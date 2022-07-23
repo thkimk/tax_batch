@@ -1,0 +1,37 @@
+spring:
+  profiles:
+    active: home
+  messages:
+    basename: i18n/exception
+    encoding: UTF-8
+  jwt:
+    secret: pepega524832857240
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  output:
+    ansi:
+      enabled: always
+  application:
+    name: tax-api
+
+management:
+  endpoints:
+    web:
+      path-mapping:
+        health: healthcheck
+  endpoint:
+    health:
+      show-details: always
+
+tax:
+  kcbMemberKey: P09510000000
+  instance: 0
+  jwt:
+    secret: testtesttesttesttesttesttesttest
+  readTimeout: 5000
+  coocon:
+    client_id: qnM81eEtpIEtR8acDxKLcXNZI4OrVnJM
+    secret: bfUcJjV81k2Ttd56bQSDxpmGuA8PyRmZ
+    url: https://plugin-uat.coocon.co.kr:8443
+  tax_token: "taxtoken0001"

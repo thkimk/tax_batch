@@ -1,0 +1,28 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://tax-database.c1ttexowmmks.ap-northeast-2.rds.amazonaws.com:3306/tax?autoReconnection=true&useSSL=false&allowMultiQueries=true
+    username: tax_admin
+    password: hli6363!
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      format_sql: true
+      ddl-auto: validate
+
+logging:
+  register-shutdown-hook: false
+  config: /home/tax/tax_api/config/logback-dev.xml
+  level:
+    root: INFO
+    com.kt.weather: INFO
+    org.apache.http: INFO
+    org.mybatis: WARN
+
+tax:
+  licence: /home/tax/tax_api/licence/P09510000000_IDS_01_PROD_AES_license.dat

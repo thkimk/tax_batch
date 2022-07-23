@@ -1,0 +1,73 @@
+{
+  "success": true,
+  "code": 0,
+  "message": "성공하였습니다.",
+  "trId": null,
+  "timestamp": "2022/06/30 12:29:40",
+  "data": [
+    {
+      "termsName": "이용약관필수동의",
+      "termsType": "1",
+      "child" : [
+        {
+          "id": 6,
+          "termsName": "서비스 이용약관2",
+          "termsType": "11",
+          "url": "http://test.com/terms/a.html"
+        },
+        {
+          "id": 2,
+          "termsName": "휴대폰 본인인증",
+          "termsType": "12",
+          "url": "http://test.com/terms/b.html"
+        }
+      ]
+    },
+    {
+      "termsName": "개인정보 필수동의",
+      "termsType": "2",
+      "child" : [
+        {
+          "id": 3,
+          "termsName": "제3자 제공이용 동의",
+          "termsType": "21",
+          "url": "http://test.com/terms/c.html"
+        }
+      ]
+    },
+    {
+      "termsName": "개인정보 선택동의",
+      "termsType": "3",
+      "child" : [
+        {
+          "id": 4,
+          "termsName": "개인정보 수집이용 동의",
+          "termsType": "31",
+          "url": "http://test.com/terms/d.html"
+        },
+        {
+          "id": 5,
+          "termsName": "마케팅 수신 동의",
+          "termsType": "32",
+          "url": "http://test.com/terms/e.html",
+          "child" : [
+            {
+              "termsName": "문자",
+              "termsType": "321"
+            },
+            {
+              "termsName": "전화",
+              "termsType": "322"
+            },
+            {
+              "termsName": "메일",
+              "termsType": "323"
+            },            {
+              "termsName": "알림톡",
+              "termsType": "324"
+            }          ]
+        }
+      ]
+    }
+  ]
+}
