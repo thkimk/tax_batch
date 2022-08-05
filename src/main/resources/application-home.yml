@@ -1,15 +1,18 @@
 server:
-  port: 8090
+  port: 9090
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://tax-database.c1ttexowmmks.ap-northeast-2.rds.amazonaws.com:3306/tax?autoReconnection=true&useSSL=false&allowMultiQueries=true
+    jdbcUrl: jdbc:mysql://tax-database.c1ttexowmmks.ap-northeast-2.rds.amazonaws.com:3306/tax?autoReconnection=true&useSSL=false&allowMultiQueries=true
     username: tax_admin
     password: hli6363!
-#    url: jdbc:mysql://172.30.1.39:3306/tax_db3?autoReconnection=true&useSSL=false&allowMultiQueries=true
-#    username: thkim
-#    password: thkim123
+  quartz-ds:
+    datasource:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://tax-dbms.cjzouundkjlm.ap-northeast-2.rds.amazonaws.com:3306/quartz?autoReconnection=true&useSSL=false&allowMultiQueries=true
+      username: root
+      password: welcome123
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     open-in-view: false
@@ -27,5 +30,3 @@ logging:
     org.apache.http: INFO
     org.mybatis: WARN
 
-tax:
-  licence: D:/dev/licence/P09510000000_IDS_01_PROD_AES_license.dat
