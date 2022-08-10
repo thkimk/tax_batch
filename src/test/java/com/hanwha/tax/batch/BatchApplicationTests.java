@@ -1,6 +1,5 @@
 package com.hanwha.tax.batch;
 
-import com.hanwha.tax.batch.config.security.JwtTokenProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

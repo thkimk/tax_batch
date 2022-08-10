@@ -26,7 +26,7 @@ logging:
   config: classpath:logback-loc.xml
   level:
     root: INFO
-    com.kt.weather: INFO
+    com.hanwha.tax.batch: DEBUG
     org.apache.http: INFO
     org.mybatis: WARN
 

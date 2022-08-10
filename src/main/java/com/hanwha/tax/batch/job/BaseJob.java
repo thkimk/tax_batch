@@ -8,6 +8,7 @@ public abstract class BaseJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
+        doExecute(context);
     }
 
     protected abstract void doExecute(JobExecutionContext context) throws JobExecutionException;
