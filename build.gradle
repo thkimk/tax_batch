@@ -41,6 +41,8 @@ dependencies {
 	implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
 	//swagger ui 추가
 	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+	// sftp
+	implementation group: 'com.jcraft', name: 'jsch', version: '0.1.54'
 
 	// security & JWT
 //	implementation 'org.springframework.boot:spring-boot-starter-security'

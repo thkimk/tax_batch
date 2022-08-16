@@ -40,4 +40,8 @@ public class Constants {
     public final static String TAX_FLAG_CBSIR = "21";   // 복식부기, 단순경비
     public final static String TAX_FLAG_CBSTR = "22";   // 복식부기, 기준경비
 
+    // 쿠콘 마이데이터 전문 파일
+    public final static String BANK_TRANS_FILE = "BankTrans";   // 은행(수입)
+    public final static String CARD_APPR_FILE = "CardAppr";   // 카드(경비)
+
 }

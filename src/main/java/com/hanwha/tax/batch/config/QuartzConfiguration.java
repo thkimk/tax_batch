@@ -10,7 +10,6 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
@@ -32,7 +31,7 @@ public class QuartzConfiguration {
 	private ApplicationContext appContext;
 	
 	@Bean
-	public JobDetailFactoryBean airJobDetail() {
+	public JobDetailFactoryBean mydataBankJobDetail() {
 	    JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
 	    jobDetailFactory.setJobClass(MydataJob.class);
 	    jobDetailFactory.setDescription("Collect tbl_weather_air Data");
@@ -41,11 +40,11 @@ public class QuartzConfiguration {
 	}
 	
 	@Bean
-	public CronTriggerFactoryBean airTrigger(JobDetail airJobDetail) {
+	public CronTriggerFactoryBean mydataBankTrigger(JobDetail mydataJobDetail) {
 		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
 		trigger.setGroup(TRIGGER_GROUP_NAME);
 		trigger.setCronExpression(mydataCronExp);
-		trigger.setJobDetail(airJobDetail);
+		trigger.setJobDetail(mydataJobDetail);
 		
 		return trigger;
 	}

@@ -1,21 +1,26 @@
 package com.hanwha.tax.batch.job;
 
+import com.hanwha.tax.batch.Utils;
+import com.hanwha.tax.batch.model.SpringApplicationContext;
+import com.hanwha.tax.batch.mydata.service.MydataService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.sql.SQLException;
 
 
 @Slf4j
 public class MydataJob extends BaseJob {
 
+	private MydataService mydataService;
+
     @Override
 	protected void doExecute(JobExecutionContext context) throws JobExecutionException {
-		System.out.println("doExecute......");
-		log.error("aaaaaaa");
+		mydataService = (MydataService) SpringApplicationContext.getBean("mydataService");
+
+		log.info("============= 마이데이터 파일 저장 QUARTZ 시작 [{}] =============", Utils.getCurrentDate("yyyy-MM-dd HH:mm:ss"));
+
+//		mydataService.batchDataJob();
+
+		log.info("============= 마이데이터 파일 저장 QUARTZ 종료 [{}] =============", Utils.getCurrentDate("yyyy-MM-dd HH:mm:ss"));
 	}
 }
