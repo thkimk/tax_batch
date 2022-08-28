@@ -32,6 +32,10 @@ public class BankTrans extends AbstractMydataCoocon {
 	protected String 조회일시;
 	protected String 수정일시;
 
+	/**
+	 * data 부 파싱
+	 * @param data
+	 */
 	public void parseData(String data) {
 		String[] dataArr = data != null ? data.split("|") : null;
 
@@ -59,5 +63,34 @@ public class BankTrans extends AbstractMydataCoocon {
 		삼점삼프로포함여부 = dataArr[14];
 		조회일시 = dataArr[15];
 		수정일시 = dataArr[16];
+	}
+
+	/**
+	 * data 부 생성
+	 * @return
+	 */
+	public String getData() {
+		StringBuffer sb = new StringBuffer();
+
+		sb.append(CI);sb.append("|");
+		sb.append(ROW_TYPE.은행수신계좌매핑거래내역조회.getCode());sb.append("|");
+		sb.append(정보제공자_기관코드);sb.append("|");
+		sb.append(계좌번호);sb.append("|");
+		sb.append(회차번호);sb.append("|");
+		sb.append(거래일시);sb.append("|");
+		sb.append(거래번호);sb.append("|");
+		sb.append(순번_랭크);sb.append("|");
+		sb.append(거래유형_코드);sb.append("|");
+		sb.append(거래구분);sb.append("|");
+		sb.append(통화코드);sb.append("|");
+		sb.append(거래금액);sb.append("|");
+		sb.append(거래후잔액);sb.append("|");
+		sb.append(소득구분);sb.append("|");
+		sb.append(삼점삼프로포함여부);sb.append("|");
+		sb.append(조회일시);sb.append("|");
+		sb.append(수정일시);sb.append("|");
+		sb.append("\n");
+
+		return sb.toString();
 	}
 }

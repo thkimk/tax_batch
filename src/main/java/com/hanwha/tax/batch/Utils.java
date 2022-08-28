@@ -4,8 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 
 @Slf4j
@@ -47,6 +50,56 @@ public class Utils {
         return getYesterday("yyyyMMdd");
     }
 
+    public static String deleteAny(String str, String charsToDelete) {
+        return org.springframework.util.StringUtils.deleteAny(str, charsToDelete);
+    }
+    private static Date chkDate(String inputDate, String format) {
+        String _date = null;
+        _date = inputDate;
+
+        if (_date == null) return null;
+        else {
+            _date = deleteAny(inputDate, "-");
+            _date = deleteAny(_date, "/");
+            _date = deleteAny(_date, ".");
+            _date = deleteAny(_date, ":");
+        }
+
+        SimpleDateFormat formatter = new SimpleDateFormat(format, java.util.Locale.KOREA);
+        Date date = null;
+
+        try {
+            date = formatter.parse(_date);
+        }
+        catch ( ParseException e ) {
+            return null;
+        }
+
+        if ( !formatter.format(date).equals(_date) ) return null;
+
+        return date;
+    }
+
+    public static String formatDate(String date, String format) {
+        if ( isEmpty(format) ) {
+            format = "yyyy-MM-dd";
+        }
+
+        if ( isEmpty(date) ) return "";
+        if ( "00000000".equals(date) ) return "";
+        if ( date.length() < 8 ) return date;
+
+        SimpleDateFormat formatter = new SimpleDateFormat(format);
+
+        String formatString = date;
+        try {
+            formatString = formatter.format(chkDate(date, "yyyyMMdd"));
+        } catch (Exception e) {
+            formatString = date;
+        }
+
+        return formatString;
+    }
 
     /**
      * 문자열이 null 이거나 빈값 여부를 리턴한다.
@@ -63,6 +116,31 @@ public class Utils {
             }
         }
         return true;
+    }
+
+    /**
+     * 문자열을 Camel 표기 형식으로 변환한다.
+     * @param str
+     * @return
+     */
+    public static String convertToCamelCase(String str) {
+        StringBuilder result = new StringBuilder();
+        boolean nextUpper = false;
+        String allLower = str.toLowerCase();
+
+        for (int i = 0; i < allLower.length(); i++) {
+            char currentChar = allLower.charAt(i);
+            if (currentChar == '_') {
+                nextUpper = true;
+            } else {
+                if (nextUpper) {
+                    currentChar = Character.toUpperCase(currentChar);
+                    nextUpper = false;
+                }
+                result.append(currentChar);
+            }
+        }
+        return result.toString();
     }
 
     public static void logCallReturned(String op, Object object) {
@@ -103,5 +181,9 @@ public class Utils {
             }
         }
     }
+
+//    public static void main(String[] args) {
+//        log.info("{}", formatDate(null,"yyyy-MM-dd HH:mm:ss"));
+//    }
 
 }

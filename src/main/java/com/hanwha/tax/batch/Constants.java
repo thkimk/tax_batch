@@ -41,7 +41,19 @@ public class Constants {
     public final static String TAX_FLAG_CBSTR = "22";   // 복식부기, 기준경비
 
     // 쿠콘 마이데이터 전문 파일
-    public final static String BANK_TRANS_FILE = "BankTrans";   // 은행(수입)
-    public final static String CARD_APPR_FILE = "CardAppr";   // 카드(경비)
+    public final static String REVOKE_FILE = "REVOKE";           // 제3자 제공동의 철회
+    public final static String BANK_TRANS_FILE = "BANK_TRANS";   // 은행(수입)
+    public final static String CARD_APPR_FILE = "CARD_APPR";     // 카드(경비)
+
+    // 쿠콘 파일 경로
+//    public final static String COOCON_FILE_DOWNLOAD_PATH = "D:/dev/hanwha/nas/tax/down/";   // sftp 다운로드 경로
+//    public final static String COOCON_FILE_MYDATA_PATH = "D:/dev/hanwha/nas/tax/mydata/";   // 마이데이터 파일 경로
+//    public final static String COOCON_FILE_DOWNLOAD_PATH = "/Users/hjlee/pds/tax/down/";   // sftp 다운로드 경로
+//    public final static String COOCON_FILE_MYDATA_PATH = "/Users/hjlee/pds/tax/mydata/";   // 마이데이터 파일 경로
+    public final static String COOCON_FILE_DOWNLOAD_PATH = "/pds/tax/down/";   // sftp 다운로드 경로
+    public final static String COOCON_FILE_MYDATA_PATH = "/pds/tax/mydata/";   // 마이데이터 파일 경로
+
+
+
 
 }

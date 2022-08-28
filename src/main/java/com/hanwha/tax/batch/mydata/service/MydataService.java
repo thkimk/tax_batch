@@ -2,14 +2,16 @@ package com.hanwha.tax.batch.mydata.service;
 
 import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.auth.service.AuthService;
+import com.hanwha.tax.batch.entity.MydataIncome;
+import com.hanwha.tax.batch.entity.MydataOutgoing;
 import com.hanwha.tax.batch.mydata.model.AbstractMydataCoocon;
 import com.hanwha.tax.batch.mydata.model.BankTrans;
-import com.hanwha.tax.batch.mydata.model.MydataIncome;
-import com.hanwha.tax.batch.mydata.repository.MydataRepository;
+import com.hanwha.tax.batch.mydata.model.CardAppr;
+import com.hanwha.tax.batch.mydata.repository.MydataIncomeRepository;
+import com.hanwha.tax.batch.mydata.repository.MydataOutgoingRepository;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
-import jdk.jshell.execution.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,19 +19,21 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import static com.hanwha.tax.batch.Constants.BANK_TRANS_FILE;
+import static com.hanwha.tax.batch.Constants.*;
 
 @Slf4j
 @Service("mydataService")
 public class MydataService {
 
     @Autowired
-    MydataRepository mydataRepository;
+    MydataIncomeRepository mydataIncomeRepository;
+
+    @Autowired
+    MydataOutgoingRepository mydataOutgoingRepository;
 
     @Autowired
     AuthService authService;
@@ -48,30 +52,32 @@ public class MydataService {
 
 
     public void batchDataJob() {
-        String yesterday = Utils.getYesterday(); //yyyymmdd = "20220705";//kkk
-        String down_path = "D:/dev/hanwha/nas/tax/down/";
-        String mydata_path = "D:/dev/hanwha/nas/tax/mydata/";
+        String yesterday = Utils.getYesterday(); // 어제일자
+        String down_path = COOCON_FILE_DOWNLOAD_PATH + yesterday + "/";
+        String mydata_path = COOCON_FILE_MYDATA_PATH + yesterday + "/";
+        String bankFile = yesterday + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + BANK_TRANS_FILE;
+        String cardFile = yesterday + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + CARD_APPR_FILE;
 
         // SFTP Get 수행 (/nas/tax/down)
         mydataSftpGet(down_path);
 
         // zip 압축 해제 (/nas/tax/mydata/yyyymmdd/*)
-        mydata_path = mydata_path.concat("/".concat(yesterday)) + "/";
-        mydataUnzip(down_path.concat(yesterday.concat("_IS000001_01_BANK_TRANS.zip")), mydata_path);
-        mydataUnzip(down_path.concat(yesterday.concat("_IS000001_01_CARD_APPR.zip")), mydata_path);
+        mydataUnzip(down_path + bankFile + ".zip", mydata_path);
+        mydataUnzip(down_path + cardFile + ".zip", mydata_path);
 
         // File load (parsing)
         // DB Upsert (mydata_income)
-        mydataIncomeLoad(mydata_path.concat(yesterday + "_IS000001_01_BANK_TRANS"));
-        mydataOutgoingLoad(mydata_path.concat(yesterday + "_IS000001_01_CARD_APPR"));
+        mydataIncomeLoad(mydata_path + bankFile);
+        mydataOutgoingLoad(mydata_path + cardFile);
 
     }
 
 
     private void mydataSftpGet(String downPath) {
-        String yyyymmdd = Utils.getYesterday(); //yyyymmdd = "20220705";//kkk
-        String sourceFile1 = "/data/".concat(yyyymmdd) + "/" + yyyymmdd + "_IS000001_01_BANK_TRANS.zip";
-        String sourceFile2 = "/data/".concat(yyyymmdd) + "/" + yyyymmdd + "_IS000001_01_CARD_APPR.zip";
+        String yesterday = Utils.getYesterday(); //yyyymmdd = "20220705";//kkk
+        String sftp_path = "/data/" + yesterday + "/";
+        String bankFile = yesterday + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + BANK_TRANS_FILE + ".zip";
+        String cardFile = yesterday + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + CARD_APPR_FILE + ".zip";
         Properties config = new Properties();
         config.put("StrictHostKeyChecking", "no");
 
@@ -88,12 +94,12 @@ public class MydataService {
             channelSftp.connect();
 
             // down bank
-            FileOutputStream fo1 = new FileOutputStream(new File(downPath.concat(yyyymmdd.concat("_IS000001_01_BANK_TRANS.zip"))));
-            channelSftp.get(sourceFile1, fo1);
+            FileOutputStream fo1 = new FileOutputStream(new File(downPath + bankFile));
+            channelSftp.get(sftp_path + bankFile, fo1);
 
             // down card
-            FileOutputStream fo2 = new FileOutputStream(new File(downPath.concat(yyyymmdd.concat("_IS000001_01_CARD_APPR.zip"))));
-            channelSftp.get(sourceFile2, fo2);
+            FileOutputStream fo2 = new FileOutputStream(new File(downPath + cardFile));
+            channelSftp.get(sftp_path + cardFile, fo2);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -139,6 +145,8 @@ public class MydataService {
     private AbstractMydataCoocon getMydataObjByName(String model_name) {
         if (Utils.isEmpty(model_name))
             return null;
+
+        model_name = Utils.convertToCamelCase("_"+model_name);
 
         AbstractMydataCoocon info = null;
         try {
@@ -190,16 +198,17 @@ public class MydataService {
      * @return
      */
     private MydataIncome saveMydataIncome(MydataIncome mydataIncome) {
-        List<MydataIncome> listMydataIncome = mydataRepository.findByCustIdAndOrgCodeAndAccountNumAndTransDtime(mydataIncome.getCustId(), mydataIncome.getOrgCode(), mydataIncome.getAccountNum(), mydataIncome.getTransDtime());
+        List<MydataIncome> listMydataIncome = mydataIncomeRepository.findByDataPk(mydataIncome);
 
-        if (listMydataIncome.size() != 1) {
+        if (1 < listMydataIncome.size()) {
+            log.error("마이데이터 수입정보에 중복 값이 존재합니다.");
             return null;
         }
 
         mydataIncome.setId(listMydataIncome.get(0).getId());
         mydataIncome.setCreateDt(listMydataIncome.get(0).getCreateDt());
 
-        return mydataRepository.save(mydataIncome);
+        return mydataIncomeRepository.save(mydataIncome);
     }
 
     /**
@@ -210,7 +219,7 @@ public class MydataService {
         // 마이데이터 은행(수입) 클래스 생성
         BankTrans bankTrans = (BankTrans) getMydataObjByName(BANK_TRANS_FILE);
         if (bankTrans == null) {
-            log.error("쿠콘 마이데이터 은행(수입) 킄래스를 확인해 주시기 바랍니다.");
+            log.error("쿠콘 마이데이터 은행(수입) 클래스를 확인해 주시기 바랍니다.");
             return;
         }
 
@@ -221,6 +230,7 @@ public class MydataService {
             String str;
             boolean isIng = false;
             while ((str = reader.readLine()) != null) {
+                log.info("## mydataIncomeLoad : {}", str);
                 String[] vals = str.split("|");
                 if (vals == null) break;
                 if (vals[0].equals("ST")) {
@@ -240,12 +250,10 @@ public class MydataService {
                         bankTrans.parseData(str);
 
                         // 고객정보 확인
-                        String cust_id = authService.getCustIdByCi(bankTrans.getCI());
+                        String custId = authService.getCustIdByCi(bankTrans.getCI());
 
                         // 마이데이터 수입 테이블 저장
-                        saveMydataIncome(new MydataIncome().convertByBankTrans(cust_id, bankTrans));
-
-                        log.info("## mydataIncomeLoad : {}", str);
+                        saveMydataIncome(new MydataIncome().convertByBankTrans(custId, bankTrans));
                     }
                 }
             }
@@ -256,13 +264,45 @@ public class MydataService {
         }
     }
 
+    /**
+     * 마이데이터 경비정보 저장
+     * @param mydataOutgoing
+     * @return
+     */
+    private MydataOutgoing saveMydataOutgoing(MydataOutgoing mydataOutgoing) {
+        List<MydataOutgoing> listMydataOutgoing = mydataOutgoingRepository.findByDataPk(mydataOutgoing);
+
+        if (1 <listMydataOutgoing.size()) {
+            log.error("마이데이터 경비정보에 중복 값이 존재합니다.");
+            return null;
+        }
+
+        mydataOutgoing.setId(listMydataOutgoing.get(0).getId());
+        mydataOutgoing.setCreateDt(listMydataOutgoing.get(0).getCreateDt());
+
+        return mydataOutgoingRepository.save(mydataOutgoing);
+    }
+
+    /**
+     * 쿠콘 마이데이터 카드(경비) 파일 DB save
+     * @param source_file
+     */
     private void mydataOutgoingLoad(String source_file) {
+        // 마이데이터 카드(경비) 클래스 생성
+        CardAppr cardAppr = (CardAppr) getMydataObjByName(CARD_APPR_FILE);
+        if (cardAppr == null) {
+            log.error("쿠콘 마이데이터 카드(경비) 클래스를 확인해 주시기 바랍니다.");
+            return;
+        }
+
+        // 마이데이터 파일 읽기
         try {
             BufferedReader reader = new BufferedReader(new FileReader(source_file));
 
             String str;
             boolean isIng = false;
             while ((str = reader.readLine()) != null) {
+                log.info("## mydataOutgoingLoad : {}", str);
                 String[] vals = str.split("|");
                 if (vals == null) break;
                 if (vals[0].equals("ST")) {
@@ -272,10 +312,16 @@ public class MydataService {
                 } else {
                     // 본처리
                     if (isIng) {
-                        String[] data = str.split("|");
-                        if (data == null) break;
+                        if (str == null) break;
 
-                        log.info("## mydataOutgoingLoad : {}", str);
+                        // 마이데이터 카드(경비) 전문 파싱
+                        cardAppr.parseData(str);
+
+                        // 고객정보 확인
+                        String custId = authService.getCustIdByCi(cardAppr.getCI());
+
+                        // 마이데이터 경비 테이블 저장
+                        saveMydataOutgoing(new MydataOutgoing().convertByCardAppr(custId, cardAppr));
                     }
                 }
             }
@@ -284,5 +330,23 @@ public class MydataService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<MydataIncome> getMydataIncomeList() {
+        MydataIncome mydataIncome = new MydataIncome();
+        mydataIncome.setCustId("2206000001");
+        mydataIncome.setOrgCode("01");
+        mydataIncome.setAccountNum("");
+        mydataIncome.setSeqNo("");
+        mydataIncome.setCurrencyCode("");
+        mydataIncome.setTransDtime("2022-06-22 00:00:00");
+        mydataIncome.setTransNo("");
+        mydataIncome.setTransType("");
+        mydataIncome.setTransClass("");
+        mydataIncome.setTransAmt(1000000);
+        mydataIncome.setBalanceAmt(0);
+        mydataIncome.setSeq(0);
+
+        return mydataIncomeRepository.findByDataPk(mydataIncome);
     }
 }

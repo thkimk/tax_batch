@@ -17,9 +17,11 @@ spring:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     open-in-view: false
     show-sql: true
-#    hibernate:
-#      format_sql: true
-#      ddl-auto: validate
+    hibernate:
+      format_sql: true
+      ddl-auto: validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
 logging:
   register-shutdown-hook: false
@@ -34,5 +36,5 @@ tax:
   sftp:
     user: IS000001
     pwd: d1OryUJJr3
-    host: 83.111.160.204
+    host: 183.111.160.204
     port: 3300

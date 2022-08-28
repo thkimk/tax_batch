@@ -29,18 +29,9 @@ public abstract class AbstractMydataCoocon {
 		헤더레코드부("ST"),
 		데이터레코드부("CI"),
 		테일레코드부("ED"),
-		은행계좌목록조회("BA01"),
-		은행수신계좌기본정보조회("BA02"),
-		은행수신계좌추가정보조회("BA03"),
-		은행수신계좌거래내역조회("BA04"),
-		은행투자계좌기본정보조회("BA05"),
-		은행투자계좌상세정보조회("BA06"),
-		은행투자계좌거래내역조회("BA07"),
-		은행대출계좌기본정보조회("BA08"),
-		은행대출계좌추가정보조회("BA09"),
-		은행대출계좌거래내역조회("BA10"),
 
-		은행수신계좌매핑거래내역조회("BT01");
+		은행수신계좌매핑거래내역조회("BT01"),
+		국내승인내역조회("CA01");
 		private final String code;
 		ROW_TYPE(String code){this.code = code;}
 		public String getCode(){return this.code;}
@@ -90,6 +81,22 @@ public abstract class AbstractMydataCoocon {
 	}
 
 	/**
+	 * 공통 전문 생성
+	 * @return
+	 */
+	public String getHeader() {
+		StringBuffer sb = new StringBuffer();
+
+		sb.append(ROW_TYPE.헤더레코드부.getCode());sb.append("|");
+		sb.append(파일구분);sb.append("|");
+		sb.append(기관코드);sb.append("|");
+		sb.append(생성일자);sb.append("|");
+		sb.append("\n");
+
+		return sb.toString();
+	}
+
+	/**
 	 * tailer 부 파싱
 	 * @param data
 	 * @throws Exception 
@@ -107,11 +114,31 @@ public abstract class AbstractMydataCoocon {
 		식별코드 = tailerArr[0];
 		전송레코드수 = tailerArr[1];
 	}
-	
+
+	/**
+	 * tailer 부 생성
+	 * @return
+	 */
+	public String getTailer() {
+		StringBuffer sb = new StringBuffer();
+
+		sb.append(ROW_TYPE.테일레코드부.getCode());sb.append("|");
+		sb.append(전송레코드수);sb.append("|");
+		sb.append("\n");
+
+		return sb.toString();
+	}
+
 	/**
 	 * data 부 파싱
 	 * @param data
 	 * @throws Exception
 	 */
 	public abstract void parseData(String data);
+
+	/**
+	 * data 부 생성
+	 * @return
+	 */
+	public abstract String getData();
 }

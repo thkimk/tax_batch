@@ -1,7 +1,7 @@
 package com.hanwha.tax.batch.auth.repository;
 
 import com.hanwha.tax.batch.auth.model.AuthId;
-import com.hanwha.tax.batch.auth.model.AuthInfo;
+import com.hanwha.tax.batch.entity.AuthInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
