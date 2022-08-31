@@ -2,6 +2,7 @@ package com.hanwha.tax.batch.mydata.service;
 
 import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.auth.service.AuthService;
+import com.hanwha.tax.batch.cust.service.CustService;
 import com.hanwha.tax.batch.entity.MydataIncome;
 import com.hanwha.tax.batch.entity.MydataOutgoing;
 import com.hanwha.tax.batch.mydata.model.AbstractMydataCoocon;
@@ -38,6 +39,9 @@ public class MydataService {
     @Autowired
     AuthService authService;
 
+    @Autowired
+    CustService custService;
+
     @Value("${tax.sftp.user}")
     private String mydataSftpUser;
 
@@ -59,19 +63,22 @@ public class MydataService {
         String cardFile = yesterday + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + CARD_APPR_FILE;
 
         // SFTP Get 수행 (/nas/tax/down)
+        log.info("▶︎▶︎▶︎ SFTP 파일 다운로드 시작");
         mydataSftpGet(down_path);
 
         // zip 압축 해제 (/nas/tax/mydata/yyyymmdd/*)
+        log.info("▶︎▶︎▶︎ BATCH 파일 압축 풀기 시작");
         mydataUnzip(down_path + bankFile + ".zip", mydata_path);
         mydataUnzip(down_path + cardFile + ".zip", mydata_path);
 
         // File load (parsing)
         // DB Upsert (mydata_income)
+        log.info("▶︎▶︎▶︎ BANK_TRANS 파일 저장 시작");
         mydataIncomeLoad(mydata_path + bankFile);
+        log.info("▶︎▶︎▶︎ CARD_APPR 파일 저장 시작");
         mydataOutgoingLoad(mydata_path + cardFile);
 
     }
-
 
     private void mydataSftpGet(String downPath) {
         String yesterday = Utils.getYesterday(); //yyyymmdd = "20220705";//kkk
@@ -254,6 +261,10 @@ public class MydataService {
 
                         // 마이데이터 수입 테이블 저장
                         saveMydataIncome(new MydataIncome().convertByBankTrans(custId, bankTrans));
+
+                        // 고객정보상세 자산변경일시 업데이트
+                        custService.updateCustMydataDt(custId);
+
                     }
                 }
             }
@@ -322,6 +333,9 @@ public class MydataService {
 
                         // 마이데이터 경비 테이블 저장
                         saveMydataOutgoing(new MydataOutgoing().convertByCardAppr(custId, cardAppr));
+
+                        // 고객정보상세 자산변경일시 업데이트
+                        custService.updateCustMydataDt(custId);
                     }
                 }
             }
@@ -332,21 +346,21 @@ public class MydataService {
         }
     }
 
-    public List<MydataIncome> getMydataIncomeList() {
-        MydataIncome mydataIncome = new MydataIncome();
-        mydataIncome.setCustId("2206000001");
-        mydataIncome.setOrgCode("01");
-        mydataIncome.setAccountNum("");
-        mydataIncome.setSeqNo("");
-        mydataIncome.setCurrencyCode("");
-        mydataIncome.setTransDtime("2022-06-22 00:00:00");
-        mydataIncome.setTransNo("");
-        mydataIncome.setTransType("");
-        mydataIncome.setTransClass("");
-        mydataIncome.setTransAmt(1000000);
-        mydataIncome.setBalanceAmt(0);
-        mydataIncome.setSeq(0);
+    /**
+     * 고객번호로 마이데이터 수입정보 삭제
+     * @param custId
+     * @return
+     */
+    public int deleteMydataIncomeByCustId(String custId) {
+        return mydataIncomeRepository.deleteByCustId(custId);
+    }
 
-        return mydataIncomeRepository.findByDataPk(mydataIncome);
+    /**
+     * 고객번호로 마이데이터 경비정보 삭제
+     * @param custId
+     * @return
+     */
+    public int deleteMydataOutgoingByCustId(String custId) {
+        return mydataOutgoingRepository.deleteByCustId(custId);
     }
 }

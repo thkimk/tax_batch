@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -24,13 +25,20 @@ public class Utils {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern(pattern));
     }
 
-
     /**
      * yyyyMMdd 형식으로 오늘 일자 리턴한다.
      * @return
      */
     public static String getCurrentDate() {
         return getCurrentDate("yyyyMMdd");
+    }
+
+    /**
+     * yyyy-MM-dd HH:mm:ss 형식으로 오늘 일자 리턴한다.
+     * @return
+     */
+    public static String getCurrentDateTime() {
+        return getCurrentDate("yyyy-MM-dd HH:mm:ss");
     }
 
     /**
@@ -99,6 +107,14 @@ public class Utils {
         }
 
         return formatString;
+    }
+
+    public static String addDays(String dateStr, int days) {
+        if (days == 0) {
+            return dateStr;
+        }
+
+        return LocalDate.parse(dateStr).plusDays(days).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.hanwha.tax.batch.config;
 
+import com.hanwha.tax.batch.job.CustDestroyJob;
 import com.hanwha.tax.batch.job.MydataJob;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
@@ -24,31 +25,52 @@ public class QuartzConfiguration {
 	@Value("${tax.mydata.schedule}")
 	private String mydataCronExp;
 
+	@Value("${tax.cust.destroy.schedule}")
+	private String custDestroyCronExp;
+
 	private final String TRIGGER_GROUP_NAME = "TAX_GROUP";
 
 
 	@Autowired
 	private ApplicationContext appContext;
 	
-	@Bean
-	public JobDetailFactoryBean mydataBankJobDetail() {
+	@Bean(name="mydataJobDetail")
+	public JobDetailFactoryBean mydataJobDetail() {
 	    JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
 	    jobDetailFactory.setJobClass(MydataJob.class);
-	    jobDetailFactory.setDescription("Collect tbl_weather_air Data");
+	    jobDetailFactory.setDescription("Collect mydata_income and mydata_outgoing Data");
 	    jobDetailFactory.setDurability(true);
 	    return jobDetailFactory;
 	}
-	
-	@Bean
-	public CronTriggerFactoryBean mydataBankTrigger(JobDetail mydataJobDetail) {
+
+	@Bean(name="mydataTrigger")
+	public CronTriggerFactoryBean mydataTrigger(JobDetail mydataJobDetail) {
 		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
 		trigger.setGroup(TRIGGER_GROUP_NAME);
 		trigger.setCronExpression(mydataCronExp);
 		trigger.setJobDetail(mydataJobDetail);
-		
+
 		return trigger;
 	}
 
+	@Bean(name="custDestroyJobDetail")
+	public JobDetailFactoryBean custDestroyJobDetail() {
+		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+		jobDetailFactory.setJobClass(CustDestroyJob.class);
+		jobDetailFactory.setDescription("Destroy cust Data");
+		jobDetailFactory.setDurability(true);
+		return jobDetailFactory;
+	}
+
+	@Bean(name="custDestroyTrigger")
+	public CronTriggerFactoryBean custDestroyTrigger(JobDetail custDestroyJobDetail) {
+		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
+		trigger.setGroup(TRIGGER_GROUP_NAME);
+		trigger.setCronExpression(custDestroyCronExp);
+		trigger.setJobDetail(custDestroyJobDetail);
+
+		return trigger;
+	}
 
 
 	@Bean

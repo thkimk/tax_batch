@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE configuration>
 <configuration debug="true">
-    <property name="LOG_DIR" value="/home/tax/tax_api/log" />
+    <property name="LOG_DIR" value="/home/ec2-user/tax_api/log" />
     <property name="LOG_PATH_NAME" value="${LOG_DIR}/weather.log" />
 
     <appender name="STDOUT"
@@ -24,7 +24,7 @@
         </rollingPolicy>
     </appender>
 
-    <logger name="com.kt.weather" level="INFO" additivity="false">
+    <logger name="com.hanwha.tax" level="INFO" additivity="false">
         <appender-ref ref="FILE" />
     </logger>
 

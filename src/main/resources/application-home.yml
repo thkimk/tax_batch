@@ -2,6 +2,9 @@ server:
   port: 9090
 
 spring:
+  .config:
+    activate:
+      on-profile: home
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     jdbcUrl: jdbc:mysql://tax-database.c1ttexowmmks.ap-northeast-2.rds.amazonaws.com:3306/tax?autoReconnection=true&useSSL=false&allowMultiQueries=true
@@ -31,6 +34,7 @@ logging:
     com.hanwha.tax.batch: DEBUG
     org.apache.http: INFO
     org.mybatis: WARN
+    org.hibernate.SQL: DEBUG
 
 tax:
   sftp:
