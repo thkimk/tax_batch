@@ -37,4 +37,13 @@ public interface CustRepository extends JpaRepository<Cust, String> {
     @Modifying
     @Query(value="delete from cust c where c.cust_id=:custId", nativeQuery = true)
     void deleteById(String custId);
+
+    /**
+     * 휴면기관과 고객상태로 휴면고객 리스트 조회
+     * @param ymdBasic
+     * @param custStatus
+     * @return
+     */
+    @Query(value="select * from cust c where (select COUNT(*) from login_hst lh where c.cust_id = lh.cust_id and lh.login_dt > :ymdBasic) = 0 and c.cust_status = :custStatus", nativeQuery = true)
+    List<Cust> getCustDormancyList(String ymdBasic, String custStatus);
 }

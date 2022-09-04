@@ -23,7 +23,7 @@ public class CustInfoDtl {
 	private String custId;			// 고객 번호
 	private String indstCode;		// 업종 코드
 	private String isDisorder;		// 장애 여부
-	private String ishshld;			// 세대주 여부
+	private String isHshld;			// 세대주 여부
 	private String isNewBusin;		// 신규사업자 여부
 	private String isMarriage;		// 결혼 여부
 	private String isSinParent;		// 한부모 여부

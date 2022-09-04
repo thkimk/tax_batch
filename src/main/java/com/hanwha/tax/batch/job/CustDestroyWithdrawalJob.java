@@ -12,7 +12,7 @@ import java.util.List;
 
 
 @Slf4j
-public class CustDestroyJob extends BaseJob {
+public class CustDestroyWithdrawalJob extends BaseJob {
 
 	private CustService custService;
 

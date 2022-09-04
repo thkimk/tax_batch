@@ -2,9 +2,6 @@ server:
   port: 8081
 
 spring:
-  .config:
-    activate:
-      on-profile: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     jdbcUrl: jdbc:mysql://tax-database.c1ttexowmmks.ap-northeast-2.rds.amazonaws.com:3306/tax?autoReconnection=true&useSSL=false&allowMultiQueries=true
@@ -28,10 +25,10 @@ spring:
 
 logging:
   register-shutdown-hook: false
-  config: classpath:logback-dev.xml
+  config: /home/ec2-user/tax_batch/config/logback-dev.xml
   level:
     root: INFO
-    com.hanwha.tax.batch: INFO
+    com.hanwha.tax.batch: DEBUG
     org.apache.http: INFO
     org.mybatis: WARN
 
@@ -41,6 +38,3 @@ tax:
     pwd: d1OryUJJr3
     host: 183.111.160.204
     port: 3300
-
-#tax:
-#  licence: /home/tax/tax_api/licence/P09510000000_IDS_01_PROD_AES_license.dat

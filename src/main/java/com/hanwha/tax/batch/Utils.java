@@ -109,12 +109,32 @@ public class Utils {
         return formatString;
     }
 
+    /**
+     * 문자열 날짜에서 N일 후 날짜를 리턴한다.
+     * @param dateStr
+     * @param days
+     * @return
+     */
     public static String addDays(String dateStr, int days) {
         if (days == 0) {
             return dateStr;
         }
 
         return LocalDate.parse(dateStr).plusDays(days).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+
+    /**
+     * 문자열 날짜에서 N년 후 날짜를 리턴한다.
+     * @param dateStr
+     * @param years
+     * @return
+     */
+    public static String addYears(String dateStr, int years) {
+        if (years == 0) {
+            return dateStr;
+        }
+
+        return LocalDate.parse(dateStr).plusYears(years).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
     /**

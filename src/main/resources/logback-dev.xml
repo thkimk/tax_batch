@@ -2,7 +2,7 @@
 <!DOCTYPE configuration>
 <configuration debug="true">
     <property name="LOG_DIR" value="/home/ec2-user/tax_api/log" />
-    <property name="LOG_PATH_NAME" value="${LOG_DIR}/weather.log" />
+    <property name="LOG_PATH_NAME" value="${LOG_DIR}/server.log" />
 
     <appender name="STDOUT"
               class="ch.qos.logback.core.ConsoleAppender">

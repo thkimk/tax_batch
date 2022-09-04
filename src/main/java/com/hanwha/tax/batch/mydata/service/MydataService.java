@@ -57,7 +57,7 @@ public class MydataService {
 
     public void batchDataJob() {
         String yesterday = Utils.getYesterday(); // 어제일자
-        String down_path = COOCON_FILE_DOWNLOAD_PATH + yesterday + "/";
+        String down_path = COOCON_FILE_DOWNLOAD_PATH;
         String mydata_path = COOCON_FILE_MYDATA_PATH + yesterday + "/";
         String bankFile = yesterday + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + BANK_TRANS_FILE;
         String cardFile = yesterday + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + CARD_APPR_FILE;
@@ -237,7 +237,7 @@ public class MydataService {
             String str;
             boolean isIng = false;
             while ((str = reader.readLine()) != null) {
-                log.info("## mydataIncomeLoad : {}", str);
+                log.debug("## mydataIncomeLoad : {}", str);
                 String[] vals = str.split("|");
                 if (vals == null) break;
                 if (vals[0].equals("ST")) {
@@ -313,7 +313,7 @@ public class MydataService {
             String str;
             boolean isIng = false;
             while ((str = reader.readLine()) != null) {
-                log.info("## mydataOutgoingLoad : {}", str);
+                log.debug("## mydataOutgoingLoad : {}", str);
                 String[] vals = str.split("|");
                 if (vals == null) break;
                 if (vals[0].equals("ST")) {

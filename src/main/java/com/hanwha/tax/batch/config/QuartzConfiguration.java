@@ -1,6 +1,8 @@
 package com.hanwha.tax.batch.config;
 
-import com.hanwha.tax.batch.job.CustDestroyJob;
+import com.hanwha.tax.batch.job.CustDestroyDormancyJob;
+import com.hanwha.tax.batch.job.CustDestroyWithdrawalJob;
+import com.hanwha.tax.batch.job.CustDormancyJob;
 import com.hanwha.tax.batch.job.MydataJob;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
@@ -25,8 +27,14 @@ public class QuartzConfiguration {
 	@Value("${tax.mydata.schedule}")
 	private String mydataCronExp;
 
-	@Value("${tax.cust.destroy.schedule}")
-	private String custDestroyCronExp;
+	@Value("${tax.cust.destroy.withdrawal.schedule}")
+	private String custDestroyWithdrawalCronExp;
+
+	@Value("${tax.cust.destroy.dormancy.schedule}")
+	private String custDestroyDormancyCronExp;
+
+	@Value("${tax.cust.dormancy.schedule}")
+	private String custDormancyCronExp;
 
 	private final String TRIGGER_GROUP_NAME = "TAX_GROUP";
 
@@ -53,21 +61,59 @@ public class QuartzConfiguration {
 		return trigger;
 	}
 
-	@Bean(name="custDestroyJobDetail")
-	public JobDetailFactoryBean custDestroyJobDetail() {
+	@Bean(name="custDestroyWithdrawalJobDetail")
+	public JobDetailFactoryBean custDestroyWithdrawalJobDetail() {
 		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
-		jobDetailFactory.setJobClass(CustDestroyJob.class);
-		jobDetailFactory.setDescription("Destroy cust Data");
+		jobDetailFactory.setJobClass(CustDestroyWithdrawalJob.class);
+		jobDetailFactory.setDescription("Destroy Cust Withdrawal Data");
 		jobDetailFactory.setDurability(true);
 		return jobDetailFactory;
 	}
 
-	@Bean(name="custDestroyTrigger")
-	public CronTriggerFactoryBean custDestroyTrigger(JobDetail custDestroyJobDetail) {
+	@Bean(name="custDestroyWithdrawalTrigger")
+	public CronTriggerFactoryBean custDestroyWithdrawalTrigger(JobDetail custDestroyWithdrawalJobDetail) {
 		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
 		trigger.setGroup(TRIGGER_GROUP_NAME);
-		trigger.setCronExpression(custDestroyCronExp);
-		trigger.setJobDetail(custDestroyJobDetail);
+		trigger.setCronExpression(custDestroyWithdrawalCronExp);
+		trigger.setJobDetail(custDestroyWithdrawalJobDetail);
+
+		return trigger;
+	}
+
+	@Bean(name="custDestroyDormancyJobDetail")
+	public JobDetailFactoryBean custDestroyDormancyJobDetail() {
+		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+		jobDetailFactory.setJobClass(CustDestroyDormancyJob.class);
+		jobDetailFactory.setDescription("Destroy Cust Dormancy Data");
+		jobDetailFactory.setDurability(true);
+		return jobDetailFactory;
+	}
+
+	@Bean(name="custDestroyDormancyTrigger")
+	public CronTriggerFactoryBean custDestroyDormancyTrigger(JobDetail custDestroyDormancyJobDetail) {
+		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
+		trigger.setGroup(TRIGGER_GROUP_NAME);
+		trigger.setCronExpression(custDestroyDormancyCronExp);
+		trigger.setJobDetail(custDestroyDormancyJobDetail);
+
+		return trigger;
+	}
+
+	@Bean(name="custDormancyJobDetail")
+	public JobDetailFactoryBean custDormancyJobDetail() {
+		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+		jobDetailFactory.setJobClass(CustDormancyJob.class);
+		jobDetailFactory.setDescription("cust Dormancy");
+		jobDetailFactory.setDurability(true);
+		return jobDetailFactory;
+	}
+
+	@Bean(name="custDormancyTrigger")
+	public CronTriggerFactoryBean custDormancyTrigger(JobDetail custDormancyJobDetail) {
+		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
+		trigger.setGroup(TRIGGER_GROUP_NAME);
+		trigger.setCronExpression(custDormancyCronExp);
+		trigger.setJobDetail(custDormancyJobDetail);
 
 		return trigger;
 	}

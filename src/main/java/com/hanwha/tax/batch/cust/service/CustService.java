@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service("custService")
@@ -71,11 +72,12 @@ public class CustService {
      * @return
      */
     public CustInfoDtl updateCustMydataDt(String custId) {
-        CustInfoDtl custInfoDtl = new CustInfoDtl();
-        custInfoDtl.setCustId(custId);
-        custInfoDtl.setMydataDt(Utils.getCurrentDateTime());
+        custInfoDtlRepository.findById(custId).ifPresent(cid -> {
+            cid.setMydataDt(Utils.getCurrentDateTime());
+            custInfoDtlRepository.save(cid);
+        });
 
-        return custInfoDtlRepository.save(custInfoDtl);
+        return null;
     }
 
     /**
@@ -195,5 +197,30 @@ public class CustService {
         log.debug("▶▶▶▶▶▶ 고객정보 식제");
         deleteCustById(custID);
         log.debug("▶▶▶▶▶▶ 고객 식제");
+    }
+
+    /**
+     * 휴면기간에 해당하는 휴면고객 리스트 조회
+     * @param ymdBasic
+     * @param custStatus
+     * @return
+     */
+    public List<Cust> getCustDormancyListByYmdBasic(String ymdBasic, String custStatus) {
+        return custRepository.getCustDormancyList(ymdBasic, custStatus);
+    }
+
+    /**
+     * 고객 휴면전환 배치
+     */
+    public void custDormancyBatch() {
+        // 1년동안 이용 기록이 없는 고객리스트 조회
+        List<Cust> custDormancyList = getCustDormancyListByYmdBasic(Utils.addYears(Utils.getCurrentDate("yyyy-MM-dd"),-1)+" 23:59:59", Cust.CustStatus.정상.getCode());
+        log.info("휴면 대상 고객 건수 : {} 건", custDormancyList.size());
+
+        // 고객 휴면처리
+        for (Cust cust : custDormancyList) {
+            cust.setCustStatus(Cust.CustStatus.휴면.getCode());
+            custRepository.save(cust);
+        }
     }
 }
