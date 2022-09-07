@@ -65,10 +65,10 @@ public abstract class AbstractMydataCoocon {
 	 * @throws Exception 
 	 */
 	public void parseHeader(String data) {
-		String[] headerArr = data != null ? data.split("|") : null;
+		String[] headerArr = data != null ? data.split("\\|") : null;
 
 		// header 부 검증
-		if (headerArr == null || headerArr.length != 5 || !ROW_TYPE.헤더레코드부.getCode().equals(headerArr[0])) {
+		if (headerArr == null || headerArr.length != 4 || !ROW_TYPE.헤더레코드부.getCode().equals(headerArr[0])) {
 			log.info("헤더부 데이터를 확인해주시기 바랍니다.");
 			return;
 		}
@@ -102,10 +102,10 @@ public abstract class AbstractMydataCoocon {
 	 * @throws Exception 
 	 */
 	public void parseTailer(String data) {
-		String[] tailerArr = data != null ? data.split("|") : null;
+		String[] tailerArr = data != null ? data.split("\\|") : null;
 
 		// header 부 검증
-		if (tailerArr == null || tailerArr.length != 3 || !ROW_TYPE.테일레코드부.getCode().equals(tailerArr[0])) {
+		if (tailerArr == null || tailerArr.length != 2 || !ROW_TYPE.테일레코드부.getCode().equals(tailerArr[0])) {
 			log.info("헤더부 데이터를 확인해주시기 바랍니다.");
 			return;
 		}

@@ -9,7 +9,7 @@ import org.quartz.JobExecutionException;
 
 
 @Slf4j
-public class MydataJob extends BaseJob {
+public class MydataThirdpartyJob extends BaseJob {
 
 	private MydataService mydataService;
 
@@ -17,10 +17,10 @@ public class MydataJob extends BaseJob {
 	protected void doExecute(JobExecutionContext context) throws JobExecutionException {
 		mydataService = (MydataService) SpringApplicationContext.getBean("mydataService");
 
-		log.info("============= 마이데이터 배치 파일 저장 QUARTZ 시작 [{}] =============", Utils.getCurrentDateTime());
+		log.info("============= 마이데이터 제3자 제공동의 확인 QUARTZ 시작 [{}] =============", Utils.getCurrentDateTime());
 
-		mydataService.batchDataJob();
+		mydataService.checkThirdpartyDataJob();
 
-		log.info("============= 마이데이터 배치 파일 저장 QUARTZ 종료 [{}] =============", Utils.getCurrentDateTime());
+		log.info("============= 마이데이터 제3자 제공동의 확인 QUARTZ 종료 [{}] =============", Utils.getCurrentDateTime());
 	}
 }

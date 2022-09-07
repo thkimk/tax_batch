@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service("custService")
@@ -210,6 +209,16 @@ public class CustService {
     }
 
     /**
+     * 고객정보 변경
+     * @param cust
+     * @return
+     */
+    public Cust modifyCust(Cust cust) {
+        cust.setUpdateDt(Utils.getCurrentDateTime());
+        return custRepository.save(cust);
+    }
+
+    /**
      * 고객 휴면전환 배치
      */
     public void custDormancyBatch() {
@@ -220,7 +229,15 @@ public class CustService {
         // 고객 휴면처리
         for (Cust cust : custDormancyList) {
             cust.setCustStatus(Cust.CustStatus.휴면.getCode());
-            custRepository.save(cust);
+            modifyCust(cust);
         }
+    }
+
+    /**
+     * 고객리스트 조회
+     * @return
+     */
+    public List<Cust> getCustList() {
+        return custRepository.findAll();
     }
 }

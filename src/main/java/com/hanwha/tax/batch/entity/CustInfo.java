@@ -27,4 +27,16 @@ public class CustInfo {
 	private String gender;			// 성별
 	private String createDt;		// 등록일시
 	private String updateDt;		// 변경일시
+
+	/*
+	 * 성별
+	 */
+	public static enum Gender {
+		남자("M"),
+		여자("F");
+
+		private final String code;
+		Gender(String code) { this.code = code; }
+		public String getCode() { return this.code; }
+	}
 }

@@ -3,11 +3,13 @@ package com.hanwha.tax.batch.mydata.service;
 import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.auth.service.AuthService;
 import com.hanwha.tax.batch.cust.service.CustService;
+import com.hanwha.tax.batch.entity.Cust;
 import com.hanwha.tax.batch.entity.MydataIncome;
 import com.hanwha.tax.batch.entity.MydataOutgoing;
 import com.hanwha.tax.batch.mydata.model.AbstractMydataCoocon;
 import com.hanwha.tax.batch.mydata.model.BankTrans;
 import com.hanwha.tax.batch.mydata.model.CardAppr;
+import com.hanwha.tax.batch.mydata.model.Thirdparty;
 import com.hanwha.tax.batch.mydata.repository.MydataIncomeRepository;
 import com.hanwha.tax.batch.mydata.repository.MydataOutgoingRepository;
 import com.jcraft.jsch.ChannelSftp;
@@ -19,7 +21,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -64,7 +68,7 @@ public class MydataService {
 
         // SFTP Get 수행 (/nas/tax/down)
         log.info("▶︎▶︎▶︎ SFTP 파일 다운로드 시작");
-        mydataSftpGet(down_path);
+        mydataSftpGet(down_path, new String[] {bankFile, cardFile});
 
         // zip 압축 해제 (/nas/tax/mydata/yyyymmdd/*)
         log.info("▶︎▶︎▶︎ BATCH 파일 압축 풀기 시작");
@@ -80,11 +84,8 @@ public class MydataService {
 
     }
 
-    private void mydataSftpGet(String downPath) {
-        String yesterday = Utils.getYesterday(); //yyyymmdd = "20220705";//kkk
-        String sftp_path = "/data/" + yesterday + "/";
-        String bankFile = yesterday + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + BANK_TRANS_FILE + ".zip";
-        String cardFile = yesterday + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + CARD_APPR_FILE + ".zip";
+    private void mydataSftpGet(String downPath, String[] fileNames) {
+        String sftpPath = "/data/" + Utils.getYesterday() + "/";
         Properties config = new Properties();
         config.put("StrictHostKeyChecking", "no");
 
@@ -100,13 +101,12 @@ public class MydataService {
             channelSftp = (ChannelSftp) session.openChannel("sftp");
             channelSftp.connect();
 
-            // down bank
-            FileOutputStream fo1 = new FileOutputStream(new File(downPath + bankFile));
-            channelSftp.get(sftp_path + bankFile, fo1);
-
-            // down card
-            FileOutputStream fo2 = new FileOutputStream(new File(downPath + cardFile));
-            channelSftp.get(sftp_path + cardFile, fo2);
+            // down files
+            for (String fileName : fileNames) {
+                fileName += ".zip";
+                FileOutputStream fo = new FileOutputStream(new File(downPath + fileName));
+                channelSftp.get(sftpPath + fileName, fo);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -179,19 +179,19 @@ public class MydataService {
             return false;
         }
 
-        String[] columnArr = row_header.split("|");
+        String[] columnArr = row_header.split("\\|");
 
-        if (columnArr.length != 5) {
+        if (columnArr.length != 4) {
             log.error("헤더 데이터 수가 일치하지 않습니다.");
             return false;
         }
 
-        if (AbstractMydataCoocon.ROW_TYPE.헤더레코드부.getCode().equals(columnArr[0])) {
+        if (!AbstractMydataCoocon.ROW_TYPE.헤더레코드부.getCode().equals(columnArr[0])) {
             log.error("헤더의 식별코드를 확인해 주시기 바랍니다.");
             return false;
         }
 
-        if ("A0000001".equals(columnArr[2])) {
+        if (!mydataSftpUser.equals(columnArr[2])) {
             log.error("헤더의 기관코드를 확인해 주시기 바랍니다.");
             return false;
         }
@@ -238,7 +238,7 @@ public class MydataService {
             boolean isIng = false;
             while ((str = reader.readLine()) != null) {
                 log.debug("## mydataIncomeLoad : {}", str);
-                String[] vals = str.split("|");
+                String[] vals = str.split("\\|");
                 if (vals == null) break;
                 if (vals[0].equals("ST")) {
                     isIng = true;
@@ -314,7 +314,7 @@ public class MydataService {
             boolean isIng = false;
             while ((str = reader.readLine()) != null) {
                 log.debug("## mydataOutgoingLoad : {}", str);
-                String[] vals = str.split("|");
+                String[] vals = str.split("\\|");
                 if (vals == null) break;
                 if (vals[0].equals("ST")) {
                     isIng = true;
@@ -362,5 +362,99 @@ public class MydataService {
      */
     public int deleteMydataOutgoingByCustId(String custId) {
         return mydataOutgoingRepository.deleteByCustId(custId);
+    }
+
+    private void mydataThirdpartyLoad(String sourceFile) {
+        // 마이데이터 제3자 제공동의 회원 클래스 생성
+        Thirdparty thirdparty = (Thirdparty) getMydataObjByName(THIRDPARTY_FILE);
+        if (thirdparty == null) {
+            log.error("제3자 제공동의 회원 클래스를 확인해 주시기 바랍니다.");
+            return;
+        }
+
+        // 제3자 제공동의 회원 맵
+        Map<String, Object> thirdpartyMap = new HashMap<String, Object>();
+
+        // 마이데이터 파일 읽기
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(sourceFile));
+
+            String str;
+            boolean isIng = false;
+            while ((str = reader.readLine()) != null) {
+                log.debug("## mydataThirdpartyLoad : {}", str);
+                String[] vals = str.split("\\|");
+                if (vals == null) break;
+                if (AbstractMydataCoocon.ROW_TYPE.헤더레코드부.getCode().equals(vals[0])) {
+                    isIng = true;
+
+                    // 헤더 검증
+                    if (!validateHeader(str))
+                        return;
+                } else if (AbstractMydataCoocon.ROW_TYPE.테일레코드부.getCode().equals(vals[0])) {
+                    break;
+                } else {
+                    // 본처리
+                    if (isIng) {
+                        // 제3자 제공동의 회원 전문 파싱
+                        thirdparty.parseData(str);
+
+                        // 고객정보 확인
+                        String custId = authService.getCustIdByCi(thirdparty.getCI());
+
+                        // 고객 제3자 제공동의 회원을 맵에 담기
+                        thirdpartyMap.put(custId, thirdparty);
+                    }
+                }
+            }
+
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 준회원, 정회원 고객리스트에서 제3자 제공동의 회원 확인
+        custService.getCustList().forEach(c -> {
+            String currentDate = Utils.getCurrentDateTime();    // 현재일시
+
+            // 정회원인데 제3자 제공 미동의한 경우
+            if (thirdpartyMap.get(c.getCustId()) == null && Cust.CustGrade.정회원.getCode().equals(c.getCustGrade())) {
+                log.info("▶︎▶︎▶︎ 준회원 등급 대상 고객 : {}", c.getCustId());
+                c.setCustGrade(Cust.CustGrade.준회원.getCode());
+                c.setAsctInDt(currentDate);
+                c.setRegOutDt(currentDate);
+                custService.modifyCust(c);
+            }
+
+            // 준회원인데 제3자 제공 동의한 경우
+            if (thirdpartyMap.get(c.getCustId()) != null && Cust.CustGrade.준회원.getCode().equals(c.getCustGrade())) {
+                log.info("▶︎▶︎▶︎ 정회원 등급 대상 고객 : {}", c.getCustId());
+                c.setCustGrade(Cust.CustGrade.정회원.getCode());
+                c.setRegInDt(currentDate);
+                c.setAsctOutDt(currentDate);
+                custService.modifyCust(c);
+            }
+        });
+    }
+
+    public void checkThirdpartyDataJob() {
+        String yesterday = Utils.getYesterday(); // 어제일자
+        String downPath = COOCON_FILE_DOWNLOAD_PATH;
+        String mydataPath = COOCON_FILE_MYDATA_PATH + yesterday + "/";
+        String fileName = yesterday + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + THIRDPARTY_FILE;
+
+        // SFTP Get 수행 (/nas/tax/down)
+        log.info("▶︎▶︎▶︎ SFTP 파일 다운로드 시작");
+        mydataSftpGet(downPath, new String[] {fileName});
+
+        // zip 압축 해제 (/nas/tax/mydata/yyyymmdd/*)
+        log.info("▶︎▶︎▶︎ BATCH 파일 압축 풀기 시작");
+        mydataUnzip(downPath + fileName + ".zip", mydataPath);
+
+        // File load (parsing)
+        // DB Upsert (mydata_income)
+        log.info("▶︎▶︎▶︎ THIRDPARTY 파일 저장 시작");
+        mydataThirdpartyLoad(mydataPath + fileName);
+
     }
 }

@@ -1,9 +1,6 @@
 package com.hanwha.tax.batch.config;
 
-import com.hanwha.tax.batch.job.CustDestroyDormancyJob;
-import com.hanwha.tax.batch.job.CustDestroyWithdrawalJob;
-import com.hanwha.tax.batch.job.CustDormancyJob;
-import com.hanwha.tax.batch.job.MydataJob;
+import com.hanwha.tax.batch.job.*;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,17 +21,26 @@ import javax.sql.DataSource;
 @Configuration
 public class QuartzConfiguration {
 
-	@Value("${tax.mydata.schedule}")
-	private String mydataCronExp;
+	@Value("${mydata.info.schedule}")
+	private String mydataInfoCronExp;
 
-	@Value("${tax.cust.destroy.withdrawal.schedule}")
+	@Value("${mydata.thirdparty.schedule}")
+	private String mydataThirdpartyCronExp;
+
+	@Value("${cust.destroy.withdrawal.schedule}")
 	private String custDestroyWithdrawalCronExp;
 
-	@Value("${tax.cust.destroy.dormancy.schedule}")
+	@Value("${cust.destroy.dormancy.schedule}")
 	private String custDestroyDormancyCronExp;
 
-	@Value("${tax.cust.dormancy.schedule}")
+	@Value("${cust.dormancy.schedule}")
 	private String custDormancyCronExp;
+
+	@Value("${cust.allmembers.schedule}")
+	private String taxAllmembersCronExp;
+
+	@Value("${cust.notice.target.schedule}")
+	private String notiTargetCronExp;
 
 	private final String TRIGGER_GROUP_NAME = "TAX_GROUP";
 
@@ -55,8 +61,27 @@ public class QuartzConfiguration {
 	public CronTriggerFactoryBean mydataTrigger(JobDetail mydataJobDetail) {
 		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
 		trigger.setGroup(TRIGGER_GROUP_NAME);
-		trigger.setCronExpression(mydataCronExp);
+		trigger.setCronExpression(mydataInfoCronExp);
 		trigger.setJobDetail(mydataJobDetail);
+
+		return trigger;
+	}
+
+	@Bean(name="mydataThirdpartyJobDetail")
+	public JobDetailFactoryBean mydataThirdpartyJobDetail() {
+		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+		jobDetailFactory.setJobClass(MydataThirdpartyJob.class);
+		jobDetailFactory.setDescription("Analyze Mydata Thirdparty Data");
+		jobDetailFactory.setDurability(true);
+		return jobDetailFactory;
+	}
+
+	@Bean(name="mydataThirdpartyTrigger")
+	public CronTriggerFactoryBean mydataThirdpartyTrigger(JobDetail mydataThirdpartyJobDetail) {
+		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
+		trigger.setGroup(TRIGGER_GROUP_NAME);
+		trigger.setCronExpression(mydataThirdpartyCronExp);
+		trigger.setJobDetail(mydataThirdpartyJobDetail);
 
 		return trigger;
 	}
@@ -114,6 +139,44 @@ public class QuartzConfiguration {
 		trigger.setGroup(TRIGGER_GROUP_NAME);
 		trigger.setCronExpression(custDormancyCronExp);
 		trigger.setJobDetail(custDormancyJobDetail);
+
+		return trigger;
+	}
+
+	@Bean(name="taxAllmembersJobDetail")
+	public JobDetailFactoryBean taxAllmembersJobDetail() {
+		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+		jobDetailFactory.setJobClass(TaxAllmembersJob.class);
+		jobDetailFactory.setDescription("cust tax allmembers");
+		jobDetailFactory.setDurability(true);
+		return jobDetailFactory;
+	}
+
+	@Bean(name="taxAllmembersTrigger")
+	public CronTriggerFactoryBean taxAllmembersTrigger(JobDetail taxAllmembersJobDetail) {
+		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
+		trigger.setGroup(TRIGGER_GROUP_NAME);
+		trigger.setCronExpression(taxAllmembersCronExp);
+		trigger.setJobDetail(taxAllmembersJobDetail);
+
+		return trigger;
+	}
+
+	@Bean(name="notiTargetJobDetail")
+	public JobDetailFactoryBean notiTargetJobDetail() {
+		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+		jobDetailFactory.setJobClass(NotiTargetJob.class);
+		jobDetailFactory.setDescription("cust notice target data");
+		jobDetailFactory.setDurability(true);
+		return jobDetailFactory;
+	}
+
+	@Bean(name="notiTargetTrigger")
+	public CronTriggerFactoryBean notiTargetTrigger(JobDetail notiTargetJobDetail) {
+		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
+		trigger.setGroup(TRIGGER_GROUP_NAME);
+		trigger.setCronExpression(notiTargetCronExp);
+		trigger.setJobDetail(notiTargetJobDetail);
 
 		return trigger;
 	}

@@ -37,10 +37,10 @@ public class CardAppr extends AbstractMydataCoocon {
 	 * @param data
 	 */
 	public void parseData(String data) {
-		String[] dataArr = data != null ? data.split("|") : null;
+		String[] dataArr = data != null ? data.split("\\|") : null;
 
 		// data 부 검증
-		if (dataArr == null || dataArr.length != 18 || !ROW_TYPE.국내승인내역조회.getCode().equals(dataArr[1])) {
+		if (dataArr == null || dataArr.length != 17 || !ROW_TYPE.국내승인내역조회.getCode().equals(dataArr[1])) {
 			log.info("국내 승인내역 조회 파일의 데이터부를 확인해주시기 바랍니다.");
 			return;
 		}

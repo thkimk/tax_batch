@@ -37,10 +37,10 @@ public class BankTrans extends AbstractMydataCoocon {
 	 * @param data
 	 */
 	public void parseData(String data) {
-		String[] dataArr = data != null ? data.split("|") : null;
+		String[] dataArr = data != null ? data.split("\\|") : null;
 
 		// data 부 검증
-		if (dataArr == null || dataArr.length != 18 || !AbstractMydataCoocon.ROW_TYPE.은행수신계좌매핑거래내역조회.getCode().equals(dataArr[1])) {
+		if (dataArr == null || dataArr.length != 17 || !AbstractMydataCoocon.ROW_TYPE.은행수신계좌매핑거래내역조회.getCode().equals(dataArr[1])) {
 			log.info("은행 수신 계좌 매핑 거래내역조회 파일의 데이터부를 확인해주시기 바랍니다.");
 			return;
 		}

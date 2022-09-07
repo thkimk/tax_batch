@@ -179,6 +179,35 @@ public class Utils {
         return result.toString();
     }
 
+    /**
+     * 생년월일로 만나이 계산
+     * @param birth
+     * @return
+     */
+    public static int realAge(String birth) {
+        LocalDate now = LocalDate.now();
+        LocalDate parsedBirthDate = LocalDate.parse(birth, DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        int realAge = now.minusYears(parsedBirthDate.getYear()).getYear();
+        if (parsedBirthDate.plusYears(realAge).isAfter(now)) {
+            realAge = realAge -1;
+        }
+
+        return realAge;
+    }
+
+    /**
+     * 생년월일로 한국 나이 계산
+     * @param birth
+     * @return
+     */
+    public static int koreaAge(String birth) {
+        LocalDate now = LocalDate.now();
+        LocalDate parsedBirthDate = LocalDate.parse(birth, DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        return now.minusYears(parsedBirthDate.getYear()).getYear()+1;
+    }
+
     public static void logCallReturned(String op, Object object) {
         if (object == null) log.info("## [RETURN] {}() : null", op);
         else {
@@ -219,7 +248,7 @@ public class Utils {
     }
 
 //    public static void main(String[] args) {
-//        log.info("{}", formatDate(null,"yyyy-MM-dd HH:mm:ss"));
+//        log.info("{}", "CI|TIvDch4batLopWj6GHwACPn87MNemqRB|Y|20220407172217|1|\n".split("\\|").length);
 //    }
 
 }

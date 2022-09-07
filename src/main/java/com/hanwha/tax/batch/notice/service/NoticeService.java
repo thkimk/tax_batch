@@ -1,8 +1,10 @@
 package com.hanwha.tax.batch.notice.service;
 
+import com.hanwha.tax.batch.entity.NotiTarget;
 import com.hanwha.tax.batch.notice.repository.NotiSettingRepository;
 import com.hanwha.tax.batch.notice.repository.NotiTargetRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,5 +34,14 @@ public class NoticeService {
      */
     public void deleteNotiTargetById(String custId) {
         notiTargetRepository.deleteById(custId);
+    }
+
+    /**
+     * 알람 대상 고객 저장
+     * @param notiTarget
+     * @return
+     */
+    public NotiTarget saveNotiTarget(NotiTarget notiTarget) {
+        return notiTargetRepository.save(notiTarget);
     }
 }

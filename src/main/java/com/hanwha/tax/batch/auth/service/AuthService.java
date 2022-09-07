@@ -1,6 +1,7 @@
 package com.hanwha.tax.batch.auth.service;
 
 import com.hanwha.tax.batch.auth.repository.AuthInfoRepository;
+import com.hanwha.tax.batch.entity.AuthInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ public class AuthService {
      * @return
      */
     public String getCustIdByCi(String ci) {
-        return authInfoRepository.findByCi(ci).stream().findAny().orElse(null).getCustId();
+        return authInfoRepository.findByCi(ci).stream().findAny().orElse(new AuthInfo()).getCustId();
     }
 
     /**

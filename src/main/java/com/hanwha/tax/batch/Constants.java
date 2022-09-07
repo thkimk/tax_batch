@@ -41,6 +41,7 @@ public class Constants {
     public final static String TAX_FLAG_CBSTR = "22";   // 복식부기, 기준경비
 
     // 쿠콘 마이데이터 전문 파일
+    public final static String THIRDPARTY_FILE = "THIRDPARTY";    // 제3자 제공동의
     public final static String REVOKE_FILE = "REVOKE";           // 제3자 제공동의 철회
     public final static String BANK_TRANS_FILE = "BANK_TRANS";   // 은행(수입)
     public final static String CARD_APPR_FILE = "CARD_APPR";     // 카드(경비)
