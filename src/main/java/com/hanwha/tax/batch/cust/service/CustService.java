@@ -3,10 +3,10 @@ package com.hanwha.tax.batch.cust.service;
 import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.auth.service.AuthService;
 import com.hanwha.tax.batch.book.service.BookService;
+import com.hanwha.tax.batch.cust.model.CustDeductId;
 import com.hanwha.tax.batch.cust.repository.*;
 import com.hanwha.tax.batch.dev.service.DevService;
-import com.hanwha.tax.batch.entity.Cust;
-import com.hanwha.tax.batch.entity.CustInfoDtl;
+import com.hanwha.tax.batch.entity.*;
 import com.hanwha.tax.batch.helpdesk.service.HelpdeskService;
 import com.hanwha.tax.batch.login.service.LoginService;
 import com.hanwha.tax.batch.mydata.service.MydataService;
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service("custService")
@@ -239,5 +240,52 @@ public class CustService {
      */
     public List<Cust> getCustList() {
         return custRepository.findAll();
+    }
+
+    /**
+     * 회원 상태 별 회원리스트 조회
+     * @param custStatus
+     * @return
+     */
+    public List<Cust> getCustListByStatus(String custStatus) {
+        return custRepository.findByCustStatus(custStatus);
+    }
+
+    /**
+     * 회원 번호로 회원 기본정보 조회
+     *
+     * @param custId
+     * @return
+     */
+    public Optional<CustInfo> getCustInfo(String custId) {
+        return custInfoRepository.findById(custId);
+    }
+
+    /**
+     * 회원 번호로 회원 상세정보 조회
+     * @param custId
+     * @return
+     */
+    public Optional<CustInfoDtl> getCustInfoDtl(String custId) {
+        return custInfoDtlRepository.findById(custId);
+    }
+
+    /**
+     * 회원 번호로 회원 간평장부 조회
+     * @param custId
+     * @return
+     */
+    public Optional<CustDeduct> getCustDeduct(String custId) {
+        CustDeductId custDeductId = new CustDeductId(custId, Integer.parseInt(Utils.getCurrentDate("yyyy")));
+        return custDeductRepository.findById(custDeductId);
+    }
+
+    /**
+     * 회원 번호로 회원 부양가족 리스트 조회
+     * @param custId
+     * @return
+     */
+    public List<CustFamily> getCustFamilyListByCustId(String custId) {
+        return custFamilyRepository.findByCustId(custId);
     }
 }

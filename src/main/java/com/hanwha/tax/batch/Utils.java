@@ -185,6 +185,10 @@ public class Utils {
      * @return
      */
     public static int realAge(String birth) {
+        if (isEmpty(birth) || birth.length() != 8) {
+            return -1;
+        }
+
         LocalDate now = LocalDate.now();
         LocalDate parsedBirthDate = LocalDate.parse(birth, DateTimeFormatter.ofPattern("yyyyMMdd"));
 

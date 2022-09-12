@@ -39,7 +39,7 @@ public class CustDeduct implements Serializable {
 	private String isSmal;			// 소기업여부
 	private String isMed;			// 소상공인 공제부금 보유
 	private String isSed;			// 중소기업창업투자 여부
-	private String idIra;			// 연금저축계좌보유 여부
+	private String isIra;			// 연금저축계좌보유 여부
 	private String createDt;		// 등록일시
 	private String updateDt;		// 변경일시
 }

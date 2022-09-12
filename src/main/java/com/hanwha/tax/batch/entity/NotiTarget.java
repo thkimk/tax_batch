@@ -135,37 +135,52 @@ public class NotiTarget {
 	}
 
 	public NotiTarget convertByCust(Cust cust, CustInfo custInfo, CustInfoDtl custInfoDtl, CustDeduct custDeduct, List<CustFamily> custFamilyList) {
-		int realAge = Utils.realAge(custInfo.getBirth());	// 고객 만나이
-		int cntFamily = custFamilyList.size();				// 부양 가족수
+		if (cust != null) {
+			this.custId = cust.getCustId();
+			this.custGrade = Cust.CustGrade.정회원.getCode().equals(cust.getCustGrade()) ? CustGrade.정회원.getCode() : CustGrade.준회원.getCode();
+		}
 
-		this.custId = cust.getCustId();
-		this.name = custInfo.getName();
-		this.email = custInfo.getEmail();
-		this.mobile = custInfo.getMobile();
-		this.custGrade = Cust.CustGrade.정회원.getCode().equals(cust.getCustGrade()) ? CustGrade.정회원.getCode() : CustGrade.준회원.getCode();
-		this.gender = CustInfo.Gender.남자.getCode().equals(custInfo.getGender()) ? Gender.남자.getCode() : Gender.여자.getCode();
-		this.age = realAge < 10 ? Age.전체.getCode() :
-				   realAge < 20 ? Age.십대.getCode() :
-				   realAge < 30 ? Age.이십대.getCode() :
-				   realAge < 40 ? Age.삼십대.getCode() :
-				   realAge < 50 ? Age.사십대.getCode() :
-				   realAge < 60 ? Age.오십대.getCode() :
-				   realAge < 70 ? Age.육십대.getCode() : Age.칠십대이상.getCode();
-		this.marriage = "Y".equals(custInfoDtl.getIsMarriage()) ? Marriage.기혼.getCode() : Marriage.미혼.getCode();
-		this.family = 1 == cntFamily ? Family.한명.getCode() :
-					  2 == cntFamily ? Family.두명.getCode() :
-					  3 == cntFamily ? Family.세명.getCode() :
-					  4 == cntFamily ? Family.네명.getCode() :
-					  5 <= cntFamily ? Family.다섯명이상.getCode() : Family.전체.getCode();
-		this.income = 10000000 <= custDeduct.getIncome() ? Income.일천만원.getCode() :
-					  20000000 <= custDeduct.getIncome() ? Income.이천만원.getCode() :
-					  30000000 <= custDeduct.getIncome() ? Income.삼천만원.getCode() :
-					  40000000 <= custDeduct.getIncome() ? Income.사천만원.getCode() :
-					  50000000 <= custDeduct.getIncome() ? Income.오천만원.getCode() :
-					  60000000 <= custDeduct.getIncome() ? Income.육천만원.getCode() :
-					  70000000 <= custDeduct.getIncome() ? Income.칠천만원.getCode() :
-					  75000000 <= custDeduct.getIncome() ? Income.칠천오백만원이상.getCode() : Income.전체.getCode();
-		this.newBusin = "Y".equals(custInfoDtl.getIsNewBusin()) ? NewBusin.신규사업자.getCode() : NewBusin.계속사업자.getCode();
+		if (custInfo != null) {
+			int realAge = Utils.realAge(custInfo.getBirth());	// 고객 만나이
+
+			this.name = custInfo.getName();
+			this.email = custInfo.getEmail();
+			this.mobile = custInfo.getMobile();
+			this.gender = CustInfo.Gender.남자.getCode().equals(custInfo.getGender()) ? Gender.남자.getCode() : Gender.여자.getCode();
+			this.age = realAge < 10 ? Age.전체.getCode() :
+					   realAge < 20 ? Age.십대.getCode() :
+					   realAge < 30 ? Age.이십대.getCode() :
+					   realAge < 40 ? Age.삼십대.getCode() :
+					   realAge < 50 ? Age.사십대.getCode() :
+					   realAge < 60 ? Age.오십대.getCode() :
+					   realAge < 70 ? Age.육십대.getCode() : Age.칠십대이상.getCode();
+
+		}
+
+		if (custInfoDtl != null) {
+			this.marriage = "Y".equals(custInfoDtl.getIsMarriage()) ? Marriage.기혼.getCode() : Marriage.미혼.getCode();
+			this.newBusin = "Y".equals(custInfoDtl.getIsNewBusin()) ? NewBusin.신규사업자.getCode() : NewBusin.계속사업자.getCode();
+		}
+
+		if (custDeduct != null) {
+			this.income = 10000000 <= custDeduct.getIncome() ? Income.일천만원.getCode() :
+						  20000000 <= custDeduct.getIncome() ? Income.이천만원.getCode() :
+						  30000000 <= custDeduct.getIncome() ? Income.삼천만원.getCode() :
+						  40000000 <= custDeduct.getIncome() ? Income.사천만원.getCode() :
+						  50000000 <= custDeduct.getIncome() ? Income.오천만원.getCode() :
+						  60000000 <= custDeduct.getIncome() ? Income.육천만원.getCode() :
+						  70000000 <= custDeduct.getIncome() ? Income.칠천만원.getCode() :
+						  75000000 <= custDeduct.getIncome() ? Income.칠천오백만원이상.getCode() : Income.전체.getCode();
+		}
+
+		if (custFamilyList != null) {
+			int cntFamily = custFamilyList.size();	// 부양 가족수
+			this.family = 1 == cntFamily ? Family.한명.getCode() :
+						  2 == cntFamily ? Family.두명.getCode() :
+						  3 == cntFamily ? Family.세명.getCode() :
+						  4 == cntFamily ? Family.네명.getCode() :
+						  5 <= cntFamily ? Family.다섯명이상.getCode() : Family.전체.getCode();
+		}
 
 		return this;
 	}

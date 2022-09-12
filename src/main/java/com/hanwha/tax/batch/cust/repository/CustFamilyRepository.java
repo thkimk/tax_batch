@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface CustFamilyRepository extends JpaRepository<CustFamily, Long> {
     /**
@@ -18,4 +20,11 @@ public interface CustFamilyRepository extends JpaRepository<CustFamily, Long> {
     @Modifying
     @Query(value="delete from cust_family cf where cf.cust_id=:custId", nativeQuery = true)
     int deleteByCustId(String custId);
+
+    /**
+     * 회원 번호로 회원 부양가족 리스트 조회
+     * @param custId
+     * @return
+     */
+    List<CustFamily> findByCustId(String custId);
 }
