@@ -180,12 +180,25 @@ public class Utils {
     }
 
     /**
+     * 생년월일 검증
+     * @param birth
+     * @return
+     */
+    private static boolean validateBirth(String birth) {
+        if (isEmpty(birth) || birth.length() != 8) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * 생년월일로 만나이 계산
      * @param birth
      * @return
      */
     public static int realAge(String birth) {
-        if (isEmpty(birth) || birth.length() != 8) {
+        if (!validateBirth(birth)) {
             return -1;
         }
 
@@ -206,10 +219,32 @@ public class Utils {
      * @return
      */
     public static int koreaAge(String birth) {
+        if (!validateBirth(birth)) {
+            return -1;
+        }
+
         LocalDate now = LocalDate.now();
         LocalDate parsedBirthDate = LocalDate.parse(birth, DateTimeFormatter.ofPattern("yyyyMMdd"));
 
         return now.minusYears(parsedBirthDate.getYear()).getYear()+1;
+    }
+
+    /**
+     * 소득세 기준 나이 계산
+     * @param birth
+     * @return
+     */
+    public static int taxAge(String birth) {
+        if (!validateBirth(birth)) {
+            return -1;
+        }
+
+        LocalDate now = LocalDate.now();
+        LocalDate parsedBirthDate = LocalDate.parse(birth, DateTimeFormatter.ofPattern("yyyyMMdd"));
+        int taxAge = now.minusYears(parsedBirthDate.getYear()).getYear();
+        if (now.getMonthValue() < 6) taxAge -= taxAge;
+
+        return taxAge;
     }
 
     public static void logCallReturned(String op, Object object) {

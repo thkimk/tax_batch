@@ -47,14 +47,12 @@ public class Constants {
     public final static String CARD_APPR_FILE = "CARD_APPR";     // 카드(경비)
 
     // 쿠콘 파일 경로
+    public final static String COOCON_FILE_SFTP_PATH = "/data/";                // sftp 경로
 //    public final static String COOCON_FILE_DOWNLOAD_PATH = "D:/dev/hanwha/nas/tax/down/";   // sftp 다운로드 경로
 //    public final static String COOCON_FILE_MYDATA_PATH = "D:/dev/hanwha/nas/tax/mydata/";   // 마이데이터 파일 경로
 //    public final static String COOCON_FILE_DOWNLOAD_PATH = "/Users/hjlee/pds/tax/down/";   // sftp 다운로드 경로
 //    public final static String COOCON_FILE_MYDATA_PATH = "/Users/hjlee/pds/tax/mydata/";   // 마이데이터 파일 경로
     public final static String COOCON_FILE_DOWNLOAD_PATH = "/pds/tax/down/";   // sftp 다운로드 경로
     public final static String COOCON_FILE_MYDATA_PATH = "/pds/tax/mydata/";   // 마이데이터 파일 경로
-
-
-
 
 }

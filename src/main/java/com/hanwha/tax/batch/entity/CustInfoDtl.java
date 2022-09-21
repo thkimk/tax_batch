@@ -20,15 +20,15 @@ import javax.persistence.Id;
 @Entity(name="cust_info_dtl")
 public class CustInfoDtl {
 	@Id
-	private String custId;			// 고객 번호
-	private String indstCode;		// 업종 코드
-	private String isDisorder;		// 장애 여부
-	private String isHshld;			// 세대주 여부
-	private String isNewBusin;		// 신규사업자 여부
-	private String isMarriage;		// 결혼 여부
-	private String isSinParent;		// 한부모 여부
-	private String taxFlag;			// 소득세 계산 flag
-	private String mydataDt;		// 자산변경일시
-	private String createDt;		// 등록일시
-	private String updateDt;		// 변경일시
+	private String 	  custId;			// 고객 번호
+	private String 	  indstCode;		// 업종 코드
+	private Character isDisorder;		// 장애 여부
+	private Character isHshld;			// 세대주 여부
+	private Character isNewBusin;		// 신규사업자 여부
+	private Character isMarriage;		// 결혼 여부
+	private Character isSinParent;		// 한부모 여부
+	private String 	  taxFlag;			// 소득세 계산 flag
+	private String 	  mydataDt;			// 자산변경일시
+	private String 	  createDt;			// 등록일시
+	private String 	  updateDt;			// 변경일시
 }

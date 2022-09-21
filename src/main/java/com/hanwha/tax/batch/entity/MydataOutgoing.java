@@ -23,21 +23,22 @@ import javax.persistence.Id;
 public class MydataOutgoing {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long   id;					// 순번
-	private String custId;				// 고객 번호
-	private String orgCode;				// 정보제공자 기관코드
-	private String cardId;				// 카드식별자
-	private int    seq;					// 일련번호_쿠콘
-	private String payType;				// 사용구분 ( 신용/체크 )
-	private String status;				// 결제상태_코드
-	private String transDtime;			// 정정일시
-	private String apprNum;				// 승인번호
-	private long   apprAmt;				// 이용금액
-	private long   modAmt;				// 정정후금액
-	private String apprDtime;			// 승인일시
-	private String merchantName;		// 가맹점명
-	private String category;			// 경비코드
-	private String createDt;			// 등록일시
+	private long    id;					// 순번
+	private String  custId;				// 고객 번호
+	private String  orgCode;			// 정보제공자 기관코드
+	private String  cardId;				// 카드식별자
+	private Integer seq;				// 일련번호_쿠콘
+	private String  payType;			// 사용구분 ( 신용/체크 )
+	private String  status;				// 결제상태_코드
+	private String  transDtime;			// 정정일시
+	private String  apprNum;			// 승인번호
+	private long    apprAmt;			// 이용금액
+	private long    modAmt;				// 정정후금액
+	private String  apprDtime;			// 승인일시
+	private String  merchantName;		// 가맹점명
+	private String  category;			// 경비코드
+	private String  createDt;			// 등록일시
+	private String  updateDt;			// 변경일시
 	
 
 	/*
@@ -56,12 +57,12 @@ public class MydataOutgoing {
 		this.custId = custId;
 		this.orgCode = cardAppr.get정보제공자_기관코드();
 		this.cardId = cardAppr.get카드식별자();
-		this.seq = Integer.parseInt(cardAppr.get순번_랭크());
+		this.seq = Utils.isEmpty(cardAppr.get순번_랭크()) ? 0 : Integer.parseInt(cardAppr.get순번_랭크());
 		this.payType = cardAppr.get사용구분_코드();
 		this.status = cardAppr.get결제상태_코드();
 		this.transDtime = Utils.formatDate(cardAppr.get정정일시(),"yyyy-MM-dd HH:mm:ss");
 		this.apprNum = cardAppr.get승인번호();
-		this.apprAmt = Long.parseLong(cardAppr.get이용금액());
+		this.apprAmt = (long) Math.floor(Float.parseFloat(cardAppr.get이용금액()));
 		this.modAmt = Long.parseLong(cardAppr.get정정후금액());
 		this.apprDtime = Utils.formatDate(cardAppr.get승인일시(),"yyyy-MM-dd HH:mm:ss");
 		this.merchantName = cardAppr.get가맹점명();

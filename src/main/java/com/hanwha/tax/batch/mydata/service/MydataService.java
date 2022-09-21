@@ -21,9 +21,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.util.HashMap;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -59,33 +59,45 @@ public class MydataService {
     private int mydataSftpPort;
 
 
-    public void batchDataJob() {
-        String yesterday = Utils.getYesterday(); // 어제일자
-        String down_path = COOCON_FILE_DOWNLOAD_PATH;
-        String mydata_path = COOCON_FILE_MYDATA_PATH + yesterday + "/";
-        String bankFile = yesterday + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + BANK_TRANS_FILE;
-        String cardFile = yesterday + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + CARD_APPR_FILE;
+    /**
+     * 마이데이터 파일 경로 가져오기
+     * @param path
+     * @return
+     */
+    private String getFilePath(String path, String ymdBasic) {
+        StringBuilder filePath = new StringBuilder();
 
-        // SFTP Get 수행 (/nas/tax/down)
-        log.info("▶︎▶︎▶︎ SFTP 파일 다운로드 시작");
-        mydataSftpGet(down_path, new String[] {bankFile, cardFile});
+        filePath.append(path);
+        filePath.append(ymdBasic);
+        filePath.append("/");
 
-        // zip 압축 해제 (/nas/tax/mydata/yyyymmdd/*)
-        log.info("▶︎▶︎▶︎ BATCH 파일 압축 풀기 시작");
-        mydataUnzip(down_path + bankFile + ".zip", mydata_path);
-        mydataUnzip(down_path + cardFile + ".zip", mydata_path);
-
-        // File load (parsing)
-        // DB Upsert (mydata_income)
-        log.info("▶︎▶︎▶︎ BANK_TRANS 파일 저장 시작");
-        mydataIncomeLoad(mydata_path + bankFile);
-        log.info("▶︎▶︎▶︎ CARD_APPR 파일 저장 시작");
-        mydataOutgoingLoad(mydata_path + cardFile);
-
+        return filePath.toString();
     }
 
-    private void mydataSftpGet(String downPath, String[] fileNames) {
-        String sftpPath = "/data/" + Utils.getYesterday() + "/";
+    /**
+     * 경로 유무 확인
+     * @param path
+     */
+    private void checkPath(String path) {
+        File file = new File(path);
+        if (!file.exists()) {
+            try {
+                file.mkdir();
+            } catch (Exception e) {
+                e.getStackTrace();
+            }
+        }
+    }
+
+    /**
+     * SFTP 파일 다운로드
+     * @param sftpPath
+     * @param downPath
+     * @param fileName
+     */
+    private void mydataSftpGet(String sftpPath, String downPath, String fileName) {
+        checkPath(downPath);
+
         Properties config = new Properties();
         config.put("StrictHostKeyChecking", "no");
 
@@ -101,12 +113,10 @@ public class MydataService {
             channelSftp = (ChannelSftp) session.openChannel("sftp");
             channelSftp.connect();
 
-            // down files
-            for (String fileName : fileNames) {
-                fileName += ".zip";
-                FileOutputStream fo = new FileOutputStream(new File(downPath + fileName));
-                channelSftp.get(sftpPath + fileName, fo);
-            }
+            // down file
+            fileName += ".zip";
+            FileOutputStream fo = new FileOutputStream(new File(downPath+fileName));
+            channelSftp.get(sftpPath+fileName, fo);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -115,17 +125,11 @@ public class MydataService {
         }
     }
 
-    private void checkPath(String path) {
-        File file = new File(path);
-        if (!file.exists()) {
-            try {
-                file.mkdir();
-            } catch (Exception e) {
-                e.getStackTrace();
-            }
-        }
-    }
-
+    /**
+     * ZIP 파일 압축 해제
+     * @param source_file
+     * @param target_path
+     */
     private void mydataUnzip(String source_file, String target_path) {
         File zipFile = new File(source_file);
         checkPath(target_path);
@@ -149,6 +153,11 @@ public class MydataService {
         }
     }
 
+    /**
+     * 쿠콘 마이데이터 전문 공통부 추상클래스 매핑
+     * @param model_name
+     * @return
+     */
     private AbstractMydataCoocon getMydataObjByName(String model_name) {
         if (Utils.isEmpty(model_name))
             return null;
@@ -200,153 +209,6 @@ public class MydataService {
     }
 
     /**
-     * 마이데이터 수입정보 저장
-     * @param mydataIncome
-     * @return
-     */
-    private MydataIncome saveMydataIncome(MydataIncome mydataIncome) {
-        List<MydataIncome> listMydataIncome = mydataIncomeRepository.findByDataPk(mydataIncome);
-
-        if (1 < listMydataIncome.size()) {
-            log.error("마이데이터 수입정보에 중복 값이 존재합니다.");
-            return null;
-        }
-
-        mydataIncome.setId(listMydataIncome.get(0).getId());
-        mydataIncome.setCreateDt(listMydataIncome.get(0).getCreateDt());
-
-        return mydataIncomeRepository.save(mydataIncome);
-    }
-
-    /**
-     * 쿠콘 마이데이터 은행(수입) 파일 DB save
-     * @param source_file
-     */
-    private void mydataIncomeLoad(String source_file) {
-        // 마이데이터 은행(수입) 클래스 생성
-        BankTrans bankTrans = (BankTrans) getMydataObjByName(BANK_TRANS_FILE);
-        if (bankTrans == null) {
-            log.error("쿠콘 마이데이터 은행(수입) 클래스를 확인해 주시기 바랍니다.");
-            return;
-        }
-
-        // 마이데이터 파일 읽기
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(source_file));
-
-            String str;
-            boolean isIng = false;
-            while ((str = reader.readLine()) != null) {
-                log.debug("## mydataIncomeLoad : {}", str);
-                String[] vals = str.split("\\|");
-                if (vals == null) break;
-                if (vals[0].equals("ST")) {
-                    isIng = true;
-
-                    // 헤더 검증
-                    if (!validateHeader(str))
-                        return;
-                } else if (vals[0].equals("ED")) {
-                    break;
-                } else {
-                    // 본처리
-                    if (isIng) {
-                        if (str == null) break;
-
-                        // 마이데이터 은행(수입) 전문 파싱
-                        bankTrans.parseData(str);
-
-                        // 고객정보 확인
-                        String custId = authService.getCustIdByCi(bankTrans.getCI());
-
-                        // 마이데이터 수입 테이블 저장
-                        saveMydataIncome(new MydataIncome().convertByBankTrans(custId, bankTrans));
-
-                        // 고객정보상세 자산변경일시 업데이트
-                        custService.updateCustMydataDt(custId);
-
-                    }
-                }
-            }
-
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 마이데이터 경비정보 저장
-     * @param mydataOutgoing
-     * @return
-     */
-    private MydataOutgoing saveMydataOutgoing(MydataOutgoing mydataOutgoing) {
-        List<MydataOutgoing> listMydataOutgoing = mydataOutgoingRepository.findByDataPk(mydataOutgoing);
-
-        if (1 <listMydataOutgoing.size()) {
-            log.error("마이데이터 경비정보에 중복 값이 존재합니다.");
-            return null;
-        }
-
-        mydataOutgoing.setId(listMydataOutgoing.get(0).getId());
-        mydataOutgoing.setCreateDt(listMydataOutgoing.get(0).getCreateDt());
-
-        return mydataOutgoingRepository.save(mydataOutgoing);
-    }
-
-    /**
-     * 쿠콘 마이데이터 카드(경비) 파일 DB save
-     * @param source_file
-     */
-    private void mydataOutgoingLoad(String source_file) {
-        // 마이데이터 카드(경비) 클래스 생성
-        CardAppr cardAppr = (CardAppr) getMydataObjByName(CARD_APPR_FILE);
-        if (cardAppr == null) {
-            log.error("쿠콘 마이데이터 카드(경비) 클래스를 확인해 주시기 바랍니다.");
-            return;
-        }
-
-        // 마이데이터 파일 읽기
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(source_file));
-
-            String str;
-            boolean isIng = false;
-            while ((str = reader.readLine()) != null) {
-                log.debug("## mydataOutgoingLoad : {}", str);
-                String[] vals = str.split("\\|");
-                if (vals == null) break;
-                if (vals[0].equals("ST")) {
-                    isIng = true;
-                } else if (vals[0].equals("ED")) {
-                    break;
-                } else {
-                    // 본처리
-                    if (isIng) {
-                        if (str == null) break;
-
-                        // 마이데이터 카드(경비) 전문 파싱
-                        cardAppr.parseData(str);
-
-                        // 고객정보 확인
-                        String custId = authService.getCustIdByCi(cardAppr.getCI());
-
-                        // 마이데이터 경비 테이블 저장
-                        saveMydataOutgoing(new MydataOutgoing().convertByCardAppr(custId, cardAppr));
-
-                        // 고객정보상세 자산변경일시 업데이트
-                        custService.updateCustMydataDt(custId);
-                    }
-                }
-            }
-
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * 고객번호로 마이데이터 수입정보 삭제
      * @param custId
      * @return
@@ -364,7 +226,101 @@ public class MydataService {
         return mydataOutgoingRepository.deleteByCustId(custId);
     }
 
-    private void mydataThirdpartyLoad(String sourceFile) {
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (은행(수입))
+     * @param row
+     */
+    private void saveMydata_BANK_TRANS(String row) {
+        // 마이데이터 은행(수입) 클래스 생성
+        BankTrans bankTrans = (BankTrans) getMydataObjByName(BANK_TRANS_FILE);
+        if (bankTrans == null) {
+            log.error("쿠콘 마이데이터 은행(수입) 클래스를 확인해 주시기 바랍니다.");
+            return;
+        }
+
+        // 마이데이터 은행(수입) 전문 파싱
+        bankTrans.parseData(row);
+
+        // 고객정보 확인
+        String custId = authService.getCustIdByCi(bankTrans.getCI());
+
+        if (Utils.isEmpty(custId)) {
+            log.error("CI 값에 해당하는 고객정보가 존재하지 않습니다. [{}]", bankTrans.getCI());
+            return;
+        }
+
+        // 마이데이터 수입 정보 조회
+        MydataIncome mydataIncome = new MydataIncome().convertByBankTrans(custId, bankTrans);
+        List<MydataIncome> listMydataIncome = mydataIncomeRepository.findByDataPk(mydataIncome);
+
+        if (1 < listMydataIncome.size()) {
+            log.error("마이데이터 수입 정보가 올바르지 않습니다.");
+            return;
+        }
+
+        if (0 < listMydataIncome.size()) {
+            mydataIncome.setId(listMydataIncome.get(0).getId());
+            mydataIncome.setCreateDt(listMydataIncome.get(0).getCreateDt());
+            mydataIncome.setUpdateDt(Utils.getCurrentDateTime());
+        }
+
+        // 마이데이터 수입 테이블 저장
+        mydataIncomeRepository.save(mydataIncome);
+
+        // 고객정보상세 자산변경일시 업데이트
+        custService.updateCustMydataDt(custId);
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (카드(경비))
+     * @param row
+     */
+    private void saveMydata_CARD_APPR(String row) {
+        // 마이데이터 카드(경비) 클래스 생성
+        CardAppr cardAppr = (CardAppr) getMydataObjByName(CARD_APPR_FILE);
+        if (cardAppr == null) {
+            log.error("쿠콘 마이데이터 카드(경비) 클래스를 확인해 주시기 바랍니다.");
+            return;
+        }
+
+        // 마이데이터 카드(경비) 전문 파싱
+        cardAppr.parseData(row);
+
+        // 고객정보 확인
+        String custId = authService.getCustIdByCi(cardAppr.getCI());
+
+        if (Utils.isEmpty(custId)) {
+            log.error("CI 값에 해당하는 고객정보가 존재하지 않습니다. [{}]", cardAppr.getCI());
+            return;
+        }
+
+        // 마이데이터 경비 정보 조회
+        MydataOutgoing mydataOutgoing = new MydataOutgoing().convertByCardAppr(custId, cardAppr);
+        List<MydataOutgoing> listMydataOutgoing = mydataOutgoingRepository.findByDataPk(mydataOutgoing);
+
+        if (1 < listMydataOutgoing.size()) {
+            log.error("마이데이터 경비 정보가 올바르지 않습니다.");
+            return;
+        }
+
+        if (0 < listMydataOutgoing.size()) {
+            mydataOutgoing.setId(listMydataOutgoing.get(0).getId());
+            mydataOutgoing.setCreateDt(listMydataOutgoing.get(0).getCreateDt());
+            mydataOutgoing.setUpdateDt(Utils.getCurrentDateTime());
+        }
+
+        // 마이데이터 경비 테이블 저장
+        mydataOutgoingRepository.save(mydataOutgoing);
+
+        // 고객정보상세 자산변경일시 업데이트
+        custService.updateCustMydataDt(custId);
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (제3자 제공동의)
+     * @param row
+     */
+    private void saveMydata_THIRDPARTY(String row) {
         // 마이데이터 제3자 제공동의 회원 클래스 생성
         Thirdparty thirdparty = (Thirdparty) getMydataObjByName(THIRDPARTY_FILE);
         if (thirdparty == null) {
@@ -372,9 +328,55 @@ public class MydataService {
             return;
         }
 
-        // 제3자 제공동의 회원 맵
-        Map<String, Object> thirdpartyMap = new HashMap<String, Object>();
+        // 제3자 제공동의 회원 전문 파싱
+        thirdparty.parseData(row);
 
+        // 고객정보 확인
+        String custId = authService.getCustIdByCi(thirdparty.getCI());
+
+        if (Utils.isEmpty(custId)) {
+            log.error("CI 값에 해당하는 고객정보가 존재하지 않습니다. [{}]", thirdparty.getCI());
+            return;
+        }
+
+        // 고객정보 조회
+        Cust cust = custService.getCust(custId).orElse(null);
+
+        if (cust == null) {
+            log.error("고객정보가 존재하지 않습니다. [{}]", custId);
+            return;
+        }
+
+        String currentDate = Utils.getCurrentDateTime();    // 현재일시
+
+        // 제3자 제공동의 동의한 경우
+        if ("Y".equals(thirdparty.get쿠콘제3자제공동의1()) && !"3".equals(thirdparty.get변경구분())) {
+            // 준회원인데 제3자 제공 동의한 경우
+            if (Cust.CustGrade.준회원.getCode().equals(cust.getCustGrade())) {
+                log.info("▶︎▶︎▶︎ 정회원 등급 대상 고객 : {}", cust.getCustId());
+                cust.setCustGrade(Cust.CustGrade.정회원.getCode());
+                cust.setRegInDt(currentDate);
+                custService.modifyCust(cust);
+            }
+        }
+        // 제3자 제공동의 미동의 경우
+        else {
+            // 정회원인데 제3자 제공 미동의한 경우
+            if (Cust.CustGrade.정회원.getCode().equals(cust.getCustGrade())) {
+                log.info("▶︎▶︎▶︎ 준회원 등급 대상 고객 : {}", cust.getCustId());
+                cust.setCustGrade(Cust.CustGrade.준회원.getCode());
+                cust.setRegOutDt(currentDate);
+                custService.modifyCust(cust);
+            }
+        }
+    }
+
+    /**
+     * 마이데이터 파일 읽기
+     * @param fileType
+     * @param sourceFile
+     */
+    private void readMydataFile(String fileType, String sourceFile) {
         // 마이데이터 파일 읽기
         try {
             BufferedReader reader = new BufferedReader(new FileReader(sourceFile));
@@ -382,7 +384,7 @@ public class MydataService {
             String str;
             boolean isIng = false;
             while ((str = reader.readLine()) != null) {
-                log.debug("## mydataThirdpartyLoad : {}", str);
+                log.debug("## row : {}", str);
                 String[] vals = str.split("\\|");
                 if (vals == null) break;
                 if (AbstractMydataCoocon.ROW_TYPE.헤더레코드부.getCode().equals(vals[0])) {
@@ -396,14 +398,12 @@ public class MydataService {
                 } else {
                     // 본처리
                     if (isIng) {
-                        // 제3자 제공동의 회원 전문 파싱
-                        thirdparty.parseData(str);
-
-                        // 고객정보 확인
-                        String custId = authService.getCustIdByCi(thirdparty.getCI());
-
-                        // 고객 제3자 제공동의 회원을 맵에 담기
-                        thirdpartyMap.put(custId, thirdparty);
+                        try {
+                            Method method = this.getClass().getDeclaredMethod("saveMydata_"+fileType, String.class);
+                            method.invoke(this, str);
+                        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -412,49 +412,28 @@ public class MydataService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // 준회원, 정회원 고객리스트에서 제3자 제공동의 회원 확인
-        custService.getCustList().forEach(c -> {
-            String currentDate = Utils.getCurrentDateTime();    // 현재일시
-
-            // 정회원인데 제3자 제공 미동의한 경우
-            if (thirdpartyMap.get(c.getCustId()) == null && Cust.CustGrade.정회원.getCode().equals(c.getCustGrade())) {
-                log.info("▶︎▶︎▶︎ 준회원 등급 대상 고객 : {}", c.getCustId());
-                c.setCustGrade(Cust.CustGrade.준회원.getCode());
-                c.setAsctInDt(currentDate);
-                c.setRegOutDt(currentDate);
-                custService.modifyCust(c);
-            }
-
-            // 준회원인데 제3자 제공 동의한 경우
-            if (thirdpartyMap.get(c.getCustId()) != null && Cust.CustGrade.준회원.getCode().equals(c.getCustGrade())) {
-                log.info("▶︎▶︎▶︎ 정회원 등급 대상 고객 : {}", c.getCustId());
-                c.setCustGrade(Cust.CustGrade.정회원.getCode());
-                c.setRegInDt(currentDate);
-                c.setAsctOutDt(currentDate);
-                custService.modifyCust(c);
-            }
-        });
     }
 
-    public void checkThirdpartyDataJob() {
-        String yesterday = Utils.getYesterday(); // 어제일자
-        String downPath = COOCON_FILE_DOWNLOAD_PATH;
-        String mydataPath = COOCON_FILE_MYDATA_PATH + yesterday + "/";
-        String fileName = yesterday + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + THIRDPARTY_FILE;
+    /**
+     * 쿠콘 마이데이터 처리
+     * @param fileType
+     */
+    public void procMydataInfo(String fileType, String ymdBasic) {
+        String downPath = getFilePath(COOCON_FILE_DOWNLOAD_PATH, ymdBasic);   // 다운로드 파일 경로
+        String mydataPath = getFilePath(COOCON_FILE_MYDATA_PATH, ymdBasic);   // 마이데이터 파일 경로
+        String fileName = ymdBasic + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + fileType;
 
         // SFTP Get 수행 (/nas/tax/down)
         log.info("▶︎▶︎▶︎ SFTP 파일 다운로드 시작");
-        mydataSftpGet(downPath, new String[] {fileName});
+        mydataSftpGet(getFilePath(COOCON_FILE_SFTP_PATH, ymdBasic), downPath, fileName);
 
         // zip 압축 해제 (/nas/tax/mydata/yyyymmdd/*)
         log.info("▶︎▶︎▶︎ BATCH 파일 압축 풀기 시작");
-        mydataUnzip(downPath + fileName + ".zip", mydataPath);
+        mydataUnzip(downPath+fileName+".zip", mydataPath);
 
         // File load (parsing)
         // DB Upsert (mydata_income)
-        log.info("▶︎▶︎▶︎ THIRDPARTY 파일 저장 시작");
-        mydataThirdpartyLoad(mydataPath + fileName);
-
+        log.info("▶︎▶︎▶︎ {} 파일 읽기 시작", fileType);
+        readMydataFile(fileType, mydataPath+fileName);
     }
 }

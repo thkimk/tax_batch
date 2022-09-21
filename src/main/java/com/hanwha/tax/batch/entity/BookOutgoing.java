@@ -20,7 +20,7 @@ public class BookOutgoing {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long   id;				// 순번
 	private String custId;			// 고객 번호
-	private long   apprAmt;			// 승인금액
+	private Long   apprAmt;			// 승인금액
 	private String apprDtime;		// 승인일시
 	private String merchantName;	// 가맹점명
 	private String category;		// 경비코드

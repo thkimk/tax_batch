@@ -37,6 +37,7 @@ public class NotiTarget {
 	 * 회원 등급
 	 */
 	public static enum CustGrade {
+		전체("00"),
 		정회원("01"),
 		준회원("02");
 
@@ -49,6 +50,7 @@ public class NotiTarget {
 	 * 성별
 	 */
 	public static enum Gender {
+		전체("00"),
 		남자("01"),
 		여자("02");
 
@@ -79,6 +81,7 @@ public class NotiTarget {
 	 * 혼인여부
 	 */
 	public static enum Marriage {
+		전체("00"),
 		기혼("01"),
 		미혼("02");
 
@@ -126,6 +129,7 @@ public class NotiTarget {
 	 * 사업자구분
 	 */
 	public static enum NewBusin {
+		전체("00"),
 		신규사업자("01"),
 		계속사업자("02");
 
@@ -137,7 +141,8 @@ public class NotiTarget {
 	public NotiTarget convertByCust(Cust cust, CustInfo custInfo, CustInfoDtl custInfoDtl, CustDeduct custDeduct, List<CustFamily> custFamilyList) {
 		if (cust != null) {
 			this.custId = cust.getCustId();
-			this.custGrade = Cust.CustGrade.정회원.getCode().equals(cust.getCustGrade()) ? CustGrade.정회원.getCode() : CustGrade.준회원.getCode();
+			this.custGrade = Cust.CustGrade.정회원.getCode().equals(cust.getCustGrade()) ? CustGrade.정회원.getCode() :
+							 Cust.CustGrade.준회원.getCode().equals(cust.getCustGrade()) ? CustGrade.준회원.getCode() : CustGrade.전체.getCode();
 		}
 
 		if (custInfo != null) {
@@ -146,7 +151,8 @@ public class NotiTarget {
 			this.name = custInfo.getName();
 			this.email = custInfo.getEmail();
 			this.mobile = custInfo.getMobile();
-			this.gender = CustInfo.Gender.남자.getCode().equals(custInfo.getGender()) ? Gender.남자.getCode() : Gender.여자.getCode();
+			this.gender = CustInfo.Gender.남자.getCode().equals(custInfo.getGender()) ? Gender.남자.getCode() :
+						  CustInfo.Gender.여자.getCode().equals(custInfo.getGender()) ? Gender.여자.getCode() : Gender.전체.getCode();
 			this.age = realAge < 10 ? Age.전체.getCode() :
 					   realAge < 20 ? Age.십대.getCode() :
 					   realAge < 30 ? Age.이십대.getCode() :
@@ -158,8 +164,10 @@ public class NotiTarget {
 		}
 
 		if (custInfoDtl != null) {
-			this.marriage = "Y".equals(custInfoDtl.getIsMarriage()) ? Marriage.기혼.getCode() : Marriage.미혼.getCode();
-			this.newBusin = "Y".equals(custInfoDtl.getIsNewBusin()) ? NewBusin.신규사업자.getCode() : NewBusin.계속사업자.getCode();
+			this.marriage = "Y".equals(custInfoDtl.getIsMarriage()) ? Marriage.기혼.getCode() :
+							"N".equals(custInfoDtl.getIsMarriage()) ? Marriage.미혼.getCode() : Marriage.전체.getCode();
+			this.newBusin = "Y".equals(custInfoDtl.getIsNewBusin()) ? NewBusin.신규사업자.getCode() :
+							"N".equals(custInfoDtl.getIsNewBusin()) ? NewBusin.계속사업자.getCode() : NewBusin.전체.getCode();
 		}
 
 		if (custDeduct != null) {

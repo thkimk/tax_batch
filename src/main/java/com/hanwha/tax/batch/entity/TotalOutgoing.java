@@ -25,7 +25,14 @@ public class TotalOutgoing {
 	private String custId;				// 고객 번호
 	private int    year;				// 연도
 	private int    month;				// 월
-	private long   amount;				// 수입금액
+	private Long   amount;				// 수입금액
 	private String createDt;			// 등록일시
 	private String updateDt;			// 변경일시
+
+	public TotalOutgoing(String custId, int year, int month, long amount) {
+		this.custId = custId;
+		this.year = year;
+		this.month = month;
+		this.amount = amount;
+	}
 }

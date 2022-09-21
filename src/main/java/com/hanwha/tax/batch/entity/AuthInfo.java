@@ -26,13 +26,13 @@ public class AuthInfo implements Serializable {
 	@Column(name="cust_id")
 	private String custId;			// 고객 번호
 	@Id
-	private String pin;				// 핀 번호
-	private String ci;				// 본인확인 인증키
-	private String isMain;			// 대표여부
-	private String authStatus;		// 최종 상태코드
-	private int    failCnt;			// 인증실패횟수
-	private String createDt;		// 등록일시
-	private String updateDt;		// 변경일시
+	private String  pin;			// 핀 번호
+	private String  ci;				// 본인확인 인증키
+	private String  isMain;			// 대표여부
+	private String  authStatus;		// 최종 상태코드
+	private Integer failCnt;		// 인증실패횟수
+	private String  createDt;		// 등록일시
+	private String  updateDt;		// 변경일시
 
 
 	/*

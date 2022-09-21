@@ -252,6 +252,16 @@ public class CustService {
     }
 
     /**
+     * 회원 번호로 회원 마스터정보 조회
+     *
+     * @param custId
+     * @return
+     */
+    public Optional<Cust> getCust(String custId) {
+        return custRepository.findById(custId);
+    }
+
+    /**
      * 회원 번호로 회원 기본정보 조회
      *
      * @param custId
@@ -271,13 +281,12 @@ public class CustService {
     }
 
     /**
-     * 회원 번호로 회원 간평장부 조회
+     * 회원 번호로 회원 간편장부 조회
      * @param custId
      * @return
      */
-    public Optional<CustDeduct> getCustDeduct(String custId) {
-        CustDeductId custDeductId = new CustDeductId(custId, Integer.parseInt(Utils.getCurrentDate("yyyy")));
-        return custDeductRepository.findById(custDeductId);
+    public Optional<CustDeduct> getCustDeduct(String custId, int year) {
+        return custDeductRepository.findById(new CustDeductId(custId, year));
     }
 
     /**
@@ -287,5 +296,15 @@ public class CustService {
      */
     public List<CustFamily> getCustFamilyListByCustId(String custId) {
         return custFamilyRepository.findByCustId(custId);
+    }
+
+    /**
+     * 회원의 직전년도,당해년도 수입 조회
+     * @param custId
+     * @param year
+     * @return
+     */
+    public Long[] getCustIncomes(String custId, int year) {
+        return custDeductRepository.getCustIncomes(custId, year);
     }
 }

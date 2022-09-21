@@ -16,6 +16,11 @@ spring:
       jdbc-url: jdbc:mysql://tax-dbms.cjzouundkjlm.ap-northeast-2.rds.amazonaws.com:3306/quartz?autoReconnection=true&useSSL=false&allowMultiQueries=true
       username: root
       password: welcome123
+  finger-ds:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jdbc-url: jdbc:mysql://tax-dbms.cjzouundkjlm.ap-northeast-2.rds.amazonaws.com:3306/finger?autoReconnection=true&useSSL=false&allowMultiQueries=true
+    username: root
+    password: welcome123
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     open-in-view: false

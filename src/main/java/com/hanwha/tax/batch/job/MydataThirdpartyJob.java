@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+import static com.hanwha.tax.batch.Constants.THIRDPARTY_FILE;
+
 
 @Slf4j
 public class MydataThirdpartyJob extends BaseJob {
@@ -19,7 +21,7 @@ public class MydataThirdpartyJob extends BaseJob {
 
 		log.info("============= 마이데이터 제3자 제공동의 확인 QUARTZ 시작 [{}] =============", Utils.getCurrentDateTime());
 
-		mydataService.checkThirdpartyDataJob();
+//		mydataService.procMydataInfo(THIRDPARTY_FILE, Utils.getYesterday());
 
 		log.info("============= 마이데이터 제3자 제공동의 확인 QUARTZ 종료 [{}] =============", Utils.getCurrentDateTime());
 	}

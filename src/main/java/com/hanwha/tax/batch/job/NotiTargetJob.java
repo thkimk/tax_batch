@@ -31,11 +31,11 @@ public class NotiTargetJob extends BaseJob {
 			// 고객 관련 정보 조회
 			CustInfo custInfo = custService.getCustInfo(c.getCustId()).orElse(null);
 			CustInfoDtl custInfoDtl = custService.getCustInfoDtl(c.getCustId()).orElse(null);
-			CustDeduct custDeduct = custService.getCustDeduct(c.getCustId()).orElse(null);
-//			List<CustFamily> custFamilyList = custService.getCustFamilyListByCustId(c.getCustId());
+			CustDeduct custDeduct = custService.getCustDeduct(c.getCustId(), Integer.parseInt(Utils.getCurrentDate("yyyy"))).orElse(null);
+			List<CustFamily> custFamilyList = custService.getCustFamilyListByCustId(c.getCustId());
 
 			// 고객정보를 알람정보로 변환
-			NotiTarget notiTarget = new NotiTarget().convertByCust(c, custInfo, custInfoDtl, custDeduct, null);
+			NotiTarget notiTarget = new NotiTarget().convertByCust(c, custInfo, custInfoDtl, custDeduct, custFamilyList);
 
 			// 알람 대상 정보 저장
 			if (noticeService.saveNotiTarget(notiTarget) == null) {
