@@ -42,6 +42,9 @@ public class QuartzConfiguration {
 	@Value("${cust.notice.target.schedule}")
 	private String notiTargetCronExp;
 
+	@Value("${deduct.transfer.schedule}")
+	private String deductTransferCronExp;
+
 	private final String TRIGGER_GROUP_NAME = "TAX_GROUP";
 
 
@@ -177,6 +180,25 @@ public class QuartzConfiguration {
 		trigger.setGroup(TRIGGER_GROUP_NAME);
 		trigger.setCronExpression(notiTargetCronExp);
 		trigger.setJobDetail(notiTargetJobDetail);
+
+		return trigger;
+	}
+
+	@Bean(name="deductTransferJobDetail")
+	public JobDetailFactoryBean deductTransferJobDetail() {
+		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+		jobDetailFactory.setJobClass(DeductTransferJob.class);
+		jobDetailFactory.setDescription("transfer deduct data");
+		jobDetailFactory.setDurability(true);
+		return jobDetailFactory;
+	}
+
+	@Bean(name="deductTransferTrigger")
+	public CronTriggerFactoryBean deductTransferTrigger(JobDetail deductTransferJobDetail) {
+		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
+		trigger.setGroup(TRIGGER_GROUP_NAME);
+		trigger.setCronExpression(deductTransferCronExp);
+		trigger.setJobDetail(deductTransferJobDetail);
 
 		return trigger;
 	}

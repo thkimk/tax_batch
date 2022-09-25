@@ -27,6 +27,10 @@ public class Tax implements Serializable {
 	private int    year;				// 연도
 	private long   rateTax;				// 경비율 소득세
 	private long   bookTax;				// 간편장부 소득세
+	private long   myDeduct;			// 본인공제
+	private long   familyDeduct;		// 가족공제
+	private long   otherDeduct;			// 기타공제
+	private long   iraDeduct;			// 연금계좌공제
 	private String createDt;			// 등록일시
 	private String updateDt;			// 변경일시
 

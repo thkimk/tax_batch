@@ -21,7 +21,7 @@ public class MydataThirdpartyJob extends BaseJob {
 
 		log.info("============= 마이데이터 제3자 제공동의 확인 QUARTZ 시작 [{}] =============", Utils.getCurrentDateTime());
 
-//		mydataService.procMydataInfo(THIRDPARTY_FILE, Utils.getYesterday());
+		mydataService.procMydataInfo(THIRDPARTY_FILE, Utils.getYesterday());
 
 		log.info("============= 마이데이터 제3자 제공동의 확인 QUARTZ 종료 [{}] =============", Utils.getCurrentDateTime());
 	}

@@ -227,6 +227,15 @@ public class MydataService {
     }
 
     /**
+     * 고객번호로 마이데이터 수입/경비정보 삭제
+     * @param custId
+     */
+    public void deleteMydataByCustId(String custId) {
+        log.info("▶▶▶▶▶▶ 마이데이터 수입정보 식제 건수 : {} 건", deleteMydataIncomeByCustId(custId));
+        log.info("▶▶▶▶▶▶ 마이데이터 경비정보 식제 건수 : {} 건", deleteMydataOutgoingByCustId(custId));
+    }
+
+    /**
      * 마이데이터 파일 ROW 별 파싱 및 저장 (은행(수입))
      * @param row
      */
@@ -367,6 +376,12 @@ public class MydataService {
                 cust.setCustGrade(Cust.CustGrade.준회원.getCode());
                 cust.setRegOutDt(currentDate);
                 custService.modifyCust(cust);
+                
+                // 마이데이터 정보 파기
+                deleteMydataByCustId(cust.getCustId());
+                
+                // 마이데이터 정보 파기에 따른 TOTAL 정보 업데이트
+                // ★★★ TOTAL 테이블 명확해지면 작업 예정
             }
         }
     }

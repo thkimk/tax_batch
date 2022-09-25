@@ -21,8 +21,12 @@ public interface TotalOutgoingRepository extends JpaRepository<TotalOutgoing, Lo
     @Query(value="delete from total_outgoing tout where tout.cust_id=:custId", nativeQuery = true)
     int deleteByCustId(String custId);
 
-    @Query(value="select mo.cust_id from mydata_outgoing mo where (mo.create_dt like ':ymdBasic%' or mo.update_dt like ':ymdBasic%') and mo.is_income='Y' union " +
-            "select bo.cust_id from book_outgoing bo where (bo.create_dt like ':ymdBasic%' or bo.update_dt like ':ymdBasic%')", nativeQuery=true)
+    @Query(value="select 0 as id, lst.cust_id, year(lst.appr_dtime), month(lst.appr_dtime), lst.appr_amt as amount, lst.category " +
+            "from ( " +
+                "select mo.*, ROW_NUMBER() over(PARTITION BY cust_id, card_id, appr_num ORDER BY trans_dtime desc, seq desc) as rn " +
+                "from mydata_outgoing mo where (mo.create_dt like concat(:ymdBasic,'%') or mo.update_dt like concat(:ymdBasic,'%')) ) lst " +
+            "where lst.rn = 1 union all " +
+            "select 0 as id, cust_id, appr_amt, appr_dtime, merchant_name, category from book_outgoing bo where (bo.create_dt like concat(:ymdBasic,'%') or bo.update_dt like concat(:ymdBasic,'%'))", nativeQuery=true)
     List<TotalOutgoing> getTotalOutgoingTarget(String ymdBasic);
 
     @Query(value="select sum(ti.amount) from (" +

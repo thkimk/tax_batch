@@ -33,7 +33,7 @@ public class TaxAllmembersJob extends BaseJob {
         // 기준일 ( 어제일자 )
         String ymdBasic = Utils.getYesterday("yyyy-MM-dd");
 
-        // 전체 수입/지출 변경이력 조회
+        // 전체 수입/지출 변경이력 조회 ( 수입/지출 뿐만 아니라 ★★★직종이 변경되는 경우 소득세 결과가 달라질 수 있음 )
         totalService.getTotalChangeList(ymdBasic).forEach(t -> {
             int year = Integer.parseInt(String.valueOf(t.get("year")));
 

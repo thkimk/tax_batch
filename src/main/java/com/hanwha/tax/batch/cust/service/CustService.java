@@ -43,6 +43,9 @@ public class CustService {
     CustTermsAgmtRepository custTermsAgmtRepository;
 
     @Autowired
+    CustEventRepository custEventRepository;
+
+    @Autowired
     AuthService authService;
 
     @Autowired
@@ -151,52 +154,63 @@ public class CustService {
     }
 
     /**
+     * 고객번호로 고객이벤트 삭제
+     * @param custId
+     * @return
+     */
+    public int deleteCustEventByCustId(String custId) {
+        return custEventRepository.deleteByCustId(custId);
+    }
+
+    /**
      * 고객 데이터 파기
      * @param custID
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
     public void deleteCustData(String custID) throws Exception {
-        log.info("▶▶▶▶▶▶ [{}] 고객정보 식제", custID);
+        log.info("▶▶▶ [{}] 고객정보 식제 시작 ◀◀◀", custID);
 
         // 수입, 경비 데이터 삭제
-        log.debug("▶▶▶▶▶▶ 수입정보 식제 건수 : {} 건", bookService.deleteBookIncomeByCustId(custID));
-        log.debug("▶▶▶▶▶▶ 경비정보 식제 건수 : {} 건", bookService.deleteBookOutgoingByCustId(custID));
-        log.debug("▶▶▶▶▶▶ 마이데이터 수입정보 식제 건수 : {} 건", mydataService.deleteMydataIncomeByCustId(custID));
-        log.debug("▶▶▶▶▶▶ 마이데이터 경비정보 식제 건수 : {} 건", mydataService.deleteMydataOutgoingByCustId(custID));
-        log.debug("▶▶▶▶▶▶ 전체 수입정보 식제 건수 : {} 건", totalService.deleteTotalIncomeByCustId(custID));
-        log.debug("▶▶▶▶▶▶ 전체 경비정보 식제 건수 : {} 건", totalService.deleteTotalOutgoingByCustId(custID));
+        log.info("▶▶▶▶▶▶ 수입정보 식제 건수 : {} 건", bookService.deleteBookIncomeByCustId(custID));
+        log.info("▶▶▶▶▶▶ 경비정보 식제 건수 : {} 건", bookService.deleteBookOutgoingByCustId(custID));
+        mydataService.deleteMydataByCustId(custID);
+        log.info("▶▶▶▶▶▶ 전체 수입정보 식제 건수 : {} 건", totalService.deleteTotalIncomeByCustId(custID));
+        log.info("▶▶▶▶▶▶ 전체 경비정보 식제 건수 : {} 건", totalService.deleteTotalOutgoingByCustId(custID));
 
         // 로그인 이력 삭제
-        log.debug("▶▶▶▶▶▶ 로그인이력 식제 건수 : {} 건", loginService.deleteLoginHstByCustId(custID));
+        log.info("▶▶▶▶▶▶ 로그인이력 식제 건수 : {} 건", loginService.deleteLoginHstByCustId(custID));
 
         // 알람 데이터 삭제
         noticeService.deleteNotiTargetById(custID);
-        log.debug("▶▶▶▶▶▶ 알람대상 식제");
+        log.info("▶▶▶▶▶▶ 알람대상 식제");
         noticeService.deleteNotiSettingById(custID);
-        log.debug("▶▶▶▶▶▶ 알람설정 식제");
+        log.info("▶▶▶▶▶▶ 알람설정 식제");
 
         // 헬프데스크 데이터 삭제
-        log.debug("▶▶▶▶▶▶ 안내데스트 식제 건수 : {} 건", helpdeskService.deleteHelpdeskAnsByCustId(custID));
-        log.debug("▶▶▶▶▶▶ 안내데스크 응답 식제 건수 : {} 건", helpdeskService.deleteHelpdeskByCustId(custID));
+        log.info("▶▶▶▶▶▶ 안내데스트 식제 건수 : {} 건", helpdeskService.deleteHelpdeskAnsByCustId(custID));
+        log.info("▶▶▶▶▶▶ 안내데스크 응답 식제 건수 : {} 건", helpdeskService.deleteHelpdeskByCustId(custID));
 
         // 단말기정보 데이터 삭제
         devService.deleteDevInfoById(custID);
-        log.debug("▶▶▶▶▶▶ 단말기정보 식제");
+        log.info("▶▶▶▶▶▶ 단말기정보 식제");
 
         // 인증정보 데이터 삭제
-        log.debug("▶▶▶▶▶▶ 인증정보 식제 건수 : {} 건", authService.deleteAuthByCustId(custID));
+        log.info("▶▶▶▶▶▶ 인증정보 식제 건수 : {} 건", authService.deleteAuthByCustId(custID));
 
         // 고객정보 관련 데이터 삭제
-        log.debug("▶▶▶▶▶▶ 연도 별 고객 자산정보 식제 건수 : {} 건", deleteCustDeductByCustId(custID));
-        log.debug("▶▶▶▶▶▶ 고객가족정보 식제 건수 : {} 건", deleteCustFamilyByCustId(custID));
-        log.debug("▶▶▶▶▶▶ 고객약관동의 식제 건수 : {} 건", deleteCustTermsAgmtByCustId(custID));
+        log.info("▶▶▶▶▶▶ 연도 별 고객 자산정보 식제 건수 : {} 건", deleteCustDeductByCustId(custID));
+        log.info("▶▶▶▶▶▶ 고객가족정보 식제 건수 : {} 건", deleteCustFamilyByCustId(custID));
+        log.info("▶▶▶▶▶▶ 고객약관동의 식제 건수 : {} 건", deleteCustTermsAgmtByCustId(custID));
+        log.info("▶▶▶▶▶▶ 고객이벤트정보 식제 건수 : {} 건", deleteCustEventByCustId(custID));
         deleteCustInfoDtlById(custID);
-        log.debug("▶▶▶▶▶▶ 고객상세정보 식제");
+        log.info("▶▶▶▶▶▶ 고객상세정보 식제");
         deleteCustInfoById(custID);
-        log.debug("▶▶▶▶▶▶ 고객정보 식제");
+        log.info("▶▶▶▶▶▶ 고객기본정보 식제");
         deleteCustById(custID);
-        log.debug("▶▶▶▶▶▶ 고객 식제");
+        log.info("▶▶▶▶▶▶ 고객마스터 식제");
+
+        log.info("▶▶▶ [{}] 고객정보 식제 종료 ◀◀◀", custID);
     }
 
     /**

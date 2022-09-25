@@ -13,7 +13,7 @@ import javax.persistence.IdClass;
 import java.io.Serializable;
 
 /**
- * 고객
+ * 고객 자산
  */
 @Getter
 @Setter
