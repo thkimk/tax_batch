@@ -17,7 +17,7 @@ public class TaxService {
     @Autowired
     TaxRepository taxRepository;
 
-    public Tax saveTax(String custId, int year, long rateTax, long bookTax) {
+    public Tax saveTax(String custId, int year, long rateTax, long bookTax, long myDeduct, long familyDeduct, long otherDeduct, long iraDeduct) {
         Tax tax = taxRepository.findById(new TaxId(custId, year)).orElse(null);
 
         if (tax == null) {
@@ -30,6 +30,10 @@ public class TaxService {
 
         tax.setRateTax(rateTax);
         tax.setBookTax(bookTax);
+        tax.setMyDeduct(myDeduct);
+        tax.setFamilyDeduct(familyDeduct);
+        tax.setOtherDeduct(otherDeduct);
+        tax.setIraDeduct(iraDeduct);
 
         log.info("★★★ tax 정보 저장 [{}]", tax.toString());
         return taxRepository.save(tax);

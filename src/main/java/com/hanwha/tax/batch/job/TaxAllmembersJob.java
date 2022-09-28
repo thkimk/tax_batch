@@ -28,47 +28,57 @@ public class TaxAllmembersJob extends BaseJob {
         taxService = (TaxService) SpringApplicationContext.getBean("taxService");
         calcTax = (CalcTax) SpringApplicationContext.getBean("calcTax");
 
+        String isMaster = context.getJobDetail().getJobDataMap().getString("isMaster");
+
         log.info("============= 고객 예상 소득세 계산 QUARTZ 시작 [{}] =============", Utils.getCurrentDateTime());
+        log.info("▶︎▶︎▶︎ isMaster : [{}]", isMaster);
 
-        // 기준일 ( 어제일자 )
-        String ymdBasic = Utils.getYesterday("yyyy-MM-dd");
+        if ("true".equals(isMaster)) {
+            // 정상 상태의 전체 고객리스트 조회
+            custService.getCustListByStatus(Cust.CustStatus.정상.getCode()).forEach(c -> {
+                AtomicBoolean ynIncome = new AtomicBoolean(false);
 
-        // 전체 수입/지출 변경이력 조회 ( 수입/지출 뿐만 아니라 ★★★직종이 변경되는 경우 소득세 결과가 달라질 수 있음 )
-        totalService.getTotalChangeList(ymdBasic).forEach(t -> {
-            int year = Integer.parseInt(String.valueOf(t.get("year")));
+                // 해당 고객의 연도 별 수입이력 조회
+                totalService.getTotalIncomeList(c.getCustId()).forEach(t -> {
+                    ynIncome.set(true);
 
-            log.info("▶︎▶︎▶︎ 회원번호 [{}] 연도 [{}]", t.get("cust_id"), year);
+                    // 소득세 계산 및 저장
+                    procTax(t.get("cust_id"), String.valueOf(t.get("year")));
+                });
 
-            // 소득세 계산 시 필요한 기본정보 세팅
-            calcTax.init(t.get("cust_id"), year);
+                if (!ynIncome.get()) {
+                    taxService.saveTax(c.getCustId(), Integer.parseInt(Utils.getCurrentDate("yyyy")), 0, 0, 0, 0, 0, 0);
+                }
+            });
+        } else {
+            // 기준일 ( 어제일자 )
+            String ymdBasic = Utils.getYesterday("yyyy-MM-dd");
 
-            // 경비율, 간편장부 소득세 계산하여 소득세 저장
-            taxService.saveTax(t.get("cust_id"), year, calcTax.calRateTax(), calcTax.calBookTax());
-        });
-
-//        // 정상 상태의 전체 고객리스트 조회
-//        custService.getCustListByStatus(Cust.CustStatus.정상.getCode()).forEach(c -> {
-//            AtomicBoolean ynIncome = new AtomicBoolean(false);
-//
-//            // 해당 고객의 연도 별 거래이력 조회
-//            totalService.getTotalIncomeList(c.getCustId()).forEach(t -> {
-//                ynIncome.set(true);
-//                int year = Integer.parseInt(String.valueOf(t.get("year")));
-//
-//                log.info("▶︎▶︎▶︎ 회원번호 [{}] 연도 [{}]", t.get("cust_id"), year);
-//
-//                // 소득세 계산 시 필요한 기본정보 세팅
-//                calcTax.init(t.get("cust_id"), year);
-//
-//                // 경비율, 간편장부 소득세 계산하여 소득세 저장
-//                taxService.saveTax(c.getCustId(), year, calcTax.calRateTax(), calcTax.calBookTax());
-//            });
-//
-//            if (!ynIncome.get()) {
-//                taxService.saveTax(c.getCustId(), Integer.parseInt(Utils.getCurrentDate("yyyy")), 0, 0);
-//            }
-//        });
+            // 전체 수입/지출 변경이력 조회 ( 수입/지출 뿐만 아니라 ★★★직종이 변경되는 경우 소득세 결과가 달라질 수 있음 )
+            totalService.getTotalChangeList(ymdBasic).forEach(t -> {
+                // 소득세 계산 및 저장
+                procTax(t.get("cust_id"), String.valueOf(t.get("year")));
+                return;
+            });
+        }
 
         log.info("============= 고객 예상 소득세 계산 QUARTZ 종료 [{}] =============", Utils.getCurrentDateTime());
+    }
+
+    /**
+     * 고객 별 소득세 계산하여 저장
+     * @param custId
+     * @param yearStr
+     */
+    private void procTax(String custId, String yearStr) {
+        int year = Integer.parseInt(yearStr);
+
+        log.info("▶︎▶︎▶︎ 회원번호 [{}] 연도 [{}]", custId, year);
+
+        // 소득세 계산 시 필요한 기본정보 세팅
+        calcTax.init(custId, year);
+
+        // 경비율, 간편장부 소득세 계산하여 소득세 저장
+        taxService.saveTax(custId, year, calcTax.calRateTax(), calcTax.calBookTax(), calcTax.getDeductMe(), calcTax.getDeductFamily(), calcTax.getDeductOthers(), 0);
     }
 }

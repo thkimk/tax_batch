@@ -17,14 +17,13 @@ public class DeductTransferJob extends BaseJob {
 
 	private CustService custService;
 
-	private NoticeService noticeService;
-
     @Override
 	protected void doExecute(JobExecutionContext context) throws JobExecutionException {
 		custService = (CustService) SpringApplicationContext.getBean("custService");
-		noticeService = (NoticeService) SpringApplicationContext.getBean("noticeService");
 
 		log.info("============= 고객 공제항목 승계 QUARTZ 시작 [{}] =============", Utils.getCurrentDateTime());
+
+		log.info("▶▶▶ ︎︎︎고객 공제항목 승계 대상 건수 : {} 건", custService.successionLastYearDeduct());
 
 		log.info("============= 고객 공제항목 승계 QUARTZ 종료 [{}] =============", Utils.getCurrentDateTime());
 	}

@@ -19,4 +19,13 @@ public interface CustEventRepository extends JpaRepository<CustEvent, CustEventI
     @Modifying
     @Query(value="delete from cust_event ce where ce.cust_id=:custId", nativeQuery = true)
     int deleteByCustId(String custId);
+
+    /**
+     * 이벤트의 참여건수 조회
+     * @param eventId
+     * @param result
+     * @param joinDt
+     * @return
+     */
+    int countByEventIdAndResultAndJoinDtContains(String eventId, char result, String joinDt);
 }

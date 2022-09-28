@@ -239,7 +239,7 @@ public class CustService {
     public void custDormancyBatch() {
         // 1년동안 이용 기록이 없는 고객리스트 조회
         List<Cust> custDormancyList = getCustDormancyListByYmdBasic(Utils.addYears(Utils.getCurrentDate("yyyy-MM-dd"),-1)+" 23:59:59", Cust.CustStatus.정상.getCode());
-        log.info("휴면 대상 고객 건수 : {} 건", custDormancyList.size());
+        log.info("▶▶▶ 휴면 대상 고객 건수 : {} 건", custDormancyList.size());
 
         // 고객 휴면처리
         for (Cust cust : custDormancyList) {
@@ -320,5 +320,24 @@ public class CustService {
      */
     public Long[] getCustIncomes(String custId, int year) {
         return custDeductRepository.getCustIncomes(custId, year);
+    }
+
+    /**
+     * 작년도 공제항목 승계
+     * @return
+     */
+    public int successionLastYearDeduct() {
+        return custDeductRepository.successionLastYearDeduct();
+    }
+
+    /**
+     * 고객 이벤트 참여 인원수 조회
+     * @param eventId
+     * @param result
+     * @param joinDt
+     * @return
+     */
+    public int getCntCustEventApply(String eventId, char result, String joinDt) {
+        return custEventRepository.countByEventIdAndResultAndJoinDtContains(eventId, result, joinDt);
     }
 }

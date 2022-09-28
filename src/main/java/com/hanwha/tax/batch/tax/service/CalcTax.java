@@ -6,6 +6,7 @@ import com.hanwha.tax.batch.cust.service.CustService;
 import com.hanwha.tax.batch.entity.*;
 import com.hanwha.tax.batch.industry.service.IndustryService;
 import com.hanwha.tax.batch.total.service.TotalService;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Slf4j
+@Getter
 @Service("calcTax")
 public class CalcTax {
 
@@ -333,6 +335,7 @@ public class CalcTax {
 //            bookFlag = "단순경비율";
             Float bookRate = industry.getSimpleExrt();
             Float bookRateExc = industry.getSimpleExrtExc();
+            log.debug("## income : {}, bookRate : {}, bookRateExc {}", income, bookRate, bookRateExc);
             outgoing = (Math.min(income, 40000000) * (long)(bookRate*100) + Math.max(income-40000000, 0) * (long)(bookRateExc*100))/100 /100;
         } else {    // 기준경비율
 //            bookFlag = "기준경비율";

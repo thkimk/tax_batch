@@ -29,4 +29,11 @@ public interface CustDeductRepository extends JpaRepository<CustDeduct, CustDedu
      */
     @Query(value = "select cd.income from cust_deduct cd where cd.cust_id = :custId and cd.year <= :year order by cd.year desc limit 2", nativeQuery = true)
     Long[] getCustIncomes(String custId, int year);
+
+    @Transactional
+    @Modifying
+    @Query(value = "insert into cust_deduct (cust_id, `year`, income, outgoing, med_amt, npc_amt, rsp_amt, sed_amt, ira_amt, irp_amt, is_rsp, is_smal, is_med, is_sed, is_ira, create_dt) " +
+            "select cust_id, year(now()) as `year`, income, outgoing, med_amt, npc_amt, rsp_amt, sed_amt, ira_amt, irp_amt, is_rsp, is_smal, is_med, is_sed, is_ira, now() " +
+            "from cust_deduct cd where cd.cust_id not in (select cust_id from cust_deduct where `year` = year(NOW())) and `year` = year(now())-1", nativeQuery = true)
+    int successionLastYearDeduct();
 }

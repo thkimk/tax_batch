@@ -1,6 +1,7 @@
 package com.hanwha.tax.batch.config;
 
 import com.hanwha.tax.batch.job.*;
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ public class QuartzConfiguration {
 	@Value("${cust.dormancy.schedule}")
 	private String custDormancyCronExp;
 
+	@Value("${cust.allmembers.data.isMaster}")
+	private String isMasterJobData;
+
 	@Value("${cust.allmembers.schedule}")
 	private String taxAllmembersCronExp;
 
@@ -44,6 +48,9 @@ public class QuartzConfiguration {
 
 	@Value("${deduct.transfer.schedule}")
 	private String deductTransferCronExp;
+
+	@Value("${event.status.schedule}")
+	private String eventStatusCronExp;
 
 	private final String TRIGGER_GROUP_NAME = "TAX_GROUP";
 
@@ -152,6 +159,11 @@ public class QuartzConfiguration {
 		jobDetailFactory.setJobClass(TaxAllmembersJob.class);
 		jobDetailFactory.setDescription("cust tax allmembers");
 		jobDetailFactory.setDurability(true);
+
+		JobDataMap jobDataMap = new JobDataMap();
+		jobDataMap.put("isMaster", isMasterJobData);
+		jobDetailFactory.setJobDataMap(jobDataMap);
+
 		return jobDetailFactory;
 	}
 
@@ -199,6 +211,25 @@ public class QuartzConfiguration {
 		trigger.setGroup(TRIGGER_GROUP_NAME);
 		trigger.setCronExpression(deductTransferCronExp);
 		trigger.setJobDetail(deductTransferJobDetail);
+
+		return trigger;
+	}
+
+	@Bean(name="eventStatusJobDetail")
+	public JobDetailFactoryBean eventStatusJobDetail() {
+		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+		jobDetailFactory.setJobClass(EventStatusJob.class);
+		jobDetailFactory.setDescription("update event status join_dt");
+		jobDetailFactory.setDurability(true);
+		return jobDetailFactory;
+	}
+
+	@Bean(name="eventStatusTrigger")
+	public CronTriggerFactoryBean eventStatusTrigger(JobDetail eventStatusJobDetail) {
+		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
+		trigger.setGroup(TRIGGER_GROUP_NAME);
+		trigger.setCronExpression(eventStatusCronExp);
+		trigger.setJobDetail(eventStatusJobDetail);
 
 		return trigger;
 	}
