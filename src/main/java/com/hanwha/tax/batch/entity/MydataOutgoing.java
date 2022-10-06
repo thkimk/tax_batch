@@ -53,6 +53,19 @@ public class MydataOutgoing {
 		public String getCode() { return this.code; }
 	}
 
+	/*
+	 * 결재 상태
+	 */
+	public static enum ApprStatus {
+		승인("01"),
+		승인취소("02"),
+		정정("03");
+
+		private final String code;
+		ApprStatus(String code) { this.code = code; }
+		public String getCode() { return this.code; }
+	}
+
 	public MydataOutgoing convertByCardAppr(String custId, CardAppr cardAppr) {
 		this.custId = custId;
 		this.orgCode = cardAppr.get정보제공자_기관코드();

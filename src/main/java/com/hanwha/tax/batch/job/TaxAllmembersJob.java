@@ -39,20 +39,20 @@ public class TaxAllmembersJob extends BaseJob {
                 AtomicBoolean ynIncome = new AtomicBoolean(false);
 
                 // 해당 고객의 연도 별 수입이력 조회
-                totalService.getTotalIncomeList(c.getCustId()).forEach(t -> {
+                totalService.getTotalIncomeByCustId(c.getCustId()).forEach(t -> {
                     ynIncome.set(true);
 
                     // 소득세 계산 및 저장
-                    procTax(t.get("cust_id"), String.valueOf(t.get("year")));
+                    procTax(t.getCustId(), String.valueOf(t.getYear()));
                 });
 
                 if (!ynIncome.get()) {
-                    taxService.saveTax(c.getCustId(), Integer.parseInt(Utils.getCurrentDate("yyyy")), 0, 0, 0, 0, 0, 0);
+                    taxService.saveTax(c.getCustId(), Integer.parseInt(Utils.getCurrentDate("yyyy")), 0, 0);
                 }
             });
         } else {
-            // 기준일 ( 어제일자 )
-            String ymdBasic = Utils.getYesterday("yyyy-MM-dd");
+            // 기준일 ( 당일 )
+            String ymdBasic = Utils.getCurrentDate("yyyy-MM-dd");
 
             // 전체 수입/지출 변경이력 조회 ( 수입/지출 뿐만 아니라 ★★★직종이 변경되는 경우 소득세 결과가 달라질 수 있음 )
             totalService.getTotalChangeList(ymdBasic).forEach(t -> {
@@ -79,6 +79,6 @@ public class TaxAllmembersJob extends BaseJob {
         calcTax.init(custId, year);
 
         // 경비율, 간편장부 소득세 계산하여 소득세 저장
-        taxService.saveTax(custId, year, calcTax.calRateTax(), calcTax.calBookTax(), calcTax.getDeductMe(), calcTax.getDeductFamily(), calcTax.getDeductOthers(), 0);
+        taxService.saveTax(custId, year, calcTax.calRateTax(), calcTax.calBookTax());
     }
 }

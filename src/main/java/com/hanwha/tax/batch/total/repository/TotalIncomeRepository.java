@@ -4,7 +4,6 @@ import com.hanwha.tax.batch.entity.TotalIncome;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,28 +22,55 @@ public interface TotalIncomeRepository extends JpaRepository<TotalIncome, Long> 
     @Query(value="delete from total_income ti where ti.cust_id=:custId", nativeQuery = true)
     int deleteByCustId(String custId);
 
-    @Query(value="select sum(ti.amount) from (" +
-            "select mi.trans_amt as amount from mydata_income mi where mi.cust_id=:custId and mi.is_income = 'Y' and year(mi.trans_dtime)=:year union all " +
-            "select bi.trans_amt as amount from book_income bi where bi.cust_id=:custId and year(bi.trans_dtime)=:year) ti", nativeQuery=true)
+    /**
+     * 전체수입정보(간편장부+마이데이터) 기준일 변경내역 조회
+     * @param ymdBasic
+     * @return
+     */
+    @Query(value="select mi.id as fk, 'M' as flag_fk, mi.cust_id, YEAR(mi.trans_dtime) as `year`, MONTH(mi.trans_dtime) as `month`, mi.trans_amt as amount, CONCAT(mi.is_33,'') from mydata_income mi where mi.is_income = 'Y' and COALESCE(mi.update_dt, mi.create_dt) like CONCAT(:ymdBasic,'%') union all " +
+            "select bi.id as fk, 'B' as flag_fk, bi.cust_id, YEAR(bi.trans_dtime) as `year`, MONTH(bi.trans_dtime) as `month`, bi.trans_amt as amount, CONCAT(bi.is_33,'') from book_income bi where COALESCE(bi.update_dt, bi.create_dt) like CONCAT(:ymdBasic,'%')", nativeQuery=true)
+    List<Map<String,String>> getTotalIncomeTarget(String ymdBasic);
+
+    /**
+     * 외래키로 전체수입정보 조회
+     * @param fk
+     * @param flagFk
+     * @return
+     */
+    List<TotalIncome> findByFkAndFlagFk(long fk, char flagFk);
+
+    /**
+     * 특정 연도 고객의 수입 총 금액 조회
+     * @param custId
+     * @param year
+     * @return
+     */
+    @Query(value="select SUM(tin.amount) from total_income tin where tin.cust_id = :custId and tin.`year` = :year", nativeQuery=true)
     Long getTotalIncome(String custId, int year);
 
-    @Query(value="select sum(ti.amount) from (" +
-            "select mi.trans_amt as amount from mydata_income mi where mi.cust_id=:custId and mi.is_income = 'Y' and year(mi.trans_dtime)=:year and month(mi.trans_dtime)=:month union all " +
-            "select bi.trans_amt as amount from book_income bi where bi.cust_id=:custId and year(bi.trans_dtime)=:year and month(bi.trans_dtime)=:month) ti", nativeQuery=true)
-    Long getTotalIncomeMonth(String custId, int year, int month);
-
-    @Query(value="select sum(ti.amount) from (" +
-            "select mi.trans_amt as amount from mydata_income mi where mi.cust_id=:custId and mi.is_income = 'Y' and year(mi.trans_dtime)=:year and mi.is_33='Y' union all " +
-            "select bi.trans_amt as amount from book_income bi where bi.cust_id=:custId and year(bi.trans_dtime)=:year and bi.is_33='Y') ti", nativeQuery=true)
+    /**
+     * 특정 연도 고객의 3.3% 포함된 수입 총 금액 조회
+     * @param custId
+     * @param year
+     * @return
+     */
+    @Query(value="select SUM(tin.amount) from total_income tin where tin.cust_id = :custId and tin.`year` = :year and tin.is_33 = 'Y'", nativeQuery=true)
     Long getTotalIncome33(String custId, int year);
 
-    @Query(value="select mi.cust_id, YEAR(trans_dtime) as year from mydata_income mi where (mi.create_dt like concat(:ymdBasic,'%') or mi.update_dt like concat(:ymdBasic,'%')) and mi.is_income='Y' union " +
-            "select bi.cust_id, YEAR(trans_dtime) as year from book_income bi where (bi.create_dt like concat(:ymdBasic,'%') or bi.update_dt like concat(:ymdBasic,'%')) union " +
-            "select mo.cust_id, YEAR(trans_dtime) as year from mydata_outgoing mo where (mo.create_dt like concat(:ymdBasic,'%') or mo.update_dt like concat(:ymdBasic,'%')) union " +
-            "select bo.cust_id, YEAR(appr_dtime) as year from book_outgoing bo where (bo.create_dt like concat(:ymdBasic,'%') or bo.update_dt like concat(:ymdBasic,'%'))", nativeQuery=true)
+    /**
+     * 고객, 연도 별 전체 수입/지출정보 변경내역 조회
+     * @param ymdBasic
+     * @return
+     */
+    @Query(value="select tin.cust_id, tin.`year` from total_income tin where COALESCE(tin.update_dt, tin.create_dt) like CONCAT(:ymdBasic,'%') union " +
+            "select tout.cust_id, tout.`year` from total_outgoing tout where COALESCE(tout.update_dt, tout.create_dt) like CONCAT(:ymdBasic,'%')", nativeQuery=true)
     List<Map<String,String>> getTotalChangeList(String ymdBasic);
 
-    @Query(value="select mi.cust_id, year(mi.trans_dtime) as year from mydata_income mi where mi.cust_id=:custId and mi.is_income = 'Y' union " +
-            "select bi.cust_id, year(bi.trans_dtime) as year from book_income bi where bi.cust_id=:custId", nativeQuery=true)
-    List<Map<String,String>> getTotalIncomeList(String custId);
+    /**
+     * 고객의 연도 별 전체수입정보 조회
+     * @param custId
+     * @return
+     */
+    @Query(value="select * from total_income tin where tin.cust_id = :custId group by tin.cust_id, tin.`year`", nativeQuery=true)
+    List<TotalIncome> getTotalIncomeByCustId(String custId);
 }

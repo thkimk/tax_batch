@@ -451,4 +451,15 @@ public class MydataService {
         log.info("▶︎▶︎▶︎ {} 파일 읽기 시작", fileType);
         readMydataFile(fileType, mydataPath+fileName);
     }
+
+    /**
+     * 카드정보로 특정 카드이력 내역 조회
+     * @param orgCode
+     * @param cardId
+     * @param apprNum
+     * @return
+     */
+    public List<MydataOutgoing> getMydataOutgoingByCardInfo(String orgCode, String cardId, String apprNum) {
+        return mydataOutgoingRepository.findByOrgCodeAndCardIdAndApprNumOrderByTransDtimeAscSeqAsc(orgCode, cardId, apprNum);
+    }
 }

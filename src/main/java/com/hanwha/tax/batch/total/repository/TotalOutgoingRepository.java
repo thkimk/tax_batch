@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface TotalOutgoingRepository extends JpaRepository<TotalOutgoing, Long> {
@@ -21,21 +22,33 @@ public interface TotalOutgoingRepository extends JpaRepository<TotalOutgoing, Lo
     @Query(value="delete from total_outgoing tout where tout.cust_id=:custId", nativeQuery = true)
     int deleteByCustId(String custId);
 
-    @Query(value="select 0 as id, lst.cust_id, year(lst.appr_dtime), month(lst.appr_dtime), lst.appr_amt as amount, lst.category " +
+    /**
+     * 전체지출정보(간편장부+마이데이터) 기준일 변경내역 조회
+     * @param ymdBasic
+     * @return
+     */
+    @Query(value="select lst.id as fk, 'M' as flag_fk, lst.cust_id, lst.org_code, lst.card_id, lst.appr_num, YEAR(lst.appr_dtime) as `year`, MONTH(lst.appr_dtime) as `month`, (case when lst.status = '03' then lst.mod_amt else lst.appr_amt end) as amount, lst.category " +
             "from ( " +
-                "select mo.*, ROW_NUMBER() over(PARTITION BY cust_id, card_id, appr_num ORDER BY trans_dtime desc, seq desc) as rn " +
-                "from mydata_outgoing mo where (mo.create_dt like concat(:ymdBasic,'%') or mo.update_dt like concat(:ymdBasic,'%')) ) lst " +
+                "select mo.*, ROW_NUMBER() over(PARTITION BY org_code, card_id, appr_num ORDER BY trans_dtime desc, seq desc) as rn " +
+                "from mydata_outgoing mo where COALESCE(mo.update_dt, mo.create_dt) like CONCAT(:ymdBasic,'%') ) lst " +
             "where lst.rn = 1 union all " +
-            "select 0 as id, cust_id, appr_amt, appr_dtime, merchant_name, category from book_outgoing bo where (bo.create_dt like concat(:ymdBasic,'%') or bo.update_dt like concat(:ymdBasic,'%'))", nativeQuery=true)
-    List<TotalOutgoing> getTotalOutgoingTarget(String ymdBasic);
+            "select bo.id as fk, 'B' as flag_fk, bo.cust_id, null as org_code, null as card_id, null as appr_num, YEAR(bo.appr_dtime) as `year`, MONTH(bo.appr_dtime) as `month`, bo.appr_amt as amount, bo.category from book_outgoing bo where COALESCE(bo.update_dt, bo.create_dt) like CONCAT(:ymdBasic,'%')", nativeQuery=true)
+    List<Map<String,String>> getTotalOutgoingTarget(String ymdBasic);
 
-    @Query(value="select sum(ti.amount) from (" +
-            "select mo.appr_amt as amount from mydata_outgoing mo where mo.cust_id=:custId and year(mo.appr_dtime)=:year union all " +
-            "select bo.appr_amt as amount from book_outgoing bo where bo.cust_id=:custId and year(bo.appr_dtime)=:year) ti", nativeQuery=true)
+    /**
+     * 외래키로 전체지출정보 조회
+     * @param fk
+     * @param flagFk
+     * @return
+     */
+    List<TotalOutgoing> findByFkAndFlagFk(long fk, char flagFk);
+
+    /**
+     * 특정 연도 고객의 지출 총 금액 조회
+     * @param custId
+     * @param year
+     * @return
+     */
+    @Query(value="select SUM(tout.amount) from total_outgoing tout where tout.cust_id = :custId and tout.`year` = :year", nativeQuery=true)
     Long getTotalOutgoing(String custId, int year);
-
-    @Query(value="select sum(ti.amount) from (" +
-            "select mo.appr_amt as amount from mydata_outgoing mo where mo.cust_id=:custId and year(mo.appr_dtime)=:year and month(mo.appr_dtime)=:month union all " +
-            "select bo.appr_amt as amount from book_outgoing bo where bo.cust_id=:custId and year(bo.appr_dtime)=:year and month(bo.appr_dtime)=:month) ti", nativeQuery=true)
-    Long getTotalOutgoingMonth(String custId, int year, int month);
 }

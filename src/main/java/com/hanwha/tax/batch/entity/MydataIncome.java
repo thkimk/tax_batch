@@ -20,24 +20,24 @@ import javax.persistence.*;
 public class MydataIncome {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long    id;					// 순번
-	private String  custId;				// 고객 번호
-	private String  orgCode;			// 정보제공자 기관코드
-	private String  accountNum;			// 계좌번호
-	private String  seqNo;				// 회차번호
-	private String  transDtime;			// 거래일시
-	private String  transNo;			// 거래번호
-	private Integer seq;				// 일련번호_쿠콘
-	private long    transAmt;			// 거래금액
-	private long    balanceAmt;			// 거래후잔액
-	private String  transType;			// 거래유형_코드
-	private String  transClass;			// 거래구분
-	private String  currencyCode;		// 통화코드
-	private String  isIncome;			// 수입여부 ( Y/N )
+	private long	  id;					// 순번
+	private String	  custId;				// 고객 번호
+	private String	  orgCode;				// 정보제공자 기관코드
+	private String	  accountNum;			// 계좌번호
+	private String	  seqNo;				// 회차번호
+	private String	  transDtime;			// 거래일시
+	private String	  transNo;				// 거래번호
+	private Integer	  seq;					// 일련번호_쿠콘
+	private long	  transAmt;				// 거래금액
+	private long	  balanceAmt;			// 거래후잔액
+	private String	  transType;			// 거래유형_코드
+	private String	  transClass;			// 거래구분
+	private String	  currencyCode;			// 통화코드
+	private String	  isIncome;				// 수입여부 ( Y/N )
 	@Column(name="is_33")
-	private String  is33;				// 3.3프로 포함여부 ( Y/N )
-	private String  createDt;			// 등록일시
-	private String  updateDt;			// 변경일시
+	private Character is33;					// 3.3프로 포함여부 ( Y/N )
+	private String	  createDt;				// 등록일시
+	private String	  updateDt;				// 변경일시
 
 
 	/*
@@ -73,7 +73,7 @@ public class MydataIncome {
 		this.transClass = bankTrans.get거래구분();
 		this.currencyCode = bankTrans.get통화코드();
 		this.isIncome = bankTrans.get소득구분();
-		this.is33 = bankTrans.get삼점삼프로포함여부();
+		this.is33 = Utils.isEmpty(bankTrans.get삼점삼프로포함여부()) ? null : bankTrans.get삼점삼프로포함여부().charAt(0);
 
 		return this;
 	}

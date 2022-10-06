@@ -34,7 +34,7 @@ public class CalcTax {
     int year;
     Character isNewBusin;
     String taxFlag = Constants.TAX_FLAG_SBSTR;
-    Long[] incomes = null;
+    Long[] incomes = null;  // 당해년도[0], 직전년도[1]
 
     CustInfo custInfo = null;
     CustInfoDtl custInfoDtl = null;
@@ -136,10 +136,10 @@ public class CalcTax {
         industry = industryService.getIndustry(custInfoDtl.getIndstCode()).orElse(null);
         if (industry == null)   return;
 
-        incomes = custService.getCustIncomes(custId, this.year);
-        isNewBusin = custInfoDtl.getIsNewBusin() == null ? 0 < incomes[0] ? 'N' : 'Y' : custInfoDtl.getIsNewBusin();
+        incomes = custService.getCustIncomes(custId, this.year);  // 당해년도[0], 직전년도[1]
+        isNewBusin = custInfoDtl.getIsNewBusin() == null ? 0 < incomes[1] ? 'N' : 'Y' : custInfoDtl.getIsNewBusin();
 
-        taxFlag = taxFlag(incomes[0], incomes[1], isNewBusin);
+        taxFlag = taxFlag(incomes[1], incomes[0], isNewBusin);
     }
 
     Long deductMe() {

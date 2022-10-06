@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface MydataOutgoingRepository extends JpaRepository<MydataOutgoing, Long>, MydataOutgoingCustomRepository {
     /**
@@ -18,4 +20,13 @@ public interface MydataOutgoingRepository extends JpaRepository<MydataOutgoing, 
     @Modifying
     @Query(value="delete from mydata_outgoing mo where mo.cust_id=:custId", nativeQuery = true)
     int deleteByCustId(String custId);
+
+    /**
+     * 카드정보로 특정 카드이력 내역 조회
+     * @param orgCode
+     * @param carId
+     * @param apprNum
+     * @return
+     */
+    List<MydataOutgoing> findByOrgCodeAndCardIdAndApprNumOrderByTransDtimeAscSeqAsc(String orgCode, String carId, String apprNum);
 }

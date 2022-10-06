@@ -43,6 +43,9 @@ public class QuartzConfiguration {
 	@Value("${cust.allmembers.schedule}")
 	private String taxAllmembersCronExp;
 
+	@Value("${total.amount.schedule}")
+	private String totalAmountCronExp;
+
 	@Value("${cust.notice.target.schedule}")
 	private String notiTargetCronExp;
 
@@ -173,6 +176,25 @@ public class QuartzConfiguration {
 		trigger.setGroup(TRIGGER_GROUP_NAME);
 		trigger.setCronExpression(taxAllmembersCronExp);
 		trigger.setJobDetail(taxAllmembersJobDetail);
+
+		return trigger;
+	}
+
+	@Bean(name="totalAmountJobDetail")
+	public JobDetailFactoryBean totalAmountJobDetail() {
+		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+		jobDetailFactory.setJobClass(TotalAmountJob.class);
+		jobDetailFactory.setDescription("update total amount");
+		jobDetailFactory.setDurability(true);
+		return jobDetailFactory;
+	}
+
+	@Bean(name="totalAmountTrigger")
+	public CronTriggerFactoryBean totalAmountTrigger(JobDetail totalAmountJobDetail) {
+		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
+		trigger.setGroup(TRIGGER_GROUP_NAME);
+		trigger.setCronExpression(totalAmountCronExp);
+		trigger.setJobDetail(totalAmountJobDetail);
 
 		return trigger;
 	}
