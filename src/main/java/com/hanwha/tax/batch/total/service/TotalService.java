@@ -21,6 +21,7 @@ public class TotalService {
 
     @Autowired
     TotalOutgoingRepository totalOutgoingRepository;
+
     /**
      * 회원번호로 전체 수입 삭제
      * @param custId
@@ -37,6 +38,24 @@ public class TotalService {
      */
     public int deleteTotalOutgoingByCustId(String custId) {
         return totalOutgoingRepository.deleteByCustId(custId);
+    }
+
+    /**
+     * 회원번호로 마이데이터 수입 삭제
+     * @param custId
+     * @return
+     */
+    public int deleteTotalIncomeByCustIdAndFlagFk(String custId) {
+        return totalIncomeRepository.deleteByCustIdAndFlagFk(custId);
+    }
+
+    /**
+     * 회원번호로 마이데이터 경비 삭제
+     * @param custId
+     * @return
+     */
+    public int deleteTotalOutgoingByCustIdAndFlagFk(String custId) {
+        return totalOutgoingRepository.deleteByCustIdAndFlagFk(custId);
     }
 
     /**

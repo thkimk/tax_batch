@@ -13,14 +13,24 @@ import java.util.Map;
 @Repository
 public interface TotalIncomeRepository extends JpaRepository<TotalIncome, Long> {
     /**
-     * 고객번호 기준으로 전체 수입 삭제
+     * 고객번호 기준으로 전체 수입정보 삭제
      * @param custId
      * @return
      */
     @Transactional
     @Modifying
-    @Query(value="delete from total_income ti where ti.cust_id=:custId", nativeQuery = true)
+    @Query(value="delete from total_income tin where tin.cust_id=:custId", nativeQuery = true)
     int deleteByCustId(String custId);
+
+    /**
+     * 고객번호 기준으로 마이데이터 수입정보 삭제
+     * @param custId
+     * @return
+     */
+    @Transactional
+    @Modifying
+    @Query(value="delete from total_income tin where tin.cust_id=:custId and tin.flag_fk = 'M'", nativeQuery = true)
+    int deleteByCustIdAndFlagFk(String custId);
 
     /**
      * 전체수입정보(간편장부+마이데이터) 기준일 변경내역 조회

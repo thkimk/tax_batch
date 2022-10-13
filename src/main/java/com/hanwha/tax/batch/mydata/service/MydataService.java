@@ -12,6 +12,7 @@ import com.hanwha.tax.batch.mydata.model.CardAppr;
 import com.hanwha.tax.batch.mydata.model.Thirdparty;
 import com.hanwha.tax.batch.mydata.repository.MydataIncomeRepository;
 import com.hanwha.tax.batch.mydata.repository.MydataOutgoingRepository;
+import com.hanwha.tax.batch.total.service.TotalService;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
@@ -45,6 +46,9 @@ public class MydataService {
 
     @Autowired
     CustService custService;
+
+    @Autowired
+    TotalService totalService;
 
     @Value("${tax.sftp.user}")
     private String mydataSftpUser;
@@ -376,12 +380,13 @@ public class MydataService {
                 cust.setCustGrade(Cust.CustGrade.준회원.getCode());
                 cust.setRegOutDt(currentDate);
                 custService.modifyCust(cust);
-                
+
                 // 마이데이터 정보 파기
                 deleteMydataByCustId(cust.getCustId());
-                
+
                 // 마이데이터 정보 파기에 따른 TOTAL 정보 업데이트
-                // ★★★ TOTAL 테이블 명확해지면 작업 예정
+                log.info("▶▶▶▶▶▶ 마이데이터 TOTAL 수입정보 식제 건수 : {} 건", totalService.deleteTotalIncomeByCustIdAndFlagFk(cust.getCustId()));
+                log.info("▶▶▶▶▶▶ 마이데이터 TOTAL 경비정보 식제 건수 : {} 건", totalService.deleteTotalOutgoingByCustIdAndFlagFk(cust.getCustId()));
             }
         }
     }
@@ -439,11 +444,9 @@ public class MydataService {
         String fileName = ymdBasic + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + fileType;
 
         // SFTP Get 수행 (/nas/tax/down)
-        log.info("▶︎▶︎▶︎ SFTP 파일 다운로드 시작");
         mydataSftpGet(getFilePath(COOCON_FILE_SFTP_PATH, ymdBasic), downPath, fileName);
 
         // zip 압축 해제 (/nas/tax/mydata/yyyymmdd/*)
-        log.info("▶︎▶︎▶︎ BATCH 파일 압축 풀기 시작");
         mydataUnzip(downPath+fileName+".zip", mydataPath);
 
         // File load (parsing)

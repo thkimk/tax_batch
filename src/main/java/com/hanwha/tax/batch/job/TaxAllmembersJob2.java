@@ -72,7 +72,7 @@ public class TaxAllmembersJob2 extends BaseJob {
     private void procTax(String custId, String yearStr) {
         int year = Integer.parseInt(yearStr);
 
-        log.info("▶︎▶︎▶︎ 회원번호 [{}] 연도 [{}]", custId, year);
+        log.info("▶︎▶︎▶︎ 회원번호 : [{}] 연도 : [{}]", custId, year);
 
         // 경비율, 간편장부 소득세 계산하여 소득세 저장
         taxService.saveTax2(custId, year, calcTax);

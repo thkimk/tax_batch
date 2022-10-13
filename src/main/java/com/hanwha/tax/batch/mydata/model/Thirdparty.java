@@ -17,6 +17,7 @@ public class Thirdparty extends AbstractMydataCoocon {
 
 	protected String CI;
 	protected String 쿠콘제3자제공동의1;
+	protected String 쿠콘제3자제공동의2;
 	protected String 최종변경일시;
 	protected String 변경구분;
 
@@ -28,7 +29,7 @@ public class Thirdparty extends AbstractMydataCoocon {
 		String[] dataArr = data != null ? data.split("\\|") : null;
 
 		// data 부 검증
-		if (dataArr == null || dataArr.length != 5 || !ROW_TYPE.데이터레코드부.getCode().equals(dataArr[0])) {
+		if (dataArr == null || dataArr.length != 6 || !ROW_TYPE.데이터레코드부.getCode().equals(dataArr[0])) {
 			log.info("제3자 제공동의 회원 파일의 데이터부를 확인해주시기 바랍니다.");
 			return;
 		}
@@ -37,8 +38,9 @@ public class Thirdparty extends AbstractMydataCoocon {
 		식별코드 = dataArr[0];
 		CI = dataArr[1];
 		쿠콘제3자제공동의1 = dataArr[2];
-		최종변경일시 = dataArr[3];
-		변경구분 = dataArr[4];
+		쿠콘제3자제공동의2 = dataArr[3];
+		최종변경일시 = dataArr[4];
+		변경구분 = dataArr[5];
 	}
 
 	/**
@@ -51,6 +53,7 @@ public class Thirdparty extends AbstractMydataCoocon {
 		sb.append(ROW_TYPE.데이터레코드부.getCode());sb.append("|");
 		sb.append(CI);sb.append("|");
 		sb.append(쿠콘제3자제공동의1);sb.append("|");
+		sb.append(쿠콘제3자제공동의2);sb.append("|");
 		sb.append(최종변경일시);sb.append("|");
 		sb.append(변경구분);sb.append("|");
 		sb.append("\n");
