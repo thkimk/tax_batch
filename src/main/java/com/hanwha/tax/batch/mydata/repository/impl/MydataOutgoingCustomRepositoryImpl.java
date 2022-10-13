@@ -24,7 +24,7 @@ public class MydataOutgoingCustomRepositoryImpl implements MydataOutgoingCustomR
     @Override
     public List<MydataOutgoing> findByDataPk(MydataOutgoing mi) {
         return jpaQueryFactory.selectFrom(mydataOutgoing)
-                .where(custIdEq(mi.getCustId()), orgCodeEq(mi.getOrgCode()), cardIdEq(mi.getCustId()), apprDtimeEq(mi.getApprDtime()), apprNumEq(mi.getApprNum()), statusEq(mi.getStatus()), transDtimeEq(mi.getTransDtime()), payTypeEq(mi.getPayType()), apprAmtEq(mi.getApprAmt()), seqEq(mi.getSeq()))
+                .where(custIdEq(mi.getCustId()), orgCodeEq(mi.getOrgCode()), cardIdEq(mi.getCardId()), apprDtimeEq(mi.getApprDtime()), apprNumEq(mi.getApprNum()), statusEq(mi.getStatus()), transDtimeEq(mi.getTransDtime()), payTypeEq(mi.getPayType()), apprAmtEq(mi.getApprAmt()), seqEq(mi.getSeq()))
                 .fetch();
     }
 

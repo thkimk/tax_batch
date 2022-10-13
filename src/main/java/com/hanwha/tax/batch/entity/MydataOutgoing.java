@@ -79,7 +79,7 @@ public class MydataOutgoing {
 		this.modAmt = Long.parseLong(cardAppr.get정정후금액());
 		this.apprDtime = Utils.formatDate(cardAppr.get승인일시(),"yyyy-MM-dd HH:mm:ss");
 		this.merchantName = cardAppr.get가맹점명();
-		this.category = cardAppr.get경비코드();
+		this.category = Utils.lpadByte(cardAppr.get경비코드(),2,"0");
 
 		return this;
 	}

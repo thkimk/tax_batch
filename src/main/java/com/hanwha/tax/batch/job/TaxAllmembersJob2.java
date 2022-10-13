@@ -14,7 +14,7 @@ import org.quartz.JobExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
-public class TaxAllmembersJob extends BaseJob {
+public class TaxAllmembersJob2 extends BaseJob {
 
     private CustService custService;
     private TotalService totalService;
@@ -47,7 +47,7 @@ public class TaxAllmembersJob extends BaseJob {
                 });
 
                 if (!ynIncome.get()) {
-                    taxService.saveTax(c.getCustId(), Integer.parseInt(Utils.getCurrentDate("yyyy")), 0, 0);
+                    taxService.saveTax2(c.getCustId(), Integer.parseInt(Utils.getCurrentDate("yyyy")), null);
                 }
             });
         } else {
@@ -74,10 +74,7 @@ public class TaxAllmembersJob extends BaseJob {
 
         log.info("▶︎▶︎▶︎ 회원번호 [{}] 연도 [{}]", custId, year);
 
-        // 소득세 계산 시 필요한 기본정보 세팅
-        calcTax.init(custId, year);
-
         // 경비율, 간편장부 소득세 계산하여 소득세 저장
-        taxService.saveTax(custId, year, calcTax.calRateTax(), calcTax.calBookTax());
+        taxService.saveTax2(custId, year, calcTax);
     }
 }

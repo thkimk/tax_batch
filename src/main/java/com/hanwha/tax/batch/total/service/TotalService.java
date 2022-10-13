@@ -97,8 +97,10 @@ public class TotalService {
      * @param year
      * @return
      */
-    public Long getTotalIncome(String custId, int year) {
-        return totalIncomeRepository.getTotalIncome(custId, year);
+    public long getTotalIncome(String custId, int year) {
+        Long income = totalIncomeRepository.getTotalIncome(custId, year);
+
+        return income == null ? 0 : income;
     }
 
     /**
@@ -107,8 +109,10 @@ public class TotalService {
      * @param year
      * @return
      */
-    public Long getTotalOutgoing(String custId, int year) {
-        return totalOutgoingRepository.getTotalOutgoing(custId, year);
+    public long getTotalOutgoing(String custId, int year) {
+        Long outgoing = totalOutgoingRepository.getTotalOutgoing(custId, year);
+
+        return outgoing == null ? 0 : outgoing;
     }
 
     /**
@@ -117,8 +121,10 @@ public class TotalService {
      * @param year
      * @return
      */
-    public Long getTotalIncome33(String custId, int year) {
-        return totalIncomeRepository.getTotalIncome33(custId, year);
+    public long getTotalIncome33(String custId, int year) {
+        Long income33 = totalIncomeRepository.getTotalIncome33(custId, year);
+
+        return income33 == null ? 0 : income33;
     }
 
     /**

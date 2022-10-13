@@ -1,7 +1,5 @@
 package com.hanwha.tax.batch;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.ParseException;
@@ -93,8 +91,8 @@ public class Utils {
             format = "yyyy-MM-dd";
         }
 
-        if ( isEmpty(date) ) return "";
-        if ( "00000000".equals(date) ) return "";
+        if ( isEmpty(date) ) return null;
+        if ( "00000000".equals(date) ) return null;
         if ( date.length() < 8 ) return date;
 
         SimpleDateFormat formatter = new SimpleDateFormat(format);
@@ -247,43 +245,45 @@ public class Utils {
         return taxAge;
     }
 
-    public static void logCallReturned(String op, Object object) {
-        if (object == null) log.info("## [RETURN] {}() : null", op);
-        else {
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                log.info("## [RETURN] {}() : {}", op, mapper.writeValueAsString(object));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                log.info("## [RETURN] {}() : {}", op, object.toString());
-            }
+    /**
+     * lpad 함수
+     * @param str       원본문자열
+     * @param sizeByte  문자열길이
+     * @param charPad   padding할 문자
+     * @return
+     */
+    public static String lpadByte(String str, int sizeByte, String charPad) {
+        if (isEmpty(charPad)) {
+            charPad = " ";
         }
-    }
 
-    public static void logExtCall(String op, Object object) {
-        if (object == null) log.info("## [EXT_CALL] {}() : null", op);
-        else {
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                log.info("## [EXT_CALL] {}() : {}", op, mapper.writeValueAsString(object));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                log.info("## [EXT_CALL] {}() : {}", op, object.toString());
-            }
-        }
-    }
+        try {
+            int strLen = str.getBytes().length;
 
-    public static void logExtCallReturned(String op, Object object) {
-        if (object == null) log.info("## [EXT_RETURN] {}() : null", op);
-        else {
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                log.info("## [EXT_RETURN] {}() : {}", op, mapper.writeValueAsString(object));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                log.info("## [EXT_RETURN] {}() : {}", op, object.toString());
+            if (strLen < sizeByte) {
+                String sResult = "";
+                for (int icnt = 0; icnt < (sizeByte - strLen); icnt++) {
+                    sResult += charPad;
+                }
+                return sResult + str;
+            } else if (strLen == sizeByte) {
+                return str;
+            } else {
+                byte[] ret = new byte[sizeByte];
+                byte[] byteStr = str.getBytes();
+
+                for (int i = 0; i < sizeByte; i++) {
+                    ret[i] = byteStr[i];
+                }
+
+                return new String(ret);
+
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        return "";
     }
 
 //    public static void main(String[] args) {

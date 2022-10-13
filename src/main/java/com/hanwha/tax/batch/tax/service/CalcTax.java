@@ -34,7 +34,6 @@ public class CalcTax {
     int year;
     Character isNewBusin;
     String taxFlag = Constants.TAX_FLAG_SBSTR;
-    Long[] incomes = null;  // 당해년도[0], 직전년도[1]
 
     CustInfo custInfo = null;
     CustInfoDtl custInfoDtl = null;
@@ -46,8 +45,9 @@ public class CalcTax {
     01.소득(earning) = 수입 - 지출
      */
     Long earning = 0L;
-    Long income = 0L;
-    Long outgoing = 0L;
+    long income = 0L;
+    long outgoing = 0L;
+    long preIncome = 0L;
 
     /*
     02.과세표준(taxBase) = 01.소득 - 소득공제
@@ -82,6 +82,10 @@ public class CalcTax {
      * @param isNewBusin : 신규 여부 (Y, N)
      */
     public static String taxFlag(Long preIncome, Long income, Character isNewBusin) {
+        if (isNewBusin == null) {
+            return Constants.TAX_FLAG_NONE;            // No data!!
+        }
+
         // 신규 사업자(Y)
         if (isNewBusin == 'Y') {
             if (income == null) {
@@ -130,16 +134,18 @@ public class CalcTax {
     public void init(String custId, int year) {
         this.custId = custId;
         this.year = year;
-        this.custInfoDtl = custService.getCustInfoDtl(custId).orElse(null);
-        if (custInfoDtl == null)   return;
 
-        industry = industryService.getIndustry(custInfoDtl.getIndstCode()).orElse(null);
-        if (industry == null)   return;
+        custInfo = custService.getCustInfo(custId).orElse(new CustInfo());
+        custInfoDtl = custService.getCustInfoDtl(custId).orElse(new CustInfoDtl());
+        custDeduct = custService.getCustDeduct(custId, year).orElse(new CustDeduct());
+        custFamilyList = custService.getCustFamilyListByCustId(custId);
+        industry = industryService.getIndustry(custInfoDtl.getIndstCode()).orElse(new Industry());
 
-        incomes = custService.getCustIncomes(custId, this.year);  // 당해년도[0], 직전년도[1]
-        isNewBusin = custInfoDtl.getIsNewBusin() == null ? 0 < incomes[1] ? 'N' : 'Y' : custInfoDtl.getIsNewBusin();
-
-        taxFlag = taxFlag(incomes[1], incomes[0], isNewBusin);
+        preIncome = totalService.getTotalIncome(custId, year-1);
+        income = totalService.getTotalIncome(custId, year);
+        outgoing = totalService.getTotalOutgoing(custId, year);
+        isNewBusin = custInfoDtl.getIsNewBusin() == null ? 0 < preIncome ? 'N' : 'Y' : custInfoDtl.getIsNewBusin();
+        taxFlag = taxFlag(preIncome, income, isNewBusin);
     }
 
     Long deductMe() {
@@ -184,16 +190,63 @@ public class CalcTax {
         return deductFamily;
     }
 
-    Long deductOthers() {
-        Double deductOthers = 0d;
+    /**
+     * 공제금액을 배열로 리턴 ( [0] npc(국민연금), [1] med(소상공인), [2] sed(창업), [3] rsp(개인연금) [4] ira + irp )
+     * @param custDeduct
+     * @return
+     */
+    public static Long[] deductVals(CustDeduct custDeduct) {
+        Long[] vals = new Long[5];
 
-        deductOthers += custDeduct.getNpcAmt();
-        deductOthers += Math.min(custDeduct.getRspAmt()*0.4, 720000);   // 한도가 720000원
-        deductOthers += earning> 100000000? Math.min(custDeduct.getMedAmt(), 2000000):
+        Long earning = custDeduct.getIncome() - custDeduct.getOutgoing();
+
+        // 국민연금 납입료 전액
+        vals[0] = custDeduct.getNpcAmt();
+
+        // 소기업 공제부금
+        vals[1] = earning> 100000000? Math.min(custDeduct.getMedAmt(), 2000000):
                 earning> 40000000? Math.min(custDeduct.getMedAmt(), 3000000): Math.min(custDeduct.getMedAmt(), 5000000);
-        deductOthers += Math.min(earning*0.5, custDeduct.getSedAmt()*0.1);
 
-        return deductOthers.longValue();
+        // 중소기업 창업에 출자
+        vals[2] = Math.min(earning*(long)(0.5*10) /10, custDeduct.getSedAmt()*(long)(0.1*10) /10);
+
+        // 개인연금저축
+        vals[3] = Math.min(custDeduct.getRspAmt()*(long)(0.4*10) /10, 720000);   // 한도가 720000원
+
+        // 연금저축 (ira+irp)
+        if (earning > 100000000) {
+            Long ira1 = Math.min(custDeduct.getIraAmt(), 3000000);
+            vals[4] = (ira1 + Math.min(custDeduct.getIrpAmt(), 7000000-ira1)) * (long)(0.15*100) /100;
+        } else {
+//kkk??            if (Utils.taxAge(custInfo.getBirth()) >= 50) {
+//                {
+//                Long ira1 = Math.min(custDeduct.getIraAmt(), 6000000);
+//                if (earning > 40000000) {
+//                    vals[4] = (ira1 + Math.min(custDeduct.getIrpAmt(), 9000000 - ira1)) * (long) (0.12 * 100) / 100;
+//                } else {
+//                    vals[4] = (ira1 + Math.min(custDeduct.getIrpAmt(), 9000000 - ira1)) * (long) (0.15 * 100) / 100;
+//                }
+//            } else {
+            {
+                Long ira1 = Math.min(custDeduct.getIraAmt(), 4000000);
+                if (earning > 40000000) {
+                    vals[4] = (ira1 + Math.min(custDeduct.getIrpAmt(), 7000000 - ira1)) * (long) (0.12 * 100) / 100;
+                } else {
+                    vals[4] = (ira1 + Math.min(custDeduct.getIrpAmt(), 7000000 - ira1)) * (long) (0.15 * 100) / 100;
+                }
+            }
+        }
+
+        return vals;
+    }
+
+    Long deductOthers() {
+        custDeduct.setIncome(income);
+        custDeduct.setOutgoing(outgoing);
+        Long[] vals = CalcTax.deductVals(custDeduct);
+
+        taxDeduct = vals[4];
+        return vals[0]+ vals[1]+ vals[2]+ vals[3];
     }
 
     /**
@@ -202,10 +255,6 @@ public class CalcTax {
      * 공제항목
      */
     void deduct() {
-        custInfo = custService.getCustInfo(custId).orElse(null);
-        custDeduct = custService.getCustDeduct(custId, year).orElse(null);
-        custFamilyList = custService.getCustFamilyListByCustId(custId);
-
         // 본인 공제
         deductMe = deductMe();
 
@@ -239,8 +288,6 @@ public class CalcTax {
     }
 
     void taxDeduct() {
-        taxDeduct = 0L;
-
         // 자녀세액 공제 : 만7세 이상 자녀
         // 당해년도 출생신고 : 한국나이 1세 자녀, 300000/ 500000/ 700000
         int count = 0, countBorn = 0;
@@ -264,11 +311,7 @@ public class CalcTax {
         }
 
         // 연금계좌 세액공제 : IRP는? --> Mydata 제공 IRP??
-        if (earning <= 40000000) {
-            taxDeduct += (custDeduct.getIraAmt()) * (long)(0.15*100) /100;
-        } else {
-            taxDeduct += (custDeduct.getIraAmt()) * (long)(0.12*100) /100;
-        }
+        // Tax.deductVals() 의 5번째 값[4]
 
         // 표준 세액공제 : 70000
         // 전자 세액공제 : 20000
@@ -277,26 +320,26 @@ public class CalcTax {
 
     void finTax() {
         // 가산세 : 계속사업자이고 직전년도 소득이 4800만 이상인 경우
-        if (isNewBusin == 'Y' && incomes[1] >= 48000000) {
+        if (isNewBusin == 'N' && preIncome >= 48000000) {
             addTax = calTax * (long)(0.2*10) /10;
         }
 
         // 기납부세액 : 수입금액의 3% --> income에는 모두 3% 기납부세액이 포함되어있어야 함 (미포함시, income계산때 강제 추가)
-        Long income33 = totalService.getTotalIncome33(custId, year);
+        long income33 = totalService.getTotalIncome33(custId, year);
 
         paidTax = (income33 * 3) /100 /100;
     }
 
     /**
      * 예상 소득세 계산기
-     * @param taxFlag : 간편장부(10), 기준경비율(02), 단순경비율(01)
      * @return : 예상 소득세
      */
-    public Long calTax(Long taxFlag) {
+    public Long calTax() {
         // 01.소득 계산
         // income : totalIncome이 아니고, 계산시에는 실시간 수입 (배치처리 필요 : mydata와 book상의 income을 합산)
         // outgoing : flag 선택값에 따라 다름
         earning = income - outgoing;
+        log.info("## [1] 소득 : {} = {} - {}", earning, income, outgoing);
 
         // 02.과세표준 계산
         // deduct(소득공제) 계산 : 본인, 부양가족, 기타
@@ -323,42 +366,31 @@ public class CalcTax {
         log.info("## [5] 최종 : {} = {} + {} - {}", finTax, decTax, addTax, paidTax);
 
         // 3.3세액
-//        simTaxPrint();
         return finTax;
     }
 
     public Long calRateTax() {
         log.debug("## 소득세 계산(calRateTax) : {}, taxFlag {}", custId, taxFlag);
 
-        income = totalService.getTotalIncome(custId, year);
-        if ((Integer.parseInt(taxFlag)%10) == 1) {    // 단순경비율
+        // 경비율 기반으로, 지출 재계산
+        if ((Integer.parseInt(taxFlag)%10) == 1) {
 //            bookFlag = "단순경비율";
             Float bookRate = industry.getSimpleExrt();
             Float bookRateExc = industry.getSimpleExrtExc();
-            log.debug("## income : {}, bookRate : {}, bookRateExc {}", income, bookRate, bookRateExc);
             outgoing = (Math.min(income, 40000000) * (long)(bookRate*100) + Math.max(income-40000000, 0) * (long)(bookRateExc*100))/100 /100;
-        } else {    // 기준경비율
+        } else {
 //            bookFlag = "기준경비율";
             Float bookRate = industry.getStandardExrt();
             outgoing = (long)((income * (long)(bookRate*100))/100 /100);
         }
 
-        earning = income - outgoing;
-
-        log.debug("## [1] 소득 : {} = {} - {}", earning, income, outgoing);
-        return calTax(earning);
+        return calTax();
     }
 
     public Long calBookTax() {
-        log.info("## 소득세 계산(calRateTax) : CustId {}, taxFlag {}", custId, taxFlag);
+        log.info("## 소득세 계산(calBookTax) : CustId {}, taxFlag {}", custId, taxFlag);
 //        bookFlag = "간편장부";
 
-        income = totalService.getTotalIncome(custId, year);
-        outgoing = totalService.getTotalOutgoing(custId, year);
-
-        earning = income - outgoing;
-
-        log.info("## [1] 소득 : {} = {} - {}", earning, income, outgoing);
-        return calTax(earning);
+        return calTax();
     }
 }

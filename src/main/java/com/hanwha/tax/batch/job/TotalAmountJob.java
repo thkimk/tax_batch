@@ -52,13 +52,17 @@ public class TotalAmountJob extends BaseJob {
 
 				// 마이데이터 승인번호 별 카드이력 조회
 				mydataService.getMydataOutgoingByCardInfo(to.get("org_code"), to.get("card_id"), to.get("appr_num")).forEach(mo -> {
+					// ★★★ 테스트 데이터 중복되어 코드 추가 함
+					if (!mo.getCustId().equals(to.get("cust_id")))
+						return;
+
 					// 카테고리가 있는 경우만 경비로 인정
 					if (!Utils.isEmpty(mo.getCategory())) {
 						if (MydataOutgoing.ApprStatus.승인.getCode().equals(mo.getStatus())) {
-							amount.set(mo.getApprAmt());
+							amount.set(amount.get()+mo.getApprAmt());
 
 							// 최초 승인내역 기준으로 외래키 세팅
-							totalOutgoing.setFk(mo.getId());
+							totalOutgoing.setFk(totalOutgoing.getFk() < mo.getId() ? totalOutgoing.getFk() : mo.getId());
 						} else if (MydataOutgoing.ApprStatus.승인취소.getCode().equals(mo.getStatus())) {
 							amount.set(amount.get()-mo.getApprAmt());
 						} else {

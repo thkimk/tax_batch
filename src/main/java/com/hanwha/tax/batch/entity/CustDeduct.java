@@ -29,12 +29,12 @@ public class CustDeduct implements Serializable {
 	private int    year;			// 연도
 	private long   income;			// 수입
 	private long   outgoing;		// 지출
-	private long   medAmt;			// 소상공인 공제부금 보유 납입액
-	private long   npcAmt;			// 국민연금보험료 납입액
-	private long   rspAmt;			// 연금저축 보유 납입액
-	private long   sedAmt;			// 중소기업창업투자 금액
-	private long   iraAmt;			// 연금저출계좌보유 납입액
-	private long   irpAmt;			// 퇴직연금 납입액
+	private Long   medAmt;			// 소상공인 공제부금 보유 납입액
+	private Long   npcAmt;			// 국민연금보험료 납입액
+	private Long   rspAmt;			// 연금저축 보유 납입액
+	private Long   sedAmt;			// 중소기업창업투자 금액
+	private Long   iraAmt;			// 연금저출계좌보유 납입액
+	private Long   irpAmt;			// 퇴직연금 납입액
 	private String isRsp;			// 연금저출 보유 여부
 	private String isSmal;			// 소기업여부
 	private String isMed;			// 소상공인 공제부금 보유
