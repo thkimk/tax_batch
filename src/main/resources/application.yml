@@ -1,6 +1,13 @@
 spring:
-  profiles:
-    active: home
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      format_sql: true
+      ddl-auto: validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 #  mvc:
 #    pathmatch:
 #      matching-strategy: ant_path_matcher

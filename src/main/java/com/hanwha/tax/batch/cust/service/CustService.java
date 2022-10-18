@@ -11,6 +11,8 @@ import com.hanwha.tax.batch.helpdesk.service.HelpdeskService;
 import com.hanwha.tax.batch.login.service.LoginService;
 import com.hanwha.tax.batch.mydata.service.MydataService;
 import com.hanwha.tax.batch.notice.service.NoticeService;
+import com.hanwha.tax.batch.tax.service.TaxService;
+import com.hanwha.tax.batch.terms.service.TermsService;
 import com.hanwha.tax.batch.total.service.TotalService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +63,9 @@ public class CustService {
     LoginService loginService;
 
     @Autowired
+    TermsService termsService;
+
+    @Autowired
     MydataService mydataService;
 
     @Autowired
@@ -68,6 +73,9 @@ public class CustService {
 
     @Autowired
     TotalService totalService;
+
+    @Autowired
+    TaxService taxService;
 
     /**
      * 고객상세정보의 자산변경일시 갱신
@@ -177,9 +185,13 @@ public class CustService {
         mydataService.deleteMydataByCustId(custID);
         log.info("▶▶▶▶▶▶ 전체 수입정보 식제 건수 : {} 건", totalService.deleteTotalIncomeByCustId(custID));
         log.info("▶▶▶▶▶▶ 전체 경비정보 식제 건수 : {} 건", totalService.deleteTotalOutgoingByCustId(custID));
+        log.info("▶▶▶▶▶▶ 소득세정보 식제 건수 : {} 건", taxService.deleteTaxByCustId(custID));
+        log.info("▶▶▶▶▶▶ 소득세2정보 식제 건수 : {} 건", taxService.deleteTax2ByCustId(custID));
 
         // 로그인 이력 삭제
         log.info("▶▶▶▶▶▶ 로그인이력 식제 건수 : {} 건", loginService.deleteLoginHstByCustId(custID));
+        // 약관동의 이력 삭제
+        log.info("▶▶▶▶▶▶ 약관동의이력 식제 건수 : {} 건", termsService.deleteTermsHstByCustId(custID));
 
         // 알람 데이터 삭제
         noticeService.deleteNotiTargetById(custID);
@@ -188,8 +200,8 @@ public class CustService {
         log.info("▶▶▶▶▶▶ 알람설정 식제");
 
         // 헬프데스크 데이터 삭제
-        log.info("▶▶▶▶▶▶ 안내데스트 식제 건수 : {} 건", helpdeskService.deleteHelpdeskAnsByCustId(custID));
-        log.info("▶▶▶▶▶▶ 안내데스크 응답 식제 건수 : {} 건", helpdeskService.deleteHelpdeskByCustId(custID));
+        log.info("▶▶▶▶▶▶ 안내데스트 응답 식제 건수 : {} 건", helpdeskService.deleteHelpdeskAnsByCustId(custID));
+        log.info("▶▶▶▶▶▶ 안내데스크 식제 건수 : {} 건", helpdeskService.deleteHelpdeskByCustId(custID));
 
         // 단말기정보 데이터 삭제
         devService.deleteDevInfoById(custID);

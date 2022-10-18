@@ -32,6 +32,7 @@ public class TotalAmountJob extends BaseJob {
 		String ymdBasic = Utils.getCurrentDate("yyyy-MM-dd");
 
 		// 간편장부, 마이데이터 수입 변경내역 조회
+		log.info("▶▶▶ TOTAL 수입정보 저장");
 		totalService.getTotalIncomeTarget(ymdBasic).forEach(ti -> {
 			// 전체수입정보
 			TotalIncome totalIncome = new TotalIncome().convertByMydataMap(ti);
@@ -41,6 +42,7 @@ public class TotalAmountJob extends BaseJob {
 		});
 
 		// 간편장부, 마이데이터 지출 변경내역 조회
+		log.info("▶▶▶ TOTAL 지출정보 저장");
 		totalService.getTotalOutgoingTarget(ymdBasic).forEach(to -> {
 			// 전체지출정보
 			TotalOutgoing totalOutgoing = new TotalOutgoing().convertByMydataMap(to);

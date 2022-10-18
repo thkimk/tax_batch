@@ -16,8 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 public class Thirdparty extends AbstractMydataCoocon {
 
 	protected String CI;
-	protected String 쿠콘제3자제공동의1;
-	protected String 쿠콘제3자제공동의2;
+	protected String 쿠콘제3자제공동의1;	// 서비스
+	protected String 쿠콘제3자제공동의2;	// 연구개발
 	protected String 최종변경일시;
 	protected String 변경구분;
 

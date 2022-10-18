@@ -12,6 +12,8 @@ import com.hanwha.tax.batch.mydata.model.CardAppr;
 import com.hanwha.tax.batch.mydata.model.Thirdparty;
 import com.hanwha.tax.batch.mydata.repository.MydataIncomeRepository;
 import com.hanwha.tax.batch.mydata.repository.MydataOutgoingRepository;
+import com.hanwha.tax.batch.tax.service.CalcTax;
+import com.hanwha.tax.batch.tax.service.TaxService;
 import com.hanwha.tax.batch.total.service.TotalService;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
@@ -49,6 +51,12 @@ public class MydataService {
 
     @Autowired
     TotalService totalService;
+
+    @Autowired
+    TaxService taxService;
+
+    @Autowired
+    CalcTax calcTax;
 
     @Value("${tax.sftp.user}")
     private String mydataSftpUser;
@@ -387,6 +395,12 @@ public class MydataService {
                 // 마이데이터 정보 파기에 따른 TOTAL 정보 업데이트
                 log.info("▶▶▶▶▶▶ 마이데이터 TOTAL 수입정보 식제 건수 : {} 건", totalService.deleteTotalIncomeByCustIdAndFlagFk(cust.getCustId()));
                 log.info("▶▶▶▶▶▶ 마이데이터 TOTAL 경비정보 식제 건수 : {} 건", totalService.deleteTotalOutgoingByCustIdAndFlagFk(cust.getCustId()));
+
+                // 해당 고객의 연도 별 수입이력 조회
+                totalService.getTotalIncomeByCustId(cust.getCustId()).forEach(t -> {
+                    // 소득세 정보 갱신
+                    taxService.saveTax2(t.getCustId(), t.getYear(), calcTax);
+                });
             }
         }
     }

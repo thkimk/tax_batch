@@ -1,7 +1,6 @@
-package com.hanwha.tax.batch.tax.repository;
+package com.hanwha.tax.batch.terms.repository;
 
-import com.hanwha.tax.batch.entity.Tax2;
-import com.hanwha.tax.batch.tax.model.TaxId;
+import com.hanwha.tax.batch.entity.TermsHst;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,14 +8,14 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface Tax2Repository extends JpaRepository<Tax2, TaxId> {
+public interface TermsHstRepository extends JpaRepository<TermsHst, Long> {
     /**
-     * 고객번호 기준으로 소득세정보 삭제
+     * 고객번호 기준으로 약관동의이력 삭제
      * @param custId
      * @return
      */
     @Transactional
     @Modifying
-    @Query(value="delete from tax2 t where t.cust_id=:custId", nativeQuery = true)
+    @Query(value="delete from terms_hst th where th.cust_id=:custId", nativeQuery = true)
     int deleteByCustId(String custId);
 }

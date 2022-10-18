@@ -10,21 +10,19 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * 로그인 이력
+ * 이용약관 동의 이력
  */
 @Getter
 @Setter
 @ToString
-@Entity(name="login_hst")
-public class LoginHst {
+@Entity(name="terms_hst")
+public class TermsHst {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long   id;				// 순번
 	private String custId;			// 고객 번호
-	private String loginDt;			// 로그인일시
-	private String authType;		// 인증 분류
-	private String devUid;			// 단말기 UID
-	private String devName;			// 단말기 명
-	private String osName;			// OS 명
-	private String authStatus;		// 인증 상태
+	private long   termsId;			// 약관 아이디
+	private String termsName;		// 약관 이름
+	private char   isAgree;			// 동의 여부
+	private String agreeDt;			// 동읠 일시
 }

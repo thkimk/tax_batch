@@ -1,0 +1,36 @@
+server:
+  port: 8007
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jdbc-url: jdbc:mysql://tax-prd-rds-mysql-api.cuiq6yjtucpj.ap-northeast-2.rds.amazonaws.com:3306/PTAXDB?autoReconnection=true&useSSL=false&allowMultiQueries=true
+    username: taxasv
+    password: qwe123!@#
+  quartz-ds:
+    datasource:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://tax-prd-rds-mysql-api.cuiq6yjtucpj.ap-northeast-2.rds.amazonaws.com:3306/PQUARTZ?autoReconnection=true&useSSL=false&allowMultiQueries=true
+      username: taxasv
+      password: qwe123!@#
+  finger-ds:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jdbc-url: jdbc:mysql://tax-prd-rds-mysql-api.cuiq6yjtucpj.ap-northeast-2.rds.amazonaws.com:3306/PFINGER?autoReconnection=true&useSSL=false&allowMultiQueries=true
+    username: taxasv
+    password: qwe123!@#
+
+logging:
+  register-shutdown-hook: false
+  config: classpath:logback-prd.xml
+  level:
+    root: INFO
+    com.hanwha.tax.batch: INFO
+    org.apache.http: INFO
+    org.mybatis: WARN
+
+tax:
+  sftp:
+    user: IS000001
+    pwd: 81qAlJDvsA
+    host: 10.12.35.90
+    port: 3300

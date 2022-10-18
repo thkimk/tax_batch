@@ -2,9 +2,6 @@ server:
   port: 9090
 
 spring:
-  .config:
-    activate:
-      on-profile: home
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     jdbcUrl: jdbc:mysql://tax-database.c1ttexowmmks.ap-northeast-2.rds.amazonaws.com:3306/tax?autoReconnection=true&useSSL=false&allowMultiQueries=true
@@ -21,15 +18,6 @@ spring:
     jdbc-url: jdbc:mysql://tax-dbms.cjzouundkjlm.ap-northeast-2.rds.amazonaws.com:3306/finger?autoReconnection=true&useSSL=false&allowMultiQueries=true
     username: root
     password: welcome123
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-    open-in-view: false
-    show-sql: true
-    hibernate:
-      format_sql: true
-      ddl-auto: validate
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
 logging:
   register-shutdown-hook: false
