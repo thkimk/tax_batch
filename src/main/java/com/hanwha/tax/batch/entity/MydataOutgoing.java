@@ -1,7 +1,7 @@
 package com.hanwha.tax.batch.entity;
 
 import com.hanwha.tax.batch.Utils;
-import com.hanwha.tax.batch.mydata.model.CA01;
+import com.hanwha.tax.batch.mydata.model.CardAppr;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -87,7 +87,7 @@ public class MydataOutgoing {
 		public String getCode() { return this.code; }
 	}
 
-	public MydataOutgoing convertByCardAppr(String custId, CA01 cardAppr) {
+	public MydataOutgoing convertByCardAppr(String custId, CardAppr cardAppr) {
 		this.custId = custId;
 		this.orgCode = cardAppr.get정보제공자_기관코드();
 		this.cardId = cardAppr.get카드식별자();
