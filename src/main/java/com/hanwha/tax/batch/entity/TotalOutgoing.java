@@ -1,7 +1,6 @@
 package com.hanwha.tax.batch.entity;
 
 import com.hanwha.tax.batch.Utils;
-import com.hanwha.tax.batch.mydata.model.CardAppr;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

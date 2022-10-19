@@ -1,7 +1,6 @@
 package com.hanwha.tax.batch.entity;
 
 import com.hanwha.tax.batch.Utils;
-import com.hanwha.tax.batch.mydata.model.BankTrans;
 import com.hanwha.tax.batch.tax.model.TaxId;
 import lombok.Getter;
 import lombok.Setter;

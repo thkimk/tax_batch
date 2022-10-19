@@ -58,18 +58,25 @@ public class TotalAmountJob extends BaseJob {
 					if (!mo.getCustId().equals(to.get("cust_id")))
 						return;
 
-					// 카테고리가 있는 경우만 경비로 인정
-					if (!Utils.isEmpty(mo.getCategory())) {
-						if (MydataOutgoing.ApprStatus.승인.getCode().equals(mo.getStatus())) {
-							amount.set(amount.get()+mo.getApprAmt());
+					if (Utils.isEmpty(mo.getCategory())) {
+						log.error("경비코드 항목을 확인해 주시기 바랍니다. cust_id : [{}], appr_num : [{}]", mo.getCustId(), mo.getApprNum());
+						return;
+					}
 
-							// 최초 승인내역 기준으로 외래키 세팅
-							totalOutgoing.setFk(totalOutgoing.getFk() < mo.getId() ? totalOutgoing.getFk() : mo.getId());
-						} else if (MydataOutgoing.ApprStatus.승인취소.getCode().equals(mo.getStatus())) {
-							amount.set(amount.get()-mo.getApprAmt());
-						} else {
-							amount.set(mo.getModAmt());
-						}
+					// 경비제외가 아닌 경우 지출금액 계산
+					if (MydataOutgoing.CardCategory.경비제외.getCode().equals(mo.getCategory()))
+						return;
+
+					// 승인, 승인취소, 정정에 따른 지출금액 계산
+					if (MydataOutgoing.ApprStatus.승인.getCode().equals(mo.getStatus())) {
+						amount.set(amount.get()+mo.getApprAmt());
+
+						// 최초 승인내역 기준으로 외래키 세팅
+						totalOutgoing.setFk(totalOutgoing.getFk() < mo.getId() ? totalOutgoing.getFk() : mo.getId());
+					} else if (MydataOutgoing.ApprStatus.승인취소.getCode().equals(mo.getStatus())) {
+						amount.set(amount.get()-mo.getApprAmt());
+					} else {
+						amount.set(mo.getModAmt());
 					}
 				});
 
@@ -77,7 +84,7 @@ public class TotalAmountJob extends BaseJob {
 				totalOutgoing.setAmount(amount.get());
 			}
 
-			// 총 지출금액 저장
+			// 총 지출금액 저장 ( ★★★ 지출금액이 0원인 경우 total 등록해야 하는지? 안해야 할것 같은데.. 기존에 등록했다가 경비제외하는 경우 갱신?삭제? )
 			totalService.saveTotalOutgoing(totalOutgoing);
 		});
 

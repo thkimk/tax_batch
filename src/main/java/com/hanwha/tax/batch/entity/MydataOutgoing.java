@@ -1,7 +1,7 @@
 package com.hanwha.tax.batch.entity;
 
 import com.hanwha.tax.batch.Utils;
-import com.hanwha.tax.batch.mydata.model.CardAppr;
+import com.hanwha.tax.batch.mydata.model.CA01;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -66,7 +66,28 @@ public class MydataOutgoing {
 		public String getCode() { return this.code; }
 	}
 
-	public MydataOutgoing convertByCardAppr(String custId, CardAppr cardAppr) {
+	/*
+	 * 카드 경비
+	 */
+	public static enum CardCategory {
+		제세공과금("01"),
+		지급이자("02"),
+		접대비("03"),
+		차량유지비("04"),
+		지급수수료("05"),
+		소모품비("06"),
+		광고선전비("07"),
+		여비교통비("08"),
+		기타("09"),
+		승인취소("10"),
+		경비제외("99");
+
+		private final String code;
+		CardCategory(String code) { this.code = code; }
+		public String getCode() { return this.code; }
+	}
+
+	public MydataOutgoing convertByCardAppr(String custId, CA01 cardAppr) {
 		this.custId = custId;
 		this.orgCode = cardAppr.get정보제공자_기관코드();
 		this.cardId = cardAppr.get카드식별자();
