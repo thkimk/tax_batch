@@ -23,10 +23,10 @@ public class MydataJob extends BaseJob {
 
 		String yesterday = Utils.getYesterday();
 
-//		log.info("▶︎▶︎▶ 마이데이터 은행(원본) 확인");
-//		mydataService.procMydataInfo(BANK_FILE, yesterday);			// 은행(원본) 파일 확인
-//		log.info("▶︎▶︎▶ 마이데이터 카드(원본) 확인");
-//		mydataService.procMydataInfo(CARD_FILE, yesterday);			// 카드(원본) 파일 확인
+		log.info("▶︎▶︎▶ 마이데이터 은행(원본) 확인");
+		mydataService.procMydataInfo(BANK_FILE, yesterday);			// 은행(원본) 파일 확인
+		log.info("▶︎▶︎▶ 마이데이터 카드(원본) 확인");
+		mydataService.procMydataInfo(CARD_FILE, yesterday);			// 카드(원본) 파일 확인
 
 		log.info("▶︎▶︎▶ 마이데이터 은행(수입) 확인");
 		mydataService.procMydataInfo(BANK_TRANS_FILE, yesterday);	// 은행(수입) 파일 확인
