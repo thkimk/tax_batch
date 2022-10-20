@@ -30,8 +30,11 @@ public abstract class AbstractMydataCoocon {
 		데이터레코드부("CI"),
 		테일레코드부("ED"),
 
-		은행수신계좌매핑거래내역조회("BT01"),
-		국내승인내역조회("CA01");
+		은행계좌목록("BA01"),
+		은행수신계좌거래내역("BA04"),
+		은행수신계좌매핑거래내역("BT01"),
+		국내승인내역("CD03"),
+		국내매핑승인내역("CA01");
 		private final String code;
 		ROW_TYPE(String code){this.code = code;}
 		public String getCode(){return this.code;}

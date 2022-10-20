@@ -1,7 +1,8 @@
 package com.hanwha.tax.batch.entity;
 
 import com.hanwha.tax.batch.Utils;
-import com.hanwha.tax.batch.mydata.model.CardAppr;
+import com.hanwha.tax.batch.mydata.model.CardApprCA01;
+import com.hanwha.tax.batch.mydata.model.CardCD03;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -87,7 +88,24 @@ public class MydataOutgoing {
 		public String getCode() { return this.code; }
 	}
 
-	public MydataOutgoing convertByCardAppr(String custId, CardAppr cardAppr) {
+	public MydataOutgoing convertByCard(String custId, CardCD03 card) {
+		this.custId = custId;
+		this.orgCode = card.get정보제공자_기관코드();
+		this.cardId = card.get카드식별자();
+		this.seq = Utils.isEmpty(card.get순번_랭크()) ? 0 : Integer.parseInt(card.get순번_랭크());
+		this.payType = card.get사용구분_코드();
+		this.status = card.get결제상태_코드();
+		this.transDtime = Utils.formatDate(card.get정정일시(),"yyyy-MM-dd HH:mm:ss");
+		this.apprNum = card.get승인번호();
+		this.apprAmt = (long) Math.floor(Float.parseFloat(card.get이용금액()));
+		this.modAmt = Long.parseLong(card.get정정후금액());
+		this.apprDtime = Utils.formatDate(card.get승인일시(),"yyyy-MM-dd HH:mm:ss");
+		this.merchantName = card.get가맹점명();
+
+		return this;
+	}
+
+	public MydataOutgoing convertByCardAppr(String custId, CardApprCA01 cardAppr) {
 		this.custId = custId;
 		this.orgCode = cardAppr.get정보제공자_기관코드();
 		this.cardId = cardAppr.get카드식별자();

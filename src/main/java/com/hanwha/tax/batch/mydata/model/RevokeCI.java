@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Setter
 @ToString
-public class Revoke extends AbstractMydataCoocon {
+public class RevokeCI extends AbstractMydataCoocon {
 
 	protected String CI;
 	protected String 요청일시;

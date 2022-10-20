@@ -22,12 +22,6 @@ import javax.sql.DataSource;
 @Configuration
 public class QuartzConfiguration {
 
-	@Value("${mydata.info.schedule}")
-	private String mydataInfoCronExp;
-
-	@Value("${mydata.thirdparty.schedule}")
-	private String mydataThirdpartyCronExp;
-
 	@Value("${cust.destroy.withdrawal.schedule}")
 	private String custDestroyWithdrawalCronExp;
 
@@ -36,6 +30,12 @@ public class QuartzConfiguration {
 
 	@Value("${cust.dormancy.schedule}")
 	private String custDormancyCronExp;
+
+	@Value("${mydata.info.schedule}")
+	private String mydataInfoCronExp;
+
+	@Value("${total.amount.schedule}")
+	private String totalAmountCronExp;
 
 	@Value("${cust.allmembers.data.isMaster}")
 	private String isMasterJobData;
@@ -49,61 +49,20 @@ public class QuartzConfiguration {
 	@Value("${cust.allmembers2.schedule}")
 	private String taxAllmembers2CronExp;
 
-	@Value("${total.amount.schedule}")
-	private String totalAmountCronExp;
-
 	@Value("${cust.notice.target.schedule}")
 	private String notiTargetCronExp;
 
-	@Value("${deduct.transfer.schedule}")
-	private String deductTransferCronExp;
-
 	@Value("${event.status.schedule}")
 	private String eventStatusCronExp;
+
+	@Value("${deduct.transfer.schedule}")
+	private String deductTransferCronExp;
 
 	private final String TRIGGER_GROUP_NAME = "TAX_GROUP";
 
 
 	@Autowired
 	private ApplicationContext appContext;
-	
-	@Bean(name="mydataJobDetail")
-	public JobDetailFactoryBean mydataJobDetail() {
-	    JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
-	    jobDetailFactory.setJobClass(MydataJob.class);
-	    jobDetailFactory.setDescription("Collect mydata_income and mydata_outgoing Data");
-	    jobDetailFactory.setDurability(true);
-	    return jobDetailFactory;
-	}
-
-	@Bean(name="mydataTrigger")
-	public CronTriggerFactoryBean mydataTrigger(JobDetail mydataJobDetail) {
-		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
-		trigger.setGroup(TRIGGER_GROUP_NAME);
-		trigger.setCronExpression(mydataInfoCronExp);
-		trigger.setJobDetail(mydataJobDetail);
-
-		return trigger;
-	}
-
-	@Bean(name="mydataThirdpartyJobDetail")
-	public JobDetailFactoryBean mydataThirdpartyJobDetail() {
-		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
-		jobDetailFactory.setJobClass(MydataThirdpartyJob.class);
-		jobDetailFactory.setDescription("Analyze Mydata Thirdparty Data");
-		jobDetailFactory.setDurability(true);
-		return jobDetailFactory;
-	}
-
-	@Bean(name="mydataThirdpartyTrigger")
-	public CronTriggerFactoryBean mydataThirdpartyTrigger(JobDetail mydataThirdpartyJobDetail) {
-		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
-		trigger.setGroup(TRIGGER_GROUP_NAME);
-		trigger.setCronExpression(mydataThirdpartyCronExp);
-		trigger.setJobDetail(mydataThirdpartyJobDetail);
-
-		return trigger;
-	}
 
 	@Bean(name="custDestroyWithdrawalJobDetail")
 	public JobDetailFactoryBean custDestroyWithdrawalJobDetail() {
@@ -162,6 +121,44 @@ public class QuartzConfiguration {
 		return trigger;
 	}
 
+	@Bean(name="mydataJobDetail")
+	public JobDetailFactoryBean mydataJobDetail() {
+	    JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+	    jobDetailFactory.setJobClass(MydataJob.class);
+	    jobDetailFactory.setDescription("Collect mydata_bank and mydata_outgoing Data");
+	    jobDetailFactory.setDurability(true);
+	    return jobDetailFactory;
+	}
+
+	@Bean(name="mydataTrigger")
+	public CronTriggerFactoryBean mydataTrigger(JobDetail mydataJobDetail) {
+		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
+		trigger.setGroup(TRIGGER_GROUP_NAME);
+		trigger.setCronExpression(mydataInfoCronExp);
+		trigger.setJobDetail(mydataJobDetail);
+
+		return trigger;
+	}
+
+	@Bean(name="totalAmountJobDetail")
+	public JobDetailFactoryBean totalAmountJobDetail() {
+		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+		jobDetailFactory.setJobClass(TotalAmountJob.class);
+		jobDetailFactory.setDescription("update total amount");
+		jobDetailFactory.setDurability(true);
+		return jobDetailFactory;
+	}
+
+	@Bean(name="totalAmountTrigger")
+	public CronTriggerFactoryBean totalAmountTrigger(JobDetail totalAmountJobDetail) {
+		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
+		trigger.setGroup(TRIGGER_GROUP_NAME);
+		trigger.setCronExpression(totalAmountCronExp);
+		trigger.setJobDetail(totalAmountJobDetail);
+
+		return trigger;
+	}
+
 	@Bean(name="taxAllmembersJobDetail")
 	public JobDetailFactoryBean taxAllmembersJobDetail() {
 		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
@@ -210,25 +207,6 @@ public class QuartzConfiguration {
 		return trigger;
 	}
 
-	@Bean(name="totalAmountJobDetail")
-	public JobDetailFactoryBean totalAmountJobDetail() {
-		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
-		jobDetailFactory.setJobClass(TotalAmountJob.class);
-		jobDetailFactory.setDescription("update total amount");
-		jobDetailFactory.setDurability(true);
-		return jobDetailFactory;
-	}
-
-	@Bean(name="totalAmountTrigger")
-	public CronTriggerFactoryBean totalAmountTrigger(JobDetail totalAmountJobDetail) {
-		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
-		trigger.setGroup(TRIGGER_GROUP_NAME);
-		trigger.setCronExpression(totalAmountCronExp);
-		trigger.setJobDetail(totalAmountJobDetail);
-
-		return trigger;
-	}
-
 	@Bean(name="notiTargetJobDetail")
 	public JobDetailFactoryBean notiTargetJobDetail() {
 		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
@@ -248,25 +226,6 @@ public class QuartzConfiguration {
 		return trigger;
 	}
 
-	@Bean(name="deductTransferJobDetail")
-	public JobDetailFactoryBean deductTransferJobDetail() {
-		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
-		jobDetailFactory.setJobClass(DeductTransferJob.class);
-		jobDetailFactory.setDescription("transfer deduct data");
-		jobDetailFactory.setDurability(true);
-		return jobDetailFactory;
-	}
-
-	@Bean(name="deductTransferTrigger")
-	public CronTriggerFactoryBean deductTransferTrigger(JobDetail deductTransferJobDetail) {
-		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
-		trigger.setGroup(TRIGGER_GROUP_NAME);
-		trigger.setCronExpression(deductTransferCronExp);
-		trigger.setJobDetail(deductTransferJobDetail);
-
-		return trigger;
-	}
-
 	@Bean(name="eventStatusJobDetail")
 	public JobDetailFactoryBean eventStatusJobDetail() {
 		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
@@ -282,6 +241,25 @@ public class QuartzConfiguration {
 		trigger.setGroup(TRIGGER_GROUP_NAME);
 		trigger.setCronExpression(eventStatusCronExp);
 		trigger.setJobDetail(eventStatusJobDetail);
+
+		return trigger;
+	}
+
+	@Bean(name="deductTransferJobDetail")
+	public JobDetailFactoryBean deductTransferJobDetail() {
+		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+		jobDetailFactory.setJobClass(DeductTransferJob.class);
+		jobDetailFactory.setDescription("transfer deduct data");
+		jobDetailFactory.setDurability(true);
+		return jobDetailFactory;
+	}
+
+	@Bean(name="deductTransferTrigger")
+	public CronTriggerFactoryBean deductTransferTrigger(JobDetail deductTransferJobDetail) {
+		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
+		trigger.setGroup(TRIGGER_GROUP_NAME);
+		trigger.setCronExpression(deductTransferCronExp);
+		trigger.setJobDetail(deductTransferJobDetail);
 
 		return trigger;
 	}

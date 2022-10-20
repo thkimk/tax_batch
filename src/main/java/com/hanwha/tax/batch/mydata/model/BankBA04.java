@@ -1,0 +1,90 @@
+package com.hanwha.tax.batch.mydata.model;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * 쿠콘 마이데이터 전문
+ * 은행 수신 계좌 거래내역조회 ( 쿠콘 -> 기관 )
+ */
+@Slf4j
+@Getter
+@Setter
+@ToString
+public class BankBA04 extends AbstractMydataCoocon {
+
+	protected String CI;
+	protected String 정보제공자_기관코드;
+	protected String 계좌번호;
+	protected String 회차번호;
+	protected String 거래일시;
+	protected String 거래번호;
+	protected String 순번_랭크;
+	protected String 거래유형_코드;
+	protected String 거래구분;
+	protected String 통화코드;
+	protected String 거래금액;
+	protected String 거래후잔액;
+	protected String 납입회차;
+	protected String 조회일시;
+
+	/**
+	 * data 부 파싱
+	 * @param data
+	 */
+	public void parseData(String data) {
+		String[] dataArr = data != null ? data.split("\\|") : null;
+
+		// data 부 검증
+		if (dataArr == null || dataArr.length != 15 || !ROW_TYPE.은행수신계좌거래내역.getCode().equals(dataArr[1])) {
+			log.info("은행 수신 계좌 거래내역조회 파일의 데이터부를 확인해주시기 바랍니다.");
+			return;
+		}
+
+		// data 부
+		CI = dataArr[0];
+		식별코드 = dataArr[1];
+		정보제공자_기관코드 = dataArr[2];
+		계좌번호 = dataArr[3];
+		회차번호 = dataArr[4];
+		거래일시 = dataArr[5];
+		거래번호 = dataArr[6];
+		순번_랭크 = dataArr[7];
+		거래유형_코드 = dataArr[8];
+		거래구분 = dataArr[9];
+		통화코드 = dataArr[10];
+		거래금액 = dataArr[11];
+		거래후잔액 = dataArr[12];
+		납입회차 = dataArr[13];
+		조회일시 = dataArr[14];
+	}
+
+	/**
+	 * data 부 생성
+	 * @return
+	 */
+	public String getData() {
+		StringBuffer sb = new StringBuffer();
+
+		sb.append(CI);sb.append("|");
+		sb.append(ROW_TYPE.은행수신계좌거래내역.getCode());sb.append("|");
+		sb.append(정보제공자_기관코드);sb.append("|");
+		sb.append(계좌번호);sb.append("|");
+		sb.append(회차번호);sb.append("|");
+		sb.append(거래일시);sb.append("|");
+		sb.append(거래번호);sb.append("|");
+		sb.append(순번_랭크);sb.append("|");
+		sb.append(거래유형_코드);sb.append("|");
+		sb.append(거래구분);sb.append("|");
+		sb.append(통화코드);sb.append("|");
+		sb.append(거래금액);sb.append("|");
+		sb.append(거래후잔액);sb.append("|");
+		sb.append(납입회차);sb.append("|");
+		sb.append(조회일시);sb.append("|");
+		sb.append("\n");
+
+		return sb.toString();
+	}
+}

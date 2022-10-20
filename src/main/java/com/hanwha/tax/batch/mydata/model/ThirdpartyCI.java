@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Setter
 @ToString
-public class Thirdparty extends AbstractMydataCoocon {
+public class ThirdpartyCI extends AbstractMydataCoocon {
 
 	protected String CI;
 	protected String 쿠콘제3자제공동의1;	// 서비스

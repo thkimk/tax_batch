@@ -1,7 +1,8 @@
 package com.hanwha.tax.batch.entity;
 
 import com.hanwha.tax.batch.Utils;
-import com.hanwha.tax.batch.mydata.model.BankTrans;
+import com.hanwha.tax.batch.mydata.model.BankBA04;
+import com.hanwha.tax.batch.mydata.model.BankTransBT01;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -59,7 +60,24 @@ public class MydataIncome {
 		public String getCode() { return this.code; }
 	}
 
-	public MydataIncome convertByBankTrans(String cust_id, BankTrans bankTrans) {
+	public MydataIncome convertByBank(String cust_id, BankBA04 bank) {
+		this.custId = cust_id;
+		this.orgCode = bank.get정보제공자_기관코드();
+		this.accountNum = bank.get계좌번호();
+		this.seqNo = bank.get회차번호();
+		this.transDtime = Utils.formatDate(bank.get거래일시(),"yyyy-MM-dd HH:mm:ss");
+		this.transNo = bank.get거래번호();
+		this.seq = Utils.isEmpty(bank.get순번_랭크()) ? 0 : Integer.parseInt(bank.get순번_랭크());
+		this.transAmt = (long) Math.floor(Float.parseFloat(bank.get거래금액()));
+		this.balanceAmt = (long) Math.floor(Float.parseFloat(bank.get거래후잔액()));
+		this.transType = bank.get거래유형_코드();
+		this.transClass = bank.get거래구분();
+		this.currencyCode = bank.get통화코드();
+
+		return this;
+	}
+
+	public MydataIncome convertByBankTrans(String cust_id, BankTransBT01 bankTrans) {
 		this.custId = cust_id;
 		this.orgCode = bankTrans.get정보제공자_기관코드();
 		this.accountNum = bankTrans.get계좌번호();

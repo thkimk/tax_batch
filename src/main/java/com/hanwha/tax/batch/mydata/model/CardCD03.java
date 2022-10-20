@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Setter
 @ToString
-public class CardAppr extends AbstractMydataCoocon {
+public class CardCD03 extends AbstractMydataCoocon {
 
 	protected String CI;
 	protected String 정보제공자_기관코드;
@@ -25,12 +25,10 @@ public class CardAppr extends AbstractMydataCoocon {
 	protected String 사용구분_코드;
 	protected String 정정일시;
 	protected String 가맹점명;
-	protected String 경비코드;
-	protected String 가맹점사업자등록번호;
 	protected String 이용금액;
 	protected String 정정후금액;
+	protected String 전체_할부회차;
 	protected String 조회일시;
-	protected String 수정일시;
 
 	/**
 	 * data 부 파싱
@@ -40,7 +38,7 @@ public class CardAppr extends AbstractMydataCoocon {
 		String[] dataArr = data != null ? data.split("\\|") : null;
 
 		// data 부 검증
-		if (dataArr == null || dataArr.length != 17 || !ROW_TYPE.국내승인내역조회.getCode().equals(dataArr[1])) {
+		if (dataArr == null || dataArr.length != 15 || !ROW_TYPE.국내승인내역.getCode().equals(dataArr[1])) {
 			log.info("국내 승인내역 조회 파일의 데이터부를 확인해주시기 바랍니다.");
 			return;
 		}
@@ -57,12 +55,10 @@ public class CardAppr extends AbstractMydataCoocon {
 		사용구분_코드 = dataArr[8];
 		정정일시 = dataArr[9];
 		가맹점명 = dataArr[10];
-		경비코드 = dataArr[11];
-		가맹점사업자등록번호 = dataArr[12];
-		이용금액 = dataArr[13];
-		정정후금액 = dataArr[14];
-		조회일시 = dataArr[15];
-		수정일시 = dataArr[16];
+		이용금액 = dataArr[11];
+		정정후금액 = dataArr[12];
+		전체_할부회차 = dataArr[13];
+		조회일시 = dataArr[14];
 	}
 
 	/**
@@ -73,7 +69,7 @@ public class CardAppr extends AbstractMydataCoocon {
 		StringBuffer sb = new StringBuffer();
 
 		sb.append(CI);sb.append("|");
-		sb.append(ROW_TYPE.국내승인내역조회.getCode());sb.append("|");
+		sb.append(ROW_TYPE.국내승인내역.getCode());sb.append("|");
 		sb.append(정보제공자_기관코드);sb.append("|");
 		sb.append(카드식별자);sb.append("|");
 		sb.append(승인번호);sb.append("|");
@@ -83,12 +79,10 @@ public class CardAppr extends AbstractMydataCoocon {
 		sb.append(사용구분_코드);sb.append("|");
 		sb.append(정정일시);sb.append("|");
 		sb.append(가맹점명);sb.append("|");
-		sb.append(경비코드);sb.append("|");
-		sb.append(가맹점사업자등록번호);sb.append("|");
 		sb.append(이용금액);sb.append("|");
 		sb.append(정정후금액);sb.append("|");
+		sb.append(전체_할부회차);sb.append("|");
 		sb.append(조회일시);sb.append("|");
-		sb.append(수정일시);sb.append("|");
 		sb.append("\n");
 
 		return sb.toString();

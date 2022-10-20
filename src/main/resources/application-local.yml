@@ -35,3 +35,7 @@ tax:
     pwd: d1OryUJJr3
     host: 183.111.160.204
     port: 3300
+  mydata:
+    path:
+      zip: /Users/hjlee/pds/tax/down/
+      unzip: /Users/hjlee/pds/tax/mydata/

@@ -34,3 +34,7 @@ tax:
     pwd: d1OryUJJr3
     host: 183.111.160.204
     port: 3300
+  mydata:
+    path:
+      zip: /pds/tax/down/
+      unzip: /pds/tax/mydata/

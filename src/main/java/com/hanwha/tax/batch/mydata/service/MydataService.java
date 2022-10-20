@@ -6,10 +6,7 @@ import com.hanwha.tax.batch.cust.service.CustService;
 import com.hanwha.tax.batch.entity.Cust;
 import com.hanwha.tax.batch.entity.MydataIncome;
 import com.hanwha.tax.batch.entity.MydataOutgoing;
-import com.hanwha.tax.batch.mydata.model.AbstractMydataCoocon;
-import com.hanwha.tax.batch.mydata.model.BankTrans;
-import com.hanwha.tax.batch.mydata.model.CardAppr;
-import com.hanwha.tax.batch.mydata.model.Thirdparty;
+import com.hanwha.tax.batch.mydata.model.*;
 import com.hanwha.tax.batch.mydata.repository.MydataIncomeRepository;
 import com.hanwha.tax.batch.mydata.repository.MydataOutgoingRepository;
 import com.hanwha.tax.batch.tax.service.CalcTax;
@@ -70,6 +67,11 @@ public class MydataService {
     @Value("${tax.sftp.port}")
     private int mydataSftpPort;
 
+    @Value("${tax.mydata.path.zip}")
+    private String mydataFileZipPath;
+
+    @Value("${tax.mydata.path.unzip}")
+    private String mydataFileUnzipPath;
 
     /**
      * 마이데이터 파일 경로 가져오기
@@ -167,18 +169,16 @@ public class MydataService {
 
     /**
      * 쿠콘 마이데이터 전문 공통부 추상클래스 매핑
-     * @param model_name
+     * @param modelName
      * @return
      */
-    private AbstractMydataCoocon getMydataObjByName(String model_name) {
-        if (Utils.isEmpty(model_name))
+    private AbstractMydataCoocon getMydataObjByName(String modelName) {
+        if (Utils.isEmpty(modelName))
             return null;
-
-        model_name = Utils.convertToCamelCase("_"+model_name);
 
         AbstractMydataCoocon info = null;
         try {
-            Class<?> c = Class.forName("com.hanwha.tax.batch.mydata.model." + model_name);
+            Class<?> c = Class.forName("com.hanwha.tax.batch.mydata.model." + modelName);
             info = (AbstractMydataCoocon) c.newInstance();
 
         } catch (Exception e) {
@@ -248,12 +248,123 @@ public class MydataService {
     }
 
     /**
-     * 마이데이터 파일 ROW 별 파싱 및 저장 (은행(수입))
+     * 마이데이터 수입 정보 저장
+     * @param mydataIncome
+     * @return
+     */
+    private MydataIncome saveMydataIncome(MydataIncome mydataIncome) {
+        // 마이데이터 수입 정보 조회
+        List<MydataIncome> listMydataIncome = mydataIncomeRepository.findByDataPk(mydataIncome);
+
+        if (1 < listMydataIncome.size()) {
+            log.error("마이데이터 수입 정보가 올바르지 않습니다.");
+            return null;
+        }
+
+        if (0 < listMydataIncome.size()) {
+            mydataIncome.setId(listMydataIncome.get(0).getId());
+            mydataIncome.setCreateDt(listMydataIncome.get(0).getCreateDt());
+            mydataIncome.setUpdateDt(Utils.getCurrentDateTime());
+        }
+
+        // 마이데이터 수입 테이블 저장
+        return mydataIncomeRepository.save(mydataIncome);
+    }
+
+    /**
+     * 마이데이터 경비 정보 저장
+     * @param mydataOutgoing
+     * @return
+     */
+    private MydataOutgoing saveMydataOutgoing(MydataOutgoing mydataOutgoing) {
+        // 마이데이터 경비 정보 조회
+        List<MydataOutgoing> listMydataOutgoing = mydataOutgoingRepository.findByDataPk(mydataOutgoing);
+
+        if (1 < listMydataOutgoing.size()) {
+            log.error("마이데이터 경비 정보가 올바르지 않습니다.");
+            return null;
+        }
+
+        if (0 < listMydataOutgoing.size()) {
+            mydataOutgoing.setId(listMydataOutgoing.get(0).getId());
+            mydataOutgoing.setCreateDt(listMydataOutgoing.get(0).getCreateDt());
+            mydataOutgoing.setUpdateDt(Utils.getCurrentDateTime());
+        }
+
+        // 마이데이터 경비 테이블 저장
+        return mydataOutgoingRepository.save(mydataOutgoing);
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (은행(원본) : 은행 수신 계좌 거래내역)
+     * @param modelName
      * @param row
      */
-    private void saveMydata_BANK_TRANS(String row) {
+    private void saveMydataBankBA04(String modelName, String row) {
+        // 마이데이터 은행(원본) 클래스 생성
+        BankBA04 bank = (BankBA04) getMydataObjByName(modelName);
+        if (bank == null) {
+            log.error("쿠콘 마이데이터 은행(원본) 수신 계좌 거래내역 클래스를 확인해 주시기 바랍니다.");
+            return;
+        }
+
+        // 마이데이터 은행(원본) 전문 파싱
+        bank.parseData(row);
+
+        // 고객정보 확인
+        String custId = authService.getCustIdByCi(bank.getCI());
+
+        if (Utils.isEmpty(custId)) {
+            log.error("CI 값에 해당하는 고객정보가 존재하지 않습니다. [{}]", bank.getCI());
+            return;
+        }
+
+        // 마이데이터 수입 정보 저장
+        saveMydataIncome(new MydataIncome().convertByBank(custId, bank));
+
+        // 고객정보상세 자산변경일시 업데이트
+        custService.updateCustMydataDt(custId);
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (카드(원본) : 국내 승인내역)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataCardCD03(String modelName, String row) {
+        // 마이데이터 카드(원본) 클래스 생성
+        CardCD03 card = (CardCD03) getMydataObjByName(modelName);
+        if (card == null) {
+            log.error("쿠콘 마이데이터 카드(원본) 국내 승인내역 클래스를 확인해 주시기 바랍니다.");
+            return;
+        }
+
+        // 마이데이터 카드(원본) 전문 파싱
+        card.parseData(row);
+
+        // 고객정보 확인
+        String custId = authService.getCustIdByCi(card.getCI());
+
+        if (Utils.isEmpty(custId)) {
+            log.error("CI 값에 해당하는 고객정보가 존재하지 않습니다. [{}]", card.getCI());
+            return;
+        }
+
+        // 마이데이터 경비 정보 저장
+        saveMydataOutgoing(new MydataOutgoing().convertByCard(custId, card));
+
+        // 고객정보상세 자산변경일시 업데이트
+        custService.updateCustMydataDt(custId);
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (은행(수입))
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataBankTransBT01(String modelName, String row) {
         // 마이데이터 은행(수입) 클래스 생성
-        BankTrans bankTrans = (BankTrans) getMydataObjByName(BANK_TRANS_FILE);
+        BankTransBT01 bankTrans = (BankTransBT01) getMydataObjByName(modelName);
         if (bankTrans == null) {
             log.error("쿠콘 마이데이터 은행(수입) 클래스를 확인해 주시기 바랍니다.");
             return;
@@ -270,23 +381,8 @@ public class MydataService {
             return;
         }
 
-        // 마이데이터 수입 정보 조회
-        MydataIncome mydataIncome = new MydataIncome().convertByBankTrans(custId, bankTrans);
-        List<MydataIncome> listMydataIncome = mydataIncomeRepository.findByDataPk(mydataIncome);
-
-        if (1 < listMydataIncome.size()) {
-            log.error("마이데이터 수입 정보가 올바르지 않습니다.");
-            return;
-        }
-
-        if (0 < listMydataIncome.size()) {
-            mydataIncome.setId(listMydataIncome.get(0).getId());
-            mydataIncome.setCreateDt(listMydataIncome.get(0).getCreateDt());
-            mydataIncome.setUpdateDt(Utils.getCurrentDateTime());
-        }
-
-        // 마이데이터 수입 테이블 저장
-        mydataIncomeRepository.save(mydataIncome);
+        // 마이데이터 수입 정보 저장
+        saveMydataIncome(new MydataIncome().convertByBankTrans(custId, bankTrans));
 
         // 고객정보상세 자산변경일시 업데이트
         custService.updateCustMydataDt(custId);
@@ -294,11 +390,12 @@ public class MydataService {
 
     /**
      * 마이데이터 파일 ROW 별 파싱 및 저장 (카드(경비))
+     * @param modelName
      * @param row
      */
-    private void saveMydata_CARD_APPR(String row) {
+    private void saveMydataCardApprCA01(String modelName, String row) {
         // 마이데이터 카드(경비) 클래스 생성
-        CardAppr cardAppr = (CardAppr) getMydataObjByName(CARD_APPR_FILE);
+        CardApprCA01 cardAppr = (CardApprCA01) getMydataObjByName(modelName);
         if (cardAppr == null) {
             log.error("쿠콘 마이데이터 카드(경비) 클래스를 확인해 주시기 바랍니다.");
             return;
@@ -315,23 +412,8 @@ public class MydataService {
             return;
         }
 
-        // 마이데이터 경비 정보 조회
-        MydataOutgoing mydataOutgoing = new MydataOutgoing().convertByCardAppr(custId, cardAppr);
-        List<MydataOutgoing> listMydataOutgoing = mydataOutgoingRepository.findByDataPk(mydataOutgoing);
-
-        if (1 < listMydataOutgoing.size()) {
-            log.error("마이데이터 경비 정보가 올바르지 않습니다.");
-            return;
-        }
-
-        if (0 < listMydataOutgoing.size()) {
-            mydataOutgoing.setId(listMydataOutgoing.get(0).getId());
-            mydataOutgoing.setCreateDt(listMydataOutgoing.get(0).getCreateDt());
-            mydataOutgoing.setUpdateDt(Utils.getCurrentDateTime());
-        }
-
-        // 마이데이터 경비 테이블 저장
-        mydataOutgoingRepository.save(mydataOutgoing);
+        // 마이데이터 경비 정보 저장
+        saveMydataOutgoing(new MydataOutgoing().convertByCardAppr(custId, cardAppr));
 
         // 고객정보상세 자산변경일시 업데이트
         custService.updateCustMydataDt(custId);
@@ -339,11 +421,12 @@ public class MydataService {
 
     /**
      * 마이데이터 파일 ROW 별 파싱 및 저장 (제3자 제공동의)
+     * @param modelName
      * @param row
      */
-    private void saveMydata_THIRDPARTY(String row) {
+    private void saveMydataThirdpartyCI(String modelName, String row) {
         // 마이데이터 제3자 제공동의 회원 클래스 생성
-        Thirdparty thirdparty = (Thirdparty) getMydataObjByName(THIRDPARTY_FILE);
+        ThirdpartyCI thirdparty = (ThirdpartyCI) getMydataObjByName(modelName);
         if (thirdparty == null) {
             log.error("제3자 제공동의 회원 클래스를 확인해 주시기 바랍니다.");
             return;
@@ -407,10 +490,12 @@ public class MydataService {
 
     /**
      * 마이데이터 파일 읽기
-     * @param fileType
+     * @param modelName
      * @param sourceFile
      */
-    private void readMydataFile(String fileType, String sourceFile) {
+    private void readMydataFile(String modelName, String sourceFile) {
+        modelName = Utils.convertToCamelCase("_"+modelName);
+
         // 마이데이터 파일 읽기
         try {
             BufferedReader reader = new BufferedReader(new FileReader(sourceFile));
@@ -433,9 +518,10 @@ public class MydataService {
                     // 본처리
                     if (isIng) {
                         try {
-                            Method method = this.getClass().getDeclaredMethod("saveMydata_"+fileType, String.class);
-                            method.invoke(this, str);
-                        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                            Method method = this.getClass().getDeclaredMethod("saveMydata"+modelName+vals[1], String.class, String.class);
+                            method.invoke(this, modelName+vals[1], str);
+                        } catch (NoSuchMethodException e) {
+                        } catch (IllegalAccessException | InvocationTargetException e) {
                             e.printStackTrace();
                         }
                     }
@@ -453,19 +539,18 @@ public class MydataService {
      * @param fileType
      */
     public void procMydataInfo(String fileType, String ymdBasic) {
-        String downPath = getFilePath(COOCON_FILE_DOWNLOAD_PATH, ymdBasic);   // 다운로드 파일 경로
-        String mydataPath = getFilePath(COOCON_FILE_MYDATA_PATH, ymdBasic);   // 마이데이터 파일 경로
+        String downPath = getFilePath(mydataFileZipPath, ymdBasic);         // 마이데이터 zip 파일 경로
+        String mydataPath = getFilePath(mydataFileUnzipPath, ymdBasic);     // 마이데이터 unzio 파일 경로
         String fileName = ymdBasic + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + fileType;
 
-        // SFTP Get 수행 (/nas/tax/down)
+        // SFTP Get 수행
         mydataSftpGet(getFilePath(COOCON_FILE_SFTP_PATH, ymdBasic), downPath, fileName);
 
-        // zip 압축 해제 (/nas/tax/mydata/yyyymmdd/*)
+        // zip 압축 해제
         mydataUnzip(downPath+fileName+".zip", mydataPath);
 
         // File load (parsing)
         // DB Upsert (mydata_income)
-        log.info("▶︎▶︎▶︎ {} 파일 읽기 시작", fileType);
         readMydataFile(fileType, mydataPath+fileName);
     }
 

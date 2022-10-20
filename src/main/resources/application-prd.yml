@@ -34,3 +34,7 @@ tax:
     pwd: 81qAlJDvsA
     host: 10.12.35.90
     port: 3300
+  mydata:
+    path:
+      zip: /data/sorc001/tax_batch/mydata/zip/
+      unzip: /data/sorc001/tax_batch/mydata/unzip/
