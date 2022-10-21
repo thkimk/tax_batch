@@ -43,12 +43,6 @@ public class QuartzConfiguration {
 	@Value("${cust.allmembers.schedule}")
 	private String taxAllmembersCronExp;
 
-	@Value("${cust.allmembers2.data.isMaster}")
-	private String isMaster2JobData;
-
-	@Value("${cust.allmembers2.schedule}")
-	private String taxAllmembers2CronExp;
-
 	@Value("${cust.notice.target.schedule}")
 	private String notiTargetCronExp;
 
@@ -179,30 +173,6 @@ public class QuartzConfiguration {
 		trigger.setGroup(TRIGGER_GROUP_NAME);
 		trigger.setCronExpression(taxAllmembersCronExp);
 		trigger.setJobDetail(taxAllmembersJobDetail);
-
-		return trigger;
-	}
-
-	@Bean(name="taxAllmembers2JobDetail")
-	public JobDetailFactoryBean taxAllmembers2JobDetail() {
-		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
-		jobDetailFactory.setJobClass(TaxAllmembersJob2.class);
-		jobDetailFactory.setDescription("cust tax allmembers");
-		jobDetailFactory.setDurability(true);
-
-		JobDataMap jobDataMap = new JobDataMap();
-		jobDataMap.put("isMaster", isMaster2JobData);
-		jobDetailFactory.setJobDataMap(jobDataMap);
-
-		return jobDetailFactory;
-	}
-
-	@Bean(name="taxAllmembers2Trigger")
-	public CronTriggerFactoryBean taxAllmembers2Trigger(JobDetail taxAllmembers2JobDetail) {
-		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
-		trigger.setGroup(TRIGGER_GROUP_NAME);
-		trigger.setCronExpression(taxAllmembers2CronExp);
-		trigger.setJobDetail(taxAllmembers2JobDetail);
 
 		return trigger;
 	}

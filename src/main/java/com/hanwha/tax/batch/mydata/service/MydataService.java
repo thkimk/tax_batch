@@ -482,7 +482,7 @@ public class MydataService {
                 // 해당 고객의 연도 별 수입이력 조회
                 totalService.getTotalIncomeByCustId(cust.getCustId()).forEach(t -> {
                     // 소득세 정보 갱신
-                    taxService.saveTax2(t.getCustId(), t.getYear(), calcTax);
+                    taxService.saveTax(t.getCustId(), t.getYear(), calcTax);
                 });
             }
         }

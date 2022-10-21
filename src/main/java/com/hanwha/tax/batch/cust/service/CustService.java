@@ -186,7 +186,6 @@ public class CustService {
         log.info("▶▶▶▶▶▶ 전체 수입정보 식제 건수 : {} 건", totalService.deleteTotalIncomeByCustId(custID));
         log.info("▶▶▶▶▶▶ 전체 경비정보 식제 건수 : {} 건", totalService.deleteTotalOutgoingByCustId(custID));
         log.info("▶▶▶▶▶▶ 소득세정보 식제 건수 : {} 건", taxService.deleteTaxByCustId(custID));
-        log.info("▶▶▶▶▶▶ 소득세2정보 식제 건수 : {} 건", taxService.deleteTax2ByCustId(custID));
 
         // 로그인 이력 삭제
         log.info("▶▶▶▶▶▶ 로그인이력 식제 건수 : {} 건", loginService.deleteLoginHstByCustId(custID));

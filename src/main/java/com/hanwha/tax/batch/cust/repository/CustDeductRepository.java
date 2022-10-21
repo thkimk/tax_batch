@@ -30,6 +30,10 @@ public interface CustDeductRepository extends JpaRepository<CustDeduct, CustDedu
     @Query(value = "select cd.income from cust_deduct cd where cd.cust_id = :custId and cd.year <= :year order by cd.year desc limit 2", nativeQuery = true)
     Long[] getCustIncomes(String custId, int year);
 
+    /**
+     * 고객 공제항목 승계
+     * @return
+     */
     @Transactional
     @Modifying
     @Query(value = "insert into cust_deduct (cust_id, `year`, income, outgoing, med_amt, npc_amt, rsp_amt, sed_amt, ira_amt, irp_amt, is_rsp, is_smal, is_med, is_sed, is_ira, create_dt) " +
