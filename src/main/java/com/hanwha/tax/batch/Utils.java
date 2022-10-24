@@ -286,6 +286,18 @@ public class Utils {
         return "";
     }
 
+    /**
+     * 입력받은 숫자 항목이 null 인 경우 0으로 리턴
+     * @param number
+     * @return
+     */
+    public static long nullToZero(Long number) {
+        if (number == null)
+            return 0;
+
+        return number;
+    }
+
 //    public static void main(String[] args) {
 //        log.info("{}", "CI|TIvDch4batLopWj6GHwACPn87MNemqRB|Y|20220407172217|1|\n".split("\\|").length);
 //    }

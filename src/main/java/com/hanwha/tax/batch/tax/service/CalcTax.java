@@ -196,6 +196,13 @@ public class CalcTax {
      * @return
      */
     public static Long[] deductVals(CustDeduct custDeduct) {
+        custDeduct.setMedAmt(Utils.nullToZero(custDeduct.getMedAmt()));
+        custDeduct.setNpcAmt(Utils.nullToZero(custDeduct.getNpcAmt()));
+        custDeduct.setRspAmt(Utils.nullToZero(custDeduct.getRspAmt()));
+        custDeduct.setSedAmt(Utils.nullToZero(custDeduct.getSedAmt()));
+        custDeduct.setIraAmt(Utils.nullToZero(custDeduct.getIraAmt()));
+        custDeduct.setIrpAmt(Utils.nullToZero(custDeduct.getIrpAmt()));
+        
         Long[] vals = new Long[5];
 
         Long earning = custDeduct.getIncome() - custDeduct.getOutgoing();

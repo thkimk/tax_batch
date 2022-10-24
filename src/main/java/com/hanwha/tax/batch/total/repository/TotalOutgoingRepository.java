@@ -33,6 +33,17 @@ public interface TotalOutgoingRepository extends JpaRepository<TotalOutgoing, Lo
     int deleteByCustIdAndFlagFk(String custId);
 
     /**
+     * 외래키 기준으로 경비 삭제
+     * @param fk
+     * @param flagFk
+     * @return
+     */
+    @Transactional
+    @Modifying
+    @Query(value="delete from total_outgoing tout where tout.fk=:fk and tout.flag_fk = :flagFk", nativeQuery = true)
+    int deleteByFkAndFlagFk(long fk, char flagFk);
+
+    /**
      * 전체지출정보(간편장부+마이데이터) 기준일 변경내역 조회
      * @param ymdBasic
      * @return

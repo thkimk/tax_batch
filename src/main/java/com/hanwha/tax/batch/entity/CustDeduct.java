@@ -35,11 +35,6 @@ public class CustDeduct implements Serializable {
 	private Long   sedAmt;			// 중소기업창업투자 금액
 	private Long   iraAmt;			// 연금저출계좌보유 납입액
 	private Long   irpAmt;			// 퇴직연금 납입액
-	private String isRsp;			// 연금저출 보유 여부
-	private String isSmal;			// 소기업여부
-	private String isMed;			// 소상공인 공제부금 보유
-	private String isSed;			// 중소기업창업투자 여부
-	private String isIra;			// 연금저축계좌보유 여부
 	private String createDt;		// 등록일시
 	private String updateDt;		// 변경일시
 }

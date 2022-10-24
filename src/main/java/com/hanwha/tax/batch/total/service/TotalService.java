@@ -59,6 +59,16 @@ public class TotalService {
     }
 
     /**
+     * 외래키로 마이데이터 경비 삭제
+     * @param fk
+     * @param flagFk
+     * @return
+     */
+    public int deleteTotalOutgoingByFkAndFlagFk(long fk, char flagFk) {
+        return totalOutgoingRepository.deleteByFkAndFlagFk(fk, flagFk);
+    }
+
+    /**
      * 기준일로 전체수입정보 등록 대상 리스트 조회
      * @param ymdBasic
      * @return

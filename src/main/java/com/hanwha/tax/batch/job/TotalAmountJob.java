@@ -58,13 +58,8 @@ public class TotalAmountJob extends BaseJob {
 					if (!mo.getCustId().equals(to.get("cust_id")))
 						return;
 
-					if (Utils.isEmpty(mo.getCategory())) {
-						log.error("경비코드 항목을 확인해 주시기 바랍니다. cust_id : [{}], appr_num : [{}]", mo.getCustId(), mo.getApprNum());
-						return;
-					}
-
-					// 경비제외가 아닌 경우 지출금액 계산
-					if (MydataOutgoing.CardCategory.경비제외.getCode().equals(mo.getCategory()))
+					// 경비제외가 아닌 경우 지출금액 계산 ( ★★★ 원본 데이터 삽입 시 경비코드 빈값으로 셋팅됨 )
+					if (Utils.isEmpty(mo.getCategory()) || MydataOutgoing.CardCategory.경비제외.getCode().equals(mo.getCategory()))
 						return;
 
 					// 승인, 승인취소, 정정에 따른 지출금액 계산
@@ -84,8 +79,12 @@ public class TotalAmountJob extends BaseJob {
 				totalOutgoing.setAmount(amount.get());
 			}
 
-			// 총 지출금액 저장 ( ★★★ 지출금액이 0원인 경우 total 등록해야 하는지? 안해야 할것 같은데.. 기존에 등록했다가 경비제외하는 경우 갱신?삭제? )
-			totalService.saveTotalOutgoing(totalOutgoing);
+			// 총 지출금액 저장 ( 금액이 있는 경우만 저장/갱신하고 0원인 경우 삭제 )
+			if (0 < totalOutgoing.getAmount()) {
+				totalService.saveTotalOutgoing(totalOutgoing);
+			} else {
+				totalService.deleteTotalOutgoingByFkAndFlagFk(totalOutgoing.getFk(), totalOutgoing.getFlagFk());
+			}
 		});
 
 		log.info("============= 월 별 수입/지출 합계 정보 QUARTZ 종료 [{}] =============", Utils.getCurrentDateTime());

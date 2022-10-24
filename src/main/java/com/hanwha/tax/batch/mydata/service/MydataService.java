@@ -250,9 +250,10 @@ public class MydataService {
     /**
      * 마이데이터 수입 정보 저장
      * @param mydataIncome
+     * @param isOrigin
      * @return
      */
-    private MydataIncome saveMydataIncome(MydataIncome mydataIncome) {
+    private MydataIncome saveMydataIncome(MydataIncome mydataIncome, boolean isOrigin) {
         // 마이데이터 수입 정보 조회
         List<MydataIncome> listMydataIncome = mydataIncomeRepository.findByDataPk(mydataIncome);
 
@@ -265,6 +266,12 @@ public class MydataService {
             mydataIncome.setId(listMydataIncome.get(0).getId());
             mydataIncome.setCreateDt(listMydataIncome.get(0).getCreateDt());
             mydataIncome.setUpdateDt(Utils.getCurrentDateTime());
+
+            // 쿠콘 원본데이터인 경우 수입여부, 3.3프로 포함여부 항목 세팅
+            if (isOrigin) {
+                mydataIncome.setIsIncome(listMydataIncome.get(0).getIsIncome());
+                mydataIncome.setIs33(listMydataIncome.get(0).getIs33());
+            }
         }
 
         // 마이데이터 수입 테이블 저장
@@ -274,9 +281,10 @@ public class MydataService {
     /**
      * 마이데이터 경비 정보 저장
      * @param mydataOutgoing
+     * @param isOrigin
      * @return
      */
-    private MydataOutgoing saveMydataOutgoing(MydataOutgoing mydataOutgoing) {
+    private MydataOutgoing saveMydataOutgoing(MydataOutgoing mydataOutgoing, boolean isOrigin) {
         // 마이데이터 경비 정보 조회
         List<MydataOutgoing> listMydataOutgoing = mydataOutgoingRepository.findByDataPk(mydataOutgoing);
 
@@ -289,6 +297,11 @@ public class MydataService {
             mydataOutgoing.setId(listMydataOutgoing.get(0).getId());
             mydataOutgoing.setCreateDt(listMydataOutgoing.get(0).getCreateDt());
             mydataOutgoing.setUpdateDt(Utils.getCurrentDateTime());
+
+            // 쿠콘 원본데이터인 경우 카테고리 항목 세팅
+            if (isOrigin) {
+                mydataOutgoing.setCategory(listMydataOutgoing.get(0).getCategory());
+            }
         }
 
         // 마이데이터 경비 테이블 저장
@@ -320,7 +333,7 @@ public class MydataService {
         }
 
         // 마이데이터 수입 정보 저장
-        saveMydataIncome(new MydataIncome().convertByBank(custId, bank));
+        saveMydataIncome(new MydataIncome().convertByBank(custId, bank), true);
 
         // 고객정보상세 자산변경일시 업데이트
         custService.updateCustMydataDt(custId);
@@ -351,7 +364,7 @@ public class MydataService {
         }
 
         // 마이데이터 경비 정보 저장
-        saveMydataOutgoing(new MydataOutgoing().convertByCard(custId, card));
+        saveMydataOutgoing(new MydataOutgoing().convertByCard(custId, card), true);
 
         // 고객정보상세 자산변경일시 업데이트
         custService.updateCustMydataDt(custId);
@@ -382,7 +395,7 @@ public class MydataService {
         }
 
         // 마이데이터 수입 정보 저장
-        saveMydataIncome(new MydataIncome().convertByBankTrans(custId, bankTrans));
+        saveMydataIncome(new MydataIncome().convertByBankTrans(custId, bankTrans), false);
 
         // 고객정보상세 자산변경일시 업데이트
         custService.updateCustMydataDt(custId);
@@ -413,7 +426,7 @@ public class MydataService {
         }
 
         // 마이데이터 경비 정보 저장
-        saveMydataOutgoing(new MydataOutgoing().convertByCardAppr(custId, cardAppr));
+        saveMydataOutgoing(new MydataOutgoing().convertByCardAppr(custId, cardAppr), false);
 
         // 고객정보상세 자산변경일시 업데이트
         custService.updateCustMydataDt(custId);
