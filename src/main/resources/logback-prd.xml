@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE configuration>
 <configuration debug="true">
-    <property name="LOG_DIR" value="/data/sorc001/tax_batch/log" />
+    <property name="LOG_DIR" value="/data/hist001/tax_batch" />
     <property name="LOG_PATH_NAME" value="${LOG_DIR}/server.log" />
 
     <appender name="STDOUT"

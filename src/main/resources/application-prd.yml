@@ -36,5 +36,5 @@ tax:
     port: 3300
   mydata:
     path:
-      zip: /data/sorc001/tax_batch/mydata/zip/
-      unzip: /data/sorc001/tax_batch/mydata/unzip/
+      zip: /data/file001/tax_batch/down/
+      unzip: /data/file001/tax_batch/open/
