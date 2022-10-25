@@ -139,7 +139,7 @@ public class CalcTax {
         custInfoDtl = custService.getCustInfoDtl(custId).orElse(new CustInfoDtl());
         custDeduct = custService.getCustDeduct(custId, year).orElse(new CustDeduct());
         custFamilyList = custService.getCustFamilyListByCustId(custId);
-        industry = industryService.getIndustry(custInfoDtl.getIndstCode()).orElse(new Industry());
+        if (!Utils.isEmpty(custInfoDtl.getIndstCode())) industry = industryService.getIndustry(custInfoDtl.getIndstCode()).orElse(new Industry());
 
         preIncome = totalService.getTotalIncome(custId, year-1);
         income = totalService.getTotalIncome(custId, year);
@@ -378,6 +378,11 @@ public class CalcTax {
 
     public Long calRateTax() {
         log.debug("## 소득세 계산(calRateTax) : {}, taxFlag {}", custId, taxFlag);
+
+        // 업종 선택이 안된 경우 경비율 기반 소득세 0 리턴
+        if (industry == null) {
+            return 0L;
+        }
 
         // 경비율 기반으로, 지출 재계산
         if ((Integer.parseInt(taxFlag)%10) == 1) {
