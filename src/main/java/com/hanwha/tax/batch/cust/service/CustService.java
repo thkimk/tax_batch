@@ -15,6 +15,8 @@ import com.hanwha.tax.batch.tax.service.TaxService;
 import com.hanwha.tax.batch.terms.service.TermsService;
 import com.hanwha.tax.batch.total.service.TotalService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +48,9 @@ public class CustService {
 
     @Autowired
     CustEventRepository custEventRepository;
+
+    @Autowired
+    CustGradeStatusRepository custGradeStatusRepository;
 
     @Autowired
     AuthService authService;
@@ -350,5 +355,28 @@ public class CustService {
      */
     public int getCntCustEventApply(String eventId, char result, String joinDt) {
         return custEventRepository.countByEventIdAndResultAndJoinDtContains(eventId, result, joinDt);
+    }
+
+    /**
+     * 기준일의 고객 등급 별 현황 저장
+     * @param basicYmd
+     * @return
+     */
+    public CustGradeStatus saveCustGradeStatus(String basicYmd) {
+        CustGradeStatus custGradeStatus = new CustGradeStatus();
+        custGradeStatus.setBasicYmd(basicYmd);
+
+        BeanWrapper wrapper = new BeanWrapperImpl(custGradeStatus);
+
+        // 기준일 별 등급 현황
+        custGradeStatusRepository.getCustGradeStatusTarget(basicYmd).forEach(cgs -> {
+            wrapper.setPropertyValue(cgs.get("grade"), cgs.get("cnt") == null ? 0 : Integer.parseInt(String.valueOf(cgs.get("cnt"))));
+        });
+        // 현재 등급 현황
+        custGradeStatusRepository.getCustGradeStatusTarget().forEach(cgs -> {
+            wrapper.setPropertyValue(cgs.get("grade"), cgs.get("cnt") == null ? 0 : Integer.parseInt(String.valueOf(cgs.get("cnt"))));
+        });
+
+        return custGradeStatusRepository.save(custGradeStatus);
     }
 }

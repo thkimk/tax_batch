@@ -52,6 +52,9 @@ public class QuartzConfiguration {
 	@Value("${deduct.transfer.schedule}")
 	private String deductTransferCronExp;
 
+	@Value("${cust.grade.status.schedule}")
+	private String custGradeStatusCronExp;
+
 	private final String TRIGGER_GROUP_NAME = "TAX_GROUP";
 
 
@@ -230,6 +233,25 @@ public class QuartzConfiguration {
 		trigger.setGroup(TRIGGER_GROUP_NAME);
 		trigger.setCronExpression(deductTransferCronExp);
 		trigger.setJobDetail(deductTransferJobDetail);
+
+		return trigger;
+	}
+
+	@Bean(name="custGradeStatusJobDetail")
+	public JobDetailFactoryBean custGradeStatusJobDetail() {
+		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+		jobDetailFactory.setJobClass(CustGradeStatusJob.class);
+		jobDetailFactory.setDescription("save status by custGrade");
+		jobDetailFactory.setDurability(true);
+		return jobDetailFactory;
+	}
+
+	@Bean(name="custGradeStatusTrigger")
+	public CronTriggerFactoryBean custGradeStatusTrigger(JobDetail custGradeStatusJobDetail) {
+		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
+		trigger.setGroup(TRIGGER_GROUP_NAME);
+		trigger.setCronExpression(custGradeStatusCronExp);
+		trigger.setJobDetail(custGradeStatusJobDetail);
 
 		return trigger;
 	}

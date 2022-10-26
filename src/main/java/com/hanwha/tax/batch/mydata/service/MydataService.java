@@ -258,7 +258,7 @@ public class MydataService {
         List<MydataIncome> listMydataIncome = mydataIncomeRepository.findByDataPk(mydataIncome);
 
         if (1 < listMydataIncome.size()) {
-            log.error("마이데이터 수입 정보가 올바르지 않습니다./n[{}]", listMydataIncome.get(0).toString());
+            log.error("마이데이터 수입 정보가 올바르지 않습니다.\n[{}]", mydataIncome.toString());
             return null;
         }
 
@@ -289,7 +289,7 @@ public class MydataService {
         List<MydataOutgoing> listMydataOutgoing = mydataOutgoingRepository.findByDataPk(mydataOutgoing);
 
         if (1 < listMydataOutgoing.size()) {
-            log.error("마이데이터 경비 정보가 올바르지 않습니다./n[{}]", listMydataOutgoing.get(0).toString());
+            log.error("마이데이터 경비 정보가 올바르지 않습니다.\n[{}]", mydataOutgoing.toString());
             return null;
         }
 

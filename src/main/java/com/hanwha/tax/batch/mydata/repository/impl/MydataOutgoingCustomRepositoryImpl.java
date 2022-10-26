@@ -29,33 +29,33 @@ public class MydataOutgoingCustomRepositoryImpl implements MydataOutgoingCustomR
     }
 
     private BooleanExpression custIdEq(String custId) {
-        return !Utils.isEmpty(custId) ? mydataOutgoing.custId.eq(custId) : null;
+        return mydataOutgoing.custId.eq(custId);
     }
     private BooleanExpression orgCodeEq(String orgCode) {
-        return !Utils.isEmpty(orgCode) ? mydataOutgoing.orgCode.eq(orgCode) : null;
+        return mydataOutgoing.orgCode.eq(orgCode);
     }
     private BooleanExpression cardIdEq(String cardId) {
-        return !Utils.isEmpty(cardId) ? mydataOutgoing.cardId.eq(cardId) : null;
+        return mydataOutgoing.cardId.eq(cardId);
     }
     private BooleanExpression apprDtimeEq(String apprDtime) {
-        return !Utils.isEmpty(apprDtime) ? mydataOutgoing.apprDtime.eq(apprDtime) : null;
+        return mydataOutgoing.apprDtime.eq(apprDtime);
     }
     private BooleanExpression apprNumEq(String apprNum) {
-        return !Utils.isEmpty(apprNum) ? mydataOutgoing.apprNum.eq(apprNum) : null;
+        return mydataOutgoing.apprNum.eq(apprNum);
     }
     private BooleanExpression statusEq(String status) {
-        return !Utils.isEmpty(status) ? mydataOutgoing.status.eq(status) : null;
+        return mydataOutgoing.status.eq(status);
     }
     private BooleanExpression transDtimeEq(String transDtime) {
-        return !Utils.isEmpty(transDtime) ? mydataOutgoing.transDtime.eq(transDtime) : null;
+        return mydataOutgoing.transDtime.eq(transDtime);
     }
     private BooleanExpression payTypeEq(String payType) {
-        return !Utils.isEmpty(payType) ? mydataOutgoing.payType.eq(payType) : null;
+        return mydataOutgoing.payType.eq(payType);
     }
     private BooleanExpression apprAmtEq(long apprAmt) {
-        return 0 < apprAmt ? mydataOutgoing.apprAmt.eq(apprAmt) : null;
+        return mydataOutgoing.apprAmt.eq(apprAmt);
     }
     private BooleanExpression seqEq(int seq) {
-        return 0 < seq ? mydataOutgoing.seq.eq(seq) : null;
+        return mydataOutgoing.seq.eq(seq);
     }
 }
