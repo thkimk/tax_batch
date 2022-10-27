@@ -1,6 +1,5 @@
 package com.hanwha.tax.batch.mydata.repository.impl;
 
-import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.entity.MydataIncome;
 import com.hanwha.tax.batch.mydata.repository.MydataIncomeCustomRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -28,31 +27,31 @@ public class MydataIncomeCustomRepositoryImpl implements MydataIncomeCustomRepos
     }
 
     private BooleanExpression custIdEq(String custId) {
-        return mydataIncome.custId.eq(custId);
+        return custId != null ? mydataIncome.custId.eq(custId) : mydataIncome.custId.isNull();
     }
     private BooleanExpression orgCodeEq(String orgCode) {
-        return mydataIncome.orgCode.eq(orgCode);
+        return orgCode != null ? mydataIncome.orgCode.eq(orgCode) : mydataIncome.orgCode.isNull();
     }
     private BooleanExpression accountNumEq(String accountNum) {
-        return mydataIncome.accountNum.eq(accountNum);
+        return accountNum != null ? mydataIncome.accountNum.eq(accountNum) : mydataIncome.accountNum.isNull();
     }
     private BooleanExpression seqNoEq(String seqNo) {
-        return mydataIncome.seqNo.eq(seqNo);
+        return seqNo != null ? mydataIncome.seqNo.eq(seqNo) : mydataIncome.seqNo.isNull();
     }
     private BooleanExpression currencyCodeEq(String currencyCode) {
-        return mydataIncome.currencyCode.eq(currencyCode);
+        return currencyCode != null ? mydataIncome.currencyCode.eq(currencyCode) : mydataIncome.currencyCode.isNull();
     }
     private BooleanExpression transDtimeEq(String transDtime) {
-        return mydataIncome.transDtime.eq(transDtime);
+        return transDtime != null ? mydataIncome.transDtime.eq(transDtime) : mydataIncome.transDtime.isNull();
     }
     private BooleanExpression transNoEq(String transNo) {
-        return mydataIncome.transNo.eq(transNo);
+        return transNo != null ? mydataIncome.transNo.eq(transNo) : mydataIncome.transNo.isNull();
     }
     private BooleanExpression transTypeEq(String transType) {
-        return mydataIncome.transType.eq(transType);
+        return transType != null ? mydataIncome.transType.eq(transType) : mydataIncome.transType.isNull();
     }
     private BooleanExpression transClassEq(String transClass) {
-        return mydataIncome.transClass.eq(transClass);
+        return transClass != null ? mydataIncome.transClass.eq(transClass) : mydataIncome.transClass.isNull();
     }
     private BooleanExpression transAmtEq(long transAmt) {
         return mydataIncome.transAmt.eq(transAmt);
@@ -61,6 +60,6 @@ public class MydataIncomeCustomRepositoryImpl implements MydataIncomeCustomRepos
         return mydataIncome.balanceAmt.eq(balanceAmt);
     }
     private BooleanExpression seqEq(Integer seq) {
-        return mydataIncome.seq.eq(seq);
+        return seq != null ? mydataIncome.seq.eq(seq) : null;
     }
 }

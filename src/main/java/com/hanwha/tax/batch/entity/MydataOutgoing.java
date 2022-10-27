@@ -92,7 +92,6 @@ public class MydataOutgoing {
 		this.custId = custId;
 		this.orgCode = card.get정보제공자_기관코드();
 		this.cardId = card.get카드식별자();
-		this.seq = Utils.isEmpty(card.get순번_랭크()) ? 0 : Integer.parseInt(card.get순번_랭크());
 		this.payType = card.get사용구분_코드();
 		this.status = card.get결제상태_코드();
 		this.transDtime = Utils.formatDate(card.get정정일시(),"yyyy-MM-dd HH:mm:ss");

@@ -267,8 +267,9 @@ public class MydataService {
             mydataIncome.setCreateDt(listMydataIncome.get(0).getCreateDt());
             mydataIncome.setUpdateDt(Utils.getCurrentDateTime());
 
-            // 쿠콘 원본데이터인 경우 수입여부, 3.3프로 포함여부 항목 세팅
+            // 쿠콘 원본데이터인 경우 쿠콘순번, 수입여부, 3.3프로 포함여부 항목 세팅
             if (isOrigin) {
+                mydataIncome.setSeq(listMydataIncome.get(0).getSeq());
                 mydataIncome.setIsIncome(listMydataIncome.get(0).getIsIncome());
                 mydataIncome.setIs33(listMydataIncome.get(0).getIs33());
             }
@@ -298,8 +299,9 @@ public class MydataService {
             mydataOutgoing.setCreateDt(listMydataOutgoing.get(0).getCreateDt());
             mydataOutgoing.setUpdateDt(Utils.getCurrentDateTime());
 
-            // 쿠콘 원본데이터인 경우 카테고리 항목 세팅
+            // 쿠콘 원본데이터인 경우 쿠콘순번, 카테고리 항목 세팅
             if (isOrigin) {
+                mydataOutgoing.setSeq(listMydataOutgoing.get(0).getSeq());
                 mydataOutgoing.setCategory(listMydataOutgoing.get(0).getCategory());
             }
         }

@@ -29,33 +29,33 @@ public class MydataOutgoingCustomRepositoryImpl implements MydataOutgoingCustomR
     }
 
     private BooleanExpression custIdEq(String custId) {
-        return mydataOutgoing.custId.eq(custId);
+        return custId != null ? mydataOutgoing.custId.eq(custId) : mydataOutgoing.custId.isNull();
     }
     private BooleanExpression orgCodeEq(String orgCode) {
-        return mydataOutgoing.orgCode.eq(orgCode);
+        return orgCode != null ? mydataOutgoing.orgCode.eq(orgCode) : mydataOutgoing.orgCode.isNull();
     }
     private BooleanExpression cardIdEq(String cardId) {
-        return mydataOutgoing.cardId.eq(cardId);
+        return cardId != null ? mydataOutgoing.cardId.eq(cardId) : mydataOutgoing.cardId.isNull();
     }
     private BooleanExpression apprDtimeEq(String apprDtime) {
-        return mydataOutgoing.apprDtime.eq(apprDtime);
+        return apprDtime != null ? mydataOutgoing.apprDtime.eq(apprDtime) : mydataOutgoing.apprDtime.isNull();
     }
     private BooleanExpression apprNumEq(String apprNum) {
-        return mydataOutgoing.apprNum.eq(apprNum);
+        return apprNum != null ? mydataOutgoing.apprNum.eq(apprNum) : mydataOutgoing.apprNum.isNull();
     }
     private BooleanExpression statusEq(String status) {
-        return mydataOutgoing.status.eq(status);
+        return status != null ? mydataOutgoing.status.eq(status) : mydataOutgoing.status.isNull();
     }
     private BooleanExpression transDtimeEq(String transDtime) {
-        return mydataOutgoing.transDtime.eq(transDtime);
+        return transDtime != null ? mydataOutgoing.transDtime.eq(transDtime) : mydataOutgoing.transDtime.isNull();
     }
     private BooleanExpression payTypeEq(String payType) {
-        return mydataOutgoing.payType.eq(payType);
+        return payType != null ? mydataOutgoing.payType.eq(payType) : mydataOutgoing.payType.isNull();
     }
     private BooleanExpression apprAmtEq(long apprAmt) {
         return mydataOutgoing.apprAmt.eq(apprAmt);
     }
-    private BooleanExpression seqEq(int seq) {
-        return mydataOutgoing.seq.eq(seq);
+    private BooleanExpression seqEq(Integer seq) {
+        return seq != null ? mydataOutgoing.seq.eq(seq) : null;
     }
 }

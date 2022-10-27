@@ -67,7 +67,6 @@ public class MydataIncome {
 		this.seqNo = bank.get회차번호();
 		this.transDtime = Utils.formatDate(bank.get거래일시(),"yyyy-MM-dd HH:mm:ss");
 		this.transNo = bank.get거래번호();
-		this.seq = Utils.isEmpty(bank.get순번_랭크()) ? 0 : Integer.parseInt(bank.get순번_랭크());
 		this.transAmt = (long) Math.floor(Float.parseFloat(bank.get거래금액()));
 		this.balanceAmt = (long) Math.floor(Float.parseFloat(bank.get거래후잔액()));
 		this.transType = bank.get거래유형_코드();
