@@ -256,6 +256,25 @@ public class QuartzConfiguration {
 		return trigger;
 	}
 
+	@Bean(name="testJobDetail")
+	public JobDetailFactoryBean testJobDetail() {
+		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+		jobDetailFactory.setJobClass(TestJob.class);
+		jobDetailFactory.setDescription("test");
+		jobDetailFactory.setDurability(true);
+		return jobDetailFactory;
+	}
+
+	@Bean(name="testTrigger")
+	public CronTriggerFactoryBean testTrigger(JobDetail testJobDetail) {
+		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
+		trigger.setGroup(TRIGGER_GROUP_NAME);
+		trigger.setCronExpression(deductTransferCronExp);
+		trigger.setJobDetail(testJobDetail);
+
+		return trigger;
+	}
+
 
 	@Bean
 	public SpringBeanJobFactory springBeanJobFactory() {

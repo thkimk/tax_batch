@@ -23,30 +23,18 @@ public class MydataJob extends BaseJob {
 
 		String yesterday = Utils.getYesterday();
 
-//		log.info("▶︎▶︎▶ 마이데이터 은행(원본) 확인");
-//		mydataService.procMydataInfo(BANK_FILE, yesterday);			// 은행(원본) 파일 확인
-//		log.info("▶︎▶︎▶ 마이데이터 카드(원본) 확인");
-//		mydataService.procMydataInfo(CARD_FILE, yesterday);			// 카드(원본) 파일 확인
-//
-//		log.info("▶︎▶︎▶ 마이데이터 은행(수입) 확인");
-//		mydataService.procMydataInfo(BANK_TRANS_FILE, yesterday);	// 은행(수입) 파일 확인
-//		log.info("▶︎▶︎▶ 마이데이터 카드(경비) 확인");
-//		mydataService.procMydataInfo(CARD_APPR_FILE, yesterday);	// 카드(경비) 파일 확인
+		log.info("▶︎▶︎▶ 마이데이터 은행(원본) 확인");
+		mydataService.procMydataInfo(BANK_FILE, yesterday);			// 은행(원본) 파일 확인
+		log.info("▶︎▶︎▶ 마이데이터 카드(원본) 확인");
+		mydataService.procMydataInfo(CARD_FILE, yesterday);			// 카드(원본) 파일 확인
+
+		log.info("▶︎▶︎▶ 마이데이터 은행(수입) 확인");
+		mydataService.procMydataInfo(BANK_TRANS_FILE, yesterday);	// 은행(수입) 파일 확인
+		log.info("▶︎▶︎▶ 마이데이터 카드(경비) 확인");
+		mydataService.procMydataInfo(CARD_APPR_FILE, yesterday);	// 카드(경비) 파일 확인
 
 		log.info("▶︎▶︎▶ 마이데이터 제3자 제공동의 확인");
 		mydataService.procMydataInfo(THIRDPARTY_FILE, yesterday);	// 제3자 제공동의 파일 확인
-
-		for (int i = 20221023 ; i < Integer.parseInt(yesterday); i++) {
-			log.info("▶︎▶︎▶ 마이데이터 은행(원본) 확인");
-			mydataService.procMydataInfo(BANK_FILE, String.valueOf(i));			// 은행(원본) 파일 확인
-			log.info("▶︎▶︎▶ 마이데이터 카드(원본) 확인");
-			mydataService.procMydataInfo(CARD_FILE, String.valueOf(i));			// 카드(원본) 파일 확인
-
-			log.info("▶︎▶︎▶ 마이데이터 은행(수입) 확인");
-			mydataService.procMydataInfo(BANK_TRANS_FILE, String.valueOf(i));	// 은행(수입) 파일 확인
-			log.info("▶︎▶︎▶ 마이데이터 카드(경비) 확인");
-			mydataService.procMydataInfo(CARD_APPR_FILE, String.valueOf(i));	// 카드(경비) 파일 확인
-		}
 
 		log.info("============= 마이데이터 배치 분석 QUARTZ 종료 [{}] =============", Utils.getCurrentDateTime());
 	}
