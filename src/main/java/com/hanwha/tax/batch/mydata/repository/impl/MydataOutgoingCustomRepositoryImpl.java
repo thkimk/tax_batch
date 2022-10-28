@@ -56,6 +56,6 @@ public class MydataOutgoingCustomRepositoryImpl implements MydataOutgoingCustomR
         return mydataOutgoing.apprAmt.eq(apprAmt);
     }
     private BooleanExpression seqEq(Integer seq) {
-        return seq != null ? mydataOutgoing.seq.eq(seq) : null;
+        return seq != null ? mydataOutgoing.seq.eq(seq) : mydataOutgoing.seq.isNull();
     }
 }

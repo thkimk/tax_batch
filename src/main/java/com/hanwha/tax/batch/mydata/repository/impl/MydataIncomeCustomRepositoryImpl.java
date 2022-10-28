@@ -60,6 +60,6 @@ public class MydataIncomeCustomRepositoryImpl implements MydataIncomeCustomRepos
         return mydataIncome.balanceAmt.eq(balanceAmt);
     }
     private BooleanExpression seqEq(Integer seq) {
-        return seq != null ? mydataIncome.seq.eq(seq) : null;
+        return seq != null ? mydataIncome.seq.eq(seq) : mydataIncome.seq.isNull();
     }
 }

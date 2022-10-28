@@ -3,12 +3,9 @@ package com.hanwha.tax.batch.mydata.service;
 import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.auth.service.AuthService;
 import com.hanwha.tax.batch.cust.service.CustService;
-import com.hanwha.tax.batch.entity.Cust;
-import com.hanwha.tax.batch.entity.MydataIncome;
-import com.hanwha.tax.batch.entity.MydataOutgoing;
+import com.hanwha.tax.batch.entity.*;
 import com.hanwha.tax.batch.mydata.model.*;
-import com.hanwha.tax.batch.mydata.repository.MydataIncomeRepository;
-import com.hanwha.tax.batch.mydata.repository.MydataOutgoingRepository;
+import com.hanwha.tax.batch.mydata.repository.*;
 import com.hanwha.tax.batch.tax.service.CalcTax;
 import com.hanwha.tax.batch.tax.service.TaxService;
 import com.hanwha.tax.batch.total.service.TotalService;
@@ -39,6 +36,69 @@ public class MydataService {
 
     @Autowired
     MydataOutgoingRepository mydataOutgoingRepository;
+
+    @Autowired
+    MydataBankBa01Repository mydataBankBa01Repository;
+
+    @Autowired
+    MydataBankBa02Repository mydataBankBa02Repository;
+
+    @Autowired
+    MydataBankBa03Repository mydataBankBa03Repository;
+
+    @Autowired
+    MydataBankBa04Repository mydataBankBa04Repository;
+
+    @Autowired
+    MydataBankBa11Repository mydataBankBa11Repository;
+
+    @Autowired
+    MydataBankBa12Repository mydataBankBa12Repository;
+
+    @Autowired
+    MydataBankBa13Repository mydataBankBa13Repository;
+
+    @Autowired
+    MydataBankBa21Repository mydataBankBa21Repository;
+
+    @Autowired
+    MydataBankBa22Repository mydataBankBa22Repository;
+
+    @Autowired
+    MydataBankBa23Repository mydataBankBa23Repository;
+
+    @Autowired
+    MydataCardCd01Repository mydataCardCd01Repository;
+
+    @Autowired
+    MydataCardCd11Repository mydataCardCd11Repository;
+
+    @Autowired
+    MydataCardCd21Repository mydataCardCd21Repository;
+
+    @Autowired
+    MydataCardCd22Repository mydataCardCd22Repository;
+
+    @Autowired
+    MydataCardCd23Repository mydataCardCd23Repository;
+
+    @Autowired
+    MydataCardCd24Repository mydataCardCd24Repository;
+
+    @Autowired
+    MydataCardCd03Repository mydataCardCd03Repository;
+
+    @Autowired
+    MydataCardCd04Repository mydataCardCd04Repository;
+
+    @Autowired
+    MydataCardCd31Repository mydataCardCd31Repository;
+
+    @Autowired
+    MydataCardCd32Repository mydataCardCd32Repository;
+
+    @Autowired
+    MydataCardCd33Repository mydataCardCd33Repository;
 
     @Autowired
     AuthService authService;
@@ -311,11 +371,52 @@ public class MydataService {
     }
 
     /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (은행(원본) : 은행 계좌 목록)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataBankBA01(String modelName, String row) {
+        // 은행(원본) : 은행 계좌 목록 저장
+        if (mydataBankBa01Repository.save(new MydataBankBa01(row)) == null) {
+            log.error("은행(원본) : 은행 계좌 목록 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (은행(원본) : 은행 수신계좌 기본정보)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataBankBA02(String modelName, String row) {
+        // 은행(원본) : 은행 수신계좌 기본정보 저장
+        if (mydataBankBa02Repository.save(new MydataBankBa02(row)) == null) {
+            log.error("은행(원본) : 은행 수신계좌 기본정보 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (은행(원본) : 은행 수신계좌 추가정보)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataBankBA03(String modelName, String row) {
+        // 은행(원본) : 은행 수신계좌 추가정보 저장
+        if (mydataBankBa03Repository.save(new MydataBankBa03(row)) == null) {
+            log.error("은행(원본) : 은행 수신계좌 추가정보 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
      * 마이데이터 파일 ROW 별 파싱 및 저장 (은행(원본) : 은행 수신 계좌 거래내역)
      * @param modelName
      * @param row
      */
     private void saveMydataBankBA04(String modelName, String row) {
+        // 은행(원본) : 은행 수신 계좌 거래내역 저장
+        if (mydataBankBa04Repository.save(new MydataBankBa04(row)) == null) {
+            log.error("은행(원본) : 은행 수신 계좌 거래내역 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+
         // 마이데이터 은행(원본) 클래스 생성
         BankBA04 bank = (BankBA04) getMydataObjByName(modelName);
         if (bank == null) {
@@ -342,11 +443,160 @@ public class MydataService {
     }
 
     /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (은행(원본) : 은행 투자 계좌 기본정보)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataBankBA11(String modelName, String row) {
+        // 은행(원본) : 은행 투자 계좌 기본정보 저장
+        if (mydataBankBa11Repository.save(new MydataBankBa11(row)) == null) {
+            log.error("은행(원본) : 은행 투자 계좌 기본정보 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (은행(원본) : 은행 투자 계좌 상세정보)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataBankBA12(String modelName, String row) {
+        // 은행(원본) : 은행 투자 계좌 상세정보 저장
+        if (mydataBankBa12Repository.save(new MydataBankBa12(row)) == null) {
+            log.error("은행(원본) : 은행 투자 계좌 상세정보 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (은행(원본) : 은행 투자 계좌 거래내역)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataBankBA13(String modelName, String row) {
+        // 은행(원본) : 은행 투자 계좌 거래내역 저장
+        if (mydataBankBa13Repository.save(new MydataBankBa13(row)) == null) {
+            log.error("은행(원본) : 은행 투자 계좌 거래내역 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (은행(원본) : 은행 대출 계좌 기본정보)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataBankBA21(String modelName, String row) {
+        // 은행(원본) : 은행 대출 계좌 기본정보 저장
+        if (mydataBankBa21Repository.save(new MydataBankBa21(row)) == null) {
+            log.error("은행(원본) : 은행 대출 계좌 기본정보 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (은행(원본) : 은행 대출 계좌 추가정보)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataBankBA22(String modelName, String row) {
+        // 은행(원본) : 은행 대출 계좌 추가정보 저장
+        if (mydataBankBa22Repository.save(new MydataBankBa22(row)) == null) {
+            log.error("은행(원본) : 은행 대출 계좌 추가정보 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (은행(원본) : 은행 대출 계좌 거래내역)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataBankBA23(String modelName, String row) {
+        // 은행(원본) : 은행 대출 계좌 거래내역 저장
+        if (mydataBankBa23Repository.save(new MydataBankBa23(row)) == null) {
+            log.error("은행(원본) : 은행 대출 계좌 거래내역 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (카드(원본) : 카드 목록)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataCardCD01(String modelName, String row) {
+        // 카드(원본) : 카드 목록 저장
+        if (mydataCardCd01Repository.save(new MydataCardCd01(row)) == null) {
+            log.error("카드(원본) : 카드 목록 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (카드(원본) : 포인트 정보)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataCardCD11(String modelName, String row) {
+        // 카드(원본) : 포인트 정보 저장
+        if (mydataCardCd11Repository.save(new MydataCardCd11(row)) == null) {
+            log.error("카드(원본) : 포인트 정보 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (카드(원본) : 청구 기본정보)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataCardCD21(String modelName, String row) {
+        // 카드(원본) : 청구 기본정보 저장
+        if (mydataCardCd21Repository.save(new MydataCardCd21(row)) == null) {
+            log.error("카드(원본) : 청구 기본정보 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (카드(원본) : 청구 추가정보)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataCardCD22(String modelName, String row) {
+        // 카드(원본) : 청구 추가정보 저장
+        if (mydataCardCd22Repository.save(new MydataCardCd22(row)) == null) {
+            log.error("카드(원본) : 청구 추가정보 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (카드(원본) : 결제정보)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataCardCD23(String modelName, String row) {
+        // 카드(원본) : 결제정보 저장
+        if (mydataCardCd23Repository.save(new MydataCardCd23(row)) == null) {
+            log.error("카드(원본) : 결제정보 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (카드(원본) : 리볼빙 정보)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataCardCD24(String modelName, String row) {
+        // 카드(원본) : 리볼빙 정보 저장
+        if (mydataCardCd24Repository.save(new MydataCardCd24(row)) == null) {
+            log.error("카드(원본) : 리볼빙 정보 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
      * 마이데이터 파일 ROW 별 파싱 및 저장 (카드(원본) : 국내 승인내역)
      * @param modelName
      * @param row
      */
     private void saveMydataCardCD03(String modelName, String row) {
+        // 카드(원본) : 국내 승인내역 저장
+        if (mydataCardCd03Repository.save(new MydataCardCd03(row)) == null) {
+            log.error("카드(원본) : 국내 승인내역 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+
         // 마이데이터 카드(원본) 클래스 생성
         CardCD03 card = (CardCD03) getMydataObjByName(modelName);
         if (card == null) {
@@ -370,6 +620,54 @@ public class MydataService {
 
         // 고객정보상세 자산변경일시 업데이트
         custService.updateCustMydataDt(custId);
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (카드(원본) : 해외 승인내역)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataCardCD04(String modelName, String row) {
+        // 카드(원본) : 해외 승인내역 저장
+        if (mydataCardCd04Repository.save(new MydataCardCd04(row)) == null) {
+            log.error("카드(원본) : 해외 승인내역 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (카드(원본) : 대출상품 목록)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataCardCD31(String modelName, String row) {
+        // 카드(원본) : 대출상품 목록 저장
+        if (mydataCardCd31Repository.save(new MydataCardCd31(row)) == null) {
+            log.error("카드(원본) : 대출상품 목록 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (카드(원본) : 단기대출 정보)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataCardCD32(String modelName, String row) {
+        // 카드(원본) : 단기대출 정보 저장
+        if (mydataCardCd32Repository.save(new MydataCardCd32(row)) == null) {
+            log.error("카드(원본) : 단기대출 정보 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (카드(원본) : 장기대출 정보)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataCardCD33(String modelName, String row) {
+        // 카드(원본) : 장기대출 정보 저장
+        if (mydataCardCd33Repository.save(new MydataCardCd33(row)) == null) {
+            log.error("카드(원본) : 장기대출 정보 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
     }
 
     /**
