@@ -25,7 +25,7 @@ import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import static com.hanwha.tax.batch.Constants.*;
+import static com.hanwha.tax.batch.Constants.COOCON_FILE_SFTP_PATH;
 
 @Slf4j
 @Service("mydataService")
@@ -310,29 +310,48 @@ public class MydataService {
     /**
      * 마이데이터 수입 정보 저장
      * @param mydataIncome
-     * @param isOrigin
      * @return
      */
-    private MydataIncome saveMydataIncome(MydataIncome mydataIncome, boolean isOrigin) {
-        // 마이데이터 수입 정보 조회
-        List<MydataIncome> listMydataIncome = mydataIncomeRepository.findByDataPk(mydataIncome);
+    public MydataIncome saveMydataIncome(MydataIncome mydataIncome) {
+        Integer seq = mydataIncome.getSeq();
 
-        if (1 < listMydataIncome.size()) {
-            log.error("마이데이터 수입 정보가 올바르지 않습니다.\n[{}]", mydataIncome.toString());
+        // 마이데이터 수입 원본 데이터 조회
+        mydataIncome.setSeq(null);
+        List<MydataIncome> mydataIncomeOri = mydataIncomeRepository.findByDataPk(mydataIncome);
+
+        // 마이데이터 수입 중복 데이터 조회
+        mydataIncome.setSeq(seq);
+        List<MydataIncome> mydataIncomePk = mydataIncomeRepository.findByDataPk(mydataIncome);
+
+//        List<MydataIncome> mydataIncomeOri = new ArrayList<>();     // 원본데이터
+//        List<MydataIncome> mydataIncomePk = new ArrayList<>();      // 기존데이터
+//        for (MydataIncome mi : listMydataIncome) {
+//            if (mi.getSeq() == null)   mydataIncomeOri.add(mi);
+//            if (mi.getSeq() == seq)  mydataIncomePk.add(mi);
+//        }
+
+        if (1 < mydataIncomeOri.size()) {
+            log.error("※※※ 마이데이터 수입 원본 데이터가 올바르지 않습니다.\n[{}]", mydataIncome.toString());
             return null;
         }
 
-        if (0 < listMydataIncome.size()) {
-            mydataIncome.setId(listMydataIncome.get(0).getId());
-            mydataIncome.setCreateDt(listMydataIncome.get(0).getCreateDt());
-            mydataIncome.setUpdateDt(Utils.getCurrentDateTime());
+        if (1 < mydataIncomePk.size()) {
+            log.error("※※※ 마이데이터 수입 중복 데이터가 존재합니다.\n[{}]", mydataIncome.toString());
+            return null;
+        }
 
-            // 쿠콘 원본데이터인 경우 쿠콘순번, 수입여부, 3.3프로 포함여부 항목 세팅
-            if (isOrigin) {
-                mydataIncome.setSeq(listMydataIncome.get(0).getSeq());
-                mydataIncome.setIsIncome(listMydataIncome.get(0).getIsIncome());
-                mydataIncome.setIs33(listMydataIncome.get(0).getIs33());
-            }
+        // 기존 매핑된 마이데이터 이력이 있고 등록할 데이터가 원본 데이터인 경우 skip
+        if (mydataIncomeOri.size() == 0 && 0 < mydataIncomePk.size()
+                && mydataIncomePk.get(0).getSeq() == null) {
+            log.info("▶▶▶︎ 기존 데이터가 존재하여 원본 데이터 저장하지 않습니다.\n[{}]", mydataIncome.toString());
+            return null;
+        }
+
+        // 기존 정보가 존재하는 경우 변경되지 않는 정보 세팅
+        if (0 < mydataIncomePk.size()) {
+            mydataIncome.setId(mydataIncomePk.get(0).getId());
+            mydataIncome.setCreateDt(mydataIncomePk.get(0).getCreateDt());
+            mydataIncome.setUpdateDt(Utils.getCurrentDateTime());
         }
 
         // 마이데이터 수입 테이블 저장
@@ -342,28 +361,41 @@ public class MydataService {
     /**
      * 마이데이터 경비 정보 저장
      * @param mydataOutgoing
-     * @param isOrigin
      * @return
      */
-    private MydataOutgoing saveMydataOutgoing(MydataOutgoing mydataOutgoing, boolean isOrigin) {
-        // 마이데이터 경비 정보 조회
-        List<MydataOutgoing> listMydataOutgoing = mydataOutgoingRepository.findByDataPk(mydataOutgoing);
+    private MydataOutgoing saveMydataOutgoing(MydataOutgoing mydataOutgoing) {
+        Integer seq = mydataOutgoing.getSeq();
 
-        if (1 < listMydataOutgoing.size()) {
-            log.error("마이데이터 경비 정보가 올바르지 않습니다.\n[{}]", mydataOutgoing.toString());
+        // 마이데이터 경비 원본 데이터 조회
+        mydataOutgoing.setSeq(null);
+        List<MydataOutgoing> mydataOutgoingOri = mydataOutgoingRepository.findByDataPk(mydataOutgoing);
+
+        // 마이데이터 경비 중복 데이터 조회
+        mydataOutgoing.setSeq(seq);
+        List<MydataOutgoing> mydataOutgoingPk = mydataOutgoingRepository.findByDataPk(mydataOutgoing);
+
+        if (1 < mydataOutgoingOri.size()) {
+            log.error("※※※ 마이데이터 경비 원본 데이터가 올바르지 않습니다.\n[{}]", mydataOutgoing.toString());
             return null;
         }
 
-        if (0 < listMydataOutgoing.size()) {
-            mydataOutgoing.setId(listMydataOutgoing.get(0).getId());
-            mydataOutgoing.setCreateDt(listMydataOutgoing.get(0).getCreateDt());
-            mydataOutgoing.setUpdateDt(Utils.getCurrentDateTime());
+        if (1 < mydataOutgoingPk.size()) {
+            log.error("※※※ 마이데이터 경비 중복 데이터가 존재합니다.\n[{}]", mydataOutgoing.toString());
+            return null;
+        }
 
-            // 쿠콘 원본데이터인 경우 쿠콘순번, 카테고리 항목 세팅
-            if (isOrigin) {
-                mydataOutgoing.setSeq(listMydataOutgoing.get(0).getSeq());
-                mydataOutgoing.setCategory(listMydataOutgoing.get(0).getCategory());
-            }
+        // 기존 매핑된 마이데이터 이력이 있고 등록할 데이터가 원본 데이터인 경우 skip
+        if (mydataOutgoingOri.size() == 0 && 0 < mydataOutgoingPk.size()
+                && mydataOutgoingPk.get(0).getSeq() == null) {
+            log.info("▶▶▶︎ 기존 데이터가 존재하여 원본 데이터 저장하지 않습니다.\n[{}]", mydataOutgoing.toString());
+            return null;
+        }
+
+        // 기존 정보가 존재하는 경우 변경되지 않는 정보 세팅
+        if (0 < mydataOutgoingPk.size()) {
+            mydataOutgoing.setId(mydataOutgoingPk.get(0).getId());
+            mydataOutgoing.setCreateDt(mydataOutgoingPk.get(0).getCreateDt());
+            mydataOutgoing.setUpdateDt(Utils.getCurrentDateTime());
         }
 
         // 마이데이터 경비 테이블 저장
@@ -436,7 +468,7 @@ public class MydataService {
         }
 
         // 마이데이터 수입 정보 저장
-        saveMydataIncome(new MydataIncome().convertByBank(custId, bank), true);
+        saveMydataIncome(new MydataIncome().convertByBank(custId, bank));
 
         // 고객정보상세 자산변경일시 업데이트
         custService.updateCustMydataDt(custId);
@@ -616,7 +648,7 @@ public class MydataService {
         }
 
         // 마이데이터 경비 정보 저장
-        saveMydataOutgoing(new MydataOutgoing().convertByCard(custId, card), true);
+        saveMydataOutgoing(new MydataOutgoing().convertByCard(custId, card));
 
         // 고객정보상세 자산변경일시 업데이트
         custService.updateCustMydataDt(custId);
@@ -695,7 +727,7 @@ public class MydataService {
         }
 
         // 마이데이터 수입 정보 저장
-        saveMydataIncome(new MydataIncome().convertByBankTrans(custId, bankTrans), false);
+        saveMydataIncome(new MydataIncome().convertByBankTrans(custId, bankTrans));
 
         // 고객정보상세 자산변경일시 업데이트
         custService.updateCustMydataDt(custId);
@@ -726,7 +758,7 @@ public class MydataService {
         }
 
         // 마이데이터 경비 정보 저장
-        saveMydataOutgoing(new MydataOutgoing().convertByCardAppr(custId, cardAppr), false);
+        saveMydataOutgoing(new MydataOutgoing().convertByCardAppr(custId, cardAppr));
 
         // 고객정보상세 자산변경일시 업데이트
         custService.updateCustMydataDt(custId);

@@ -152,14 +152,14 @@ public class CalcTax {
         Long deductMe = 1500000L;
 
         // 장애인
-        if (custInfoDtl.getIsDisorder() == 'Y') deductMe += 2000000;
+        if (custInfoDtl.getIsDisorder() != null && custInfoDtl.getIsDisorder() == 'Y') deductMe += 2000000;
 
         // 경로우대자
         if (Utils.taxAge(custInfo.getBirth()) >= 70) deductMe += 1000000;
 
         // 한부모 공제 : 고객이 직접 체크한 값으로 계산
         boolean isFlag = false;
-        if (custInfoDtl.getIsSinParent() == 'Y') {
+        if (custInfoDtl.getIsSinParent() != null && custInfoDtl.getIsSinParent() == 'Y') {
             deductMe += 1000000;
             isFlag = true;
         }
@@ -169,7 +169,7 @@ public class CalcTax {
             if (custInfo.getGender() == 'F' && earning <= 30000000) {
                 if (CustFamily.existPartner(custFamilyList)) {
                     deductMe += 500000;
-                } else if (custInfoDtl.getIsHshld() == 'Y' && custFamilyList.size() > 0) {
+                } else if (custInfoDtl.getIsHshld() != null && custInfoDtl.getIsHshld() == 'Y' && custFamilyList.size() > 0) {
                     deductMe += 500000;
                 }
             }
