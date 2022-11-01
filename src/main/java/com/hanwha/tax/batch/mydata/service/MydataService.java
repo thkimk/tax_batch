@@ -346,7 +346,12 @@ public class MydataService {
         }
 
         // 기존 정보가 존재하는 경우 변경되지 않는 정보 세팅
-        if (0 < mydataIncomeOri.size() || 0 < mydataIncomePk.size()) {
+        if (0 < mydataIncomeOri.size()) {
+            mydataIncome.setId(mydataIncomeOri.get(0).getId());
+            mydataIncome.setCreateDt(mydataIncomeOri.get(0).getCreateDt());
+            mydataIncome.setUpdateDt(Utils.getCurrentDateTime());
+        }
+        if (0 < mydataIncomePk.size()) {
             mydataIncome.setId(mydataIncomePk.get(0).getId());
             mydataIncome.setCreateDt(mydataIncomePk.get(0).getCreateDt());
             mydataIncome.setUpdateDt(Utils.getCurrentDateTime());
@@ -377,21 +382,6 @@ public class MydataService {
             if (mo.getSeq() == seq)  mydataOutgoingPk.add(mo);
         }
 
-        log.info("==========================================================");
-        log.info("★★★ 쿠콘 총 내역 ★★★");
-        listMydataOutgoing.forEach(mo -> {
-            log.info("★★★ [{}]]", mo.toString());
-        });
-        log.info("★★★ 쿠콘 원본데이터 ★★★");
-        mydataOutgoingOri.forEach(ori -> {
-            log.info("★★★ [{}]]", ori.toString());
-        });
-        log.info("★★★ 쿠콘 단건데이터 ★★★");
-        mydataOutgoingPk.forEach(pk -> {
-            log.info("★★★ [{}]]", pk.toString());
-        });
-        log.info("==========================================================");
-
         if (1 < mydataOutgoingOri.size()) {
             log.error("※※※ 마이데이터 경비 원본 데이터가 올바르지 않습니다.\n[{}]", mydataOutgoing.toString());
             return null;
@@ -409,11 +399,33 @@ public class MydataService {
         }
 
         // 기존 정보가 존재하는 경우 변경되지 않는 정보 세팅
-        if (0 < mydataOutgoingOri.size() || 0 < mydataOutgoingPk.size()) {
+        if (0 < mydataOutgoingOri.size()) {
+            mydataOutgoing.setId(mydataOutgoingOri.get(0).getId());
+            mydataOutgoing.setCreateDt(mydataOutgoingOri.get(0).getCreateDt());
+            mydataOutgoing.setUpdateDt(Utils.getCurrentDateTime());
+        }
+        if (0 < mydataOutgoingPk.size()) {
             mydataOutgoing.setId(mydataOutgoingPk.get(0).getId());
             mydataOutgoing.setCreateDt(mydataOutgoingPk.get(0).getCreateDt());
             mydataOutgoing.setUpdateDt(Utils.getCurrentDateTime());
         }
+
+        log.info("==========================================================");
+        log.info("★★★ 쿠콘 총 내역 ★★★");
+        listMydataOutgoing.forEach(mo -> {
+            log.info("★★★ [{}]]", mo.toString());
+        });
+        log.info("★★★ 쿠콘 원본데이터 ★★★");
+        mydataOutgoingOri.forEach(ori -> {
+            log.info("★★★ [{}]]", ori.toString());
+        });
+        log.info("★★★ 쿠콘 단건데이터 ★★★");
+        mydataOutgoingPk.forEach(pk -> {
+            log.info("★★★ [{}]]", pk.toString());
+        });
+        log.info("★★★ 쿠콘 저장데이터 ★★★");
+        log.info("★★★ [{}]]", mydataOutgoing.toString());
+        log.info("==========================================================");
 
         // 마이데이터 경비 테이블 저장
         return mydataOutgoingRepository.save(mydataOutgoing);
