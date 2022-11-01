@@ -35,9 +35,13 @@ public class CustDeduct implements Serializable {
 	private Long   sedAmt;			// 중소기업창업투자 금액
 	private Long   iraAmt;			// 연금저출계좌보유 납입액
 	private Long   irpAmt;			// 퇴직연금 납입액
+	@Column(name="sed01_amt")
 	private Long   sed01Amt;		// 벤처투자조합 및 투자기구
+	@Column(name="sed02_amt")
 	private Long   sed02Amt;		// 벤처기업투자신탁 수익증권
+	@Column(name="sed03_amt")
 	private Long   sed03Amt;		// 개인투자조합
+	@Column(name="sed04_amt")
 	private Long   sed04Amt;		// 벤처기업 및 크라우드 펀딩
 	private String createDt;		// 등록일시
 	private String updateDt;		// 변경일시
