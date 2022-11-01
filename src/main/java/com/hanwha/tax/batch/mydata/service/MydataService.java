@@ -377,6 +377,21 @@ public class MydataService {
             if (mo.getSeq() == seq)  mydataOutgoingPk.add(mo);
         }
 
+        log.info("==========================================================");
+        log.info("★★★ 쿠콘 총 내역 ★★★");
+        listMydataOutgoing.forEach(mo -> {
+            log.info("★★★ [{}]]", mo.toString());
+        });
+        log.info("★★★ 쿠콘 원본데이터 ★★★");
+        mydataOutgoingOri.forEach(ori -> {
+            log.info("★★★ [{}]]", ori.toString());
+        });
+        log.info("★★★ 쿠콘 단건데이터 ★★★");
+        mydataOutgoingPk.forEach(pk -> {
+            log.info("★★★ [{}]]", pk.toString());
+        });
+        log.info("==========================================================");
+
         if (1 < mydataOutgoingOri.size()) {
             log.error("※※※ 마이데이터 경비 원본 데이터가 올바르지 않습니다.\n[{}]", mydataOutgoing.toString());
             return null;
