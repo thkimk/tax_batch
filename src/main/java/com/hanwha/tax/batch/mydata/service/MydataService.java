@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
@@ -317,18 +318,16 @@ public class MydataService {
 
         // 마이데이터 수입 원본 데이터 조회
         mydataIncome.setSeq(null);
-        List<MydataIncome> mydataIncomeOri = mydataIncomeRepository.findByDataPk(mydataIncome);
+        List<MydataIncome> listMydataIncome = mydataIncomeRepository.findByDataPk(mydataIncome);
 
-        // 마이데이터 수입 중복 데이터 조회
-        mydataIncome.setSeq(seq);
-        List<MydataIncome> mydataIncomePk = mydataIncomeRepository.findByDataPk(mydataIncome);
+        List<MydataIncome> mydataIncomeOri = new ArrayList<>();     // 원본데이터
+        List<MydataIncome> mydataIncomePk = new ArrayList<>();      // 기존데이터
 
-//        List<MydataIncome> mydataIncomeOri = new ArrayList<>();     // 원본데이터
-//        List<MydataIncome> mydataIncomePk = new ArrayList<>();      // 기존데이터
-//        for (MydataIncome mi : listMydataIncome) {
-//            if (mi.getSeq() == null)   mydataIncomeOri.add(mi);
-//            if (mi.getSeq() == seq)  mydataIncomePk.add(mi);
-//        }
+        // 마이데이터 수입 원본/단건 데이터 조회
+        for (MydataIncome mi : listMydataIncome) {
+            if (mi.getSeq() == null)   mydataIncomeOri.add(mi);
+            if (mi.getSeq() == seq)  mydataIncomePk.add(mi);
+        }
 
         if (1 < mydataIncomeOri.size()) {
             log.error("※※※ 마이데이터 수입 원본 데이터가 올바르지 않습니다.\n[{}]", mydataIncome.toString());
@@ -341,14 +340,13 @@ public class MydataService {
         }
 
         // 기존 매핑된 마이데이터 이력이 있고 등록할 데이터가 원본 데이터인 경우 skip
-        if (mydataIncomeOri.size() == 0 && 0 < mydataIncomePk.size()
-                && mydataIncomePk.get(0).getSeq() == null) {
+        if (0 < listMydataIncome.size() && mydataIncomeOri.size() == 0 && mydataIncomePk.size() == 0) {
             log.info("▶▶▶︎ 기존 데이터가 존재하여 원본 데이터 저장하지 않습니다.\n[{}]", mydataIncome.toString());
             return null;
         }
 
         // 기존 정보가 존재하는 경우 변경되지 않는 정보 세팅
-        if (0 < mydataIncomePk.size()) {
+        if (0 < mydataIncomeOri.size() || 0 < mydataIncomePk.size()) {
             mydataIncome.setId(mydataIncomePk.get(0).getId());
             mydataIncome.setCreateDt(mydataIncomePk.get(0).getCreateDt());
             mydataIncome.setUpdateDt(Utils.getCurrentDateTime());
@@ -366,13 +364,18 @@ public class MydataService {
     private MydataOutgoing saveMydataOutgoing(MydataOutgoing mydataOutgoing) {
         Integer seq = mydataOutgoing.getSeq();
 
-        // 마이데이터 경비 원본 데이터 조회
+        // 마이데이터 경비 내역 조회
         mydataOutgoing.setSeq(null);
-        List<MydataOutgoing> mydataOutgoingOri = mydataOutgoingRepository.findByDataPk(mydataOutgoing);
+        List<MydataOutgoing> listMydataOutgoing = mydataOutgoingRepository.findByDataPk(mydataOutgoing);
 
-        // 마이데이터 경비 중복 데이터 조회
-        mydataOutgoing.setSeq(seq);
-        List<MydataOutgoing> mydataOutgoingPk = mydataOutgoingRepository.findByDataPk(mydataOutgoing);
+        List<MydataOutgoing> mydataOutgoingOri = new ArrayList<>();     // 원본데이터
+        List<MydataOutgoing> mydataOutgoingPk = new ArrayList<>();      // 기존데이터
+
+        // 마이데이터 경비 원본/단건 데이터 조회
+        for (MydataOutgoing mo : listMydataOutgoing) {
+            if (mo.getSeq() == null)   mydataOutgoingOri.add(mo);
+            if (mo.getSeq() == seq)  mydataOutgoingPk.add(mo);
+        }
 
         if (1 < mydataOutgoingOri.size()) {
             log.error("※※※ 마이데이터 경비 원본 데이터가 올바르지 않습니다.\n[{}]", mydataOutgoing.toString());
@@ -385,14 +388,13 @@ public class MydataService {
         }
 
         // 기존 매핑된 마이데이터 이력이 있고 등록할 데이터가 원본 데이터인 경우 skip
-        if (mydataOutgoingOri.size() == 0 && 0 < mydataOutgoingPk.size()
-                && mydataOutgoingPk.get(0).getSeq() == null) {
+        if (0 < listMydataOutgoing.size() && mydataOutgoingOri.size() == 0 && mydataOutgoingPk.size() == 0) {
             log.info("▶▶▶︎ 기존 데이터가 존재하여 원본 데이터 저장하지 않습니다.\n[{}]", mydataOutgoing.toString());
             return null;
         }
 
         // 기존 정보가 존재하는 경우 변경되지 않는 정보 세팅
-        if (0 < mydataOutgoingPk.size()) {
+        if (0 < mydataOutgoingOri.size() || 0 < mydataOutgoingPk.size()) {
             mydataOutgoing.setId(mydataOutgoingPk.get(0).getId());
             mydataOutgoing.setCreateDt(mydataOutgoingPk.get(0).getCreateDt());
             mydataOutgoing.setUpdateDt(Utils.getCurrentDateTime());
