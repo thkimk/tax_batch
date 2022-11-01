@@ -410,23 +410,6 @@ public class MydataService {
             mydataOutgoing.setUpdateDt(Utils.getCurrentDateTime());
         }
 
-        log.info("==========================================================");
-        log.info("★★★ 쿠콘 총 내역 ★★★");
-        listMydataOutgoing.forEach(mo -> {
-            log.info("★★★ [{}]]", mo.toString());
-        });
-        log.info("★★★ 쿠콘 원본데이터 ★★★");
-        mydataOutgoingOri.forEach(ori -> {
-            log.info("★★★ [{}]]", ori.toString());
-        });
-        log.info("★★★ 쿠콘 단건데이터 ★★★");
-        mydataOutgoingPk.forEach(pk -> {
-            log.info("★★★ [{}]]", pk.toString());
-        });
-        log.info("★★★ 쿠콘 저장데이터 ★★★");
-        log.info("★★★ [{}]]", mydataOutgoing.toString());
-        log.info("==========================================================");
-
         // 마이데이터 경비 테이블 저장
         return mydataOutgoingRepository.save(mydataOutgoing);
     }
@@ -478,29 +461,29 @@ public class MydataService {
             log.error("은행(원본) : 은행 수신 계좌 거래내역 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
         }
 
-        // 마이데이터 은행(원본) 클래스 생성
-        BankBA04 bank = (BankBA04) getMydataObjByName(modelName);
-        if (bank == null) {
-            log.error("쿠콘 마이데이터 은행(원본) 수신 계좌 거래내역 클래스를 확인해 주시기 바랍니다.");
-            return;
-        }
-
-        // 마이데이터 은행(원본) 전문 파싱
-        bank.parseData(row);
-
-        // 고객정보 확인
-        String custId = authService.getCustIdByCi(bank.getCI());
-
-        if (Utils.isEmpty(custId)) {
-            log.error("CI 값에 해당하는 고객정보가 존재하지 않습니다. [{}]", bank.getCI());
-            return;
-        }
-
-        // 마이데이터 수입 정보 저장
-        saveMydataIncome(new MydataIncome().convertByBank(custId, bank));
-
-        // 고객정보상세 자산변경일시 업데이트
-        custService.updateCustMydataDt(custId);
+//        // 마이데이터 은행(원본) 클래스 생성
+//        BankBA04 bank = (BankBA04) getMydataObjByName(modelName);
+//        if (bank == null) {
+//            log.error("쿠콘 마이데이터 은행(원본) 수신 계좌 거래내역 클래스를 확인해 주시기 바랍니다.");
+//            return;
+//        }
+//
+//        // 마이데이터 은행(원본) 전문 파싱
+//        bank.parseData(row);
+//
+//        // 고객정보 확인
+//        String custId = authService.getCustIdByCi(bank.getCI());
+//
+//        if (Utils.isEmpty(custId)) {
+//            log.error("CI 값에 해당하는 고객정보가 존재하지 않습니다. [{}]", bank.getCI());
+//            return;
+//        }
+//
+//        // 마이데이터 수입 정보 저장
+//        saveMydataIncome(new MydataIncome().convertByBank(custId, bank));
+//
+//        // 고객정보상세 자산변경일시 업데이트
+//        custService.updateCustMydataDt(custId);
     }
 
     /**
@@ -658,29 +641,29 @@ public class MydataService {
             log.error("카드(원본) : 국내 승인내역 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
         }
 
-        // 마이데이터 카드(원본) 클래스 생성
-        CardCD03 card = (CardCD03) getMydataObjByName(modelName);
-        if (card == null) {
-            log.error("쿠콘 마이데이터 카드(원본) 국내 승인내역 클래스를 확인해 주시기 바랍니다.");
-            return;
-        }
-
-        // 마이데이터 카드(원본) 전문 파싱
-        card.parseData(row);
-
-        // 고객정보 확인
-        String custId = authService.getCustIdByCi(card.getCI());
-
-        if (Utils.isEmpty(custId)) {
-            log.error("CI 값에 해당하는 고객정보가 존재하지 않습니다. [{}]", card.getCI());
-            return;
-        }
-
-        // 마이데이터 경비 정보 저장
-        saveMydataOutgoing(new MydataOutgoing().convertByCard(custId, card));
-
-        // 고객정보상세 자산변경일시 업데이트
-        custService.updateCustMydataDt(custId);
+//        // 마이데이터 카드(원본) 클래스 생성
+//        CardCD03 card = (CardCD03) getMydataObjByName(modelName);
+//        if (card == null) {
+//            log.error("쿠콘 마이데이터 카드(원본) 국내 승인내역 클래스를 확인해 주시기 바랍니다.");
+//            return;
+//        }
+//
+//        // 마이데이터 카드(원본) 전문 파싱
+//        card.parseData(row);
+//
+//        // 고객정보 확인
+//        String custId = authService.getCustIdByCi(card.getCI());
+//
+//        if (Utils.isEmpty(custId)) {
+//            log.error("CI 값에 해당하는 고객정보가 존재하지 않습니다. [{}]", card.getCI());
+//            return;
+//        }
+//
+//        // 마이데이터 경비 정보 저장
+//        saveMydataOutgoing(new MydataOutgoing().convertByCard(custId, card));
+//
+//        // 고객정보상세 자산변경일시 업데이트
+//        custService.updateCustMydataDt(custId);
     }
 
     /**
