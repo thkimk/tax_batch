@@ -37,8 +37,8 @@ public interface TotalIncomeRepository extends JpaRepository<TotalIncome, Long> 
      * @param ymdBasic
      * @return
      */
-    @Query(value="select mi.id as fk, 'M' as flag_fk, mi.cust_id, YEAR(mi.trans_dtime) as `year`, MONTH(mi.trans_dtime) as `month`, mi.trans_amt as amount, CONCAT(mi.is_33,'') from mydata_income mi where mi.is_income = 'Y' and COALESCE(mi.update_dt, mi.create_dt) like CONCAT(:ymdBasic,'%') union all " +
-            "select bi.id as fk, 'B' as flag_fk, bi.cust_id, YEAR(bi.trans_dtime) as `year`, MONTH(bi.trans_dtime) as `month`, bi.trans_amt as amount, CONCAT(bi.is_33,'') from book_income bi where COALESCE(bi.update_dt, bi.create_dt) like CONCAT(:ymdBasic,'%')", nativeQuery=true)
+    @Query(value="select mi.id as fk, 'M' as flag_fk, mi.cust_id, YEAR(mi.trans_dtime) as `year`, MONTH(mi.trans_dtime) as `month`, mi.trans_amt as amount, CONCAT(mi.is_33,'') as is_33 from mydata_income mi where mi.is_income = 'Y' and COALESCE(mi.update_dt, mi.create_dt) like CONCAT(:ymdBasic,'%') union all " +
+            "select bi.id as fk, 'B' as flag_fk, bi.cust_id, YEAR(bi.trans_dtime) as `year`, MONTH(bi.trans_dtime) as `month`, bi.trans_amt as amount, CONCAT(bi.is_33,'') as is_33 from book_income bi where COALESCE(bi.update_dt, bi.create_dt) like CONCAT(:ymdBasic,'%')", nativeQuery=true)
     List<Map<String,String>> getTotalIncomeTarget(String ymdBasic);
 
     /**

@@ -382,6 +382,21 @@ public class MydataService {
             if (mo.getSeq() == seq)  mydataOutgoingPk.add(mo);
         }
 
+        log.info("========================================");
+        log.info("▶▶▶︎︎︎ total");
+        listMydataOutgoing.forEach(t -> {
+            log.info("▶▶▶︎︎︎ [{}]", t.toString());
+        });
+        log.info("▶▶▶︎︎︎ ori");
+        mydataOutgoingOri.forEach(ori -> {
+            log.info("▶▶▶︎︎︎ [{}]", ori.toString());
+        });
+        log.info("▶▶▶︎︎︎ pk");
+        mydataOutgoingPk.forEach(pk -> {
+            log.info("▶▶▶︎︎︎ [{}]", pk.toString());
+        });
+        log.info("========================================");
+
         if (1 < mydataOutgoingOri.size()) {
             log.error("※※※ 마이데이터 경비 원본 데이터가 올바르지 않습니다.\n[{}]", mydataOutgoing.toString());
             return null;
