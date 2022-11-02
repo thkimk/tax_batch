@@ -652,9 +652,9 @@ public class MydataService {
      */
     private void saveMydataCardCD03(String modelName, String row) {
         // 카드(원본) : 국내 승인내역 저장
-        if (mydataCardCd03Repository.save(new MydataCardCd03(row)) == null) {
-            log.error("카드(원본) : 국내 승인내역 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
-        }
+//        if (mydataCardCd03Repository.save(new MydataCardCd03(row)) == null) {
+//            log.error("카드(원본) : 국내 승인내역 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+//        }
 
         // 마이데이터 카드(원본) 클래스 생성
         CardCD03 card = (CardCD03) getMydataObjByName(modelName);
