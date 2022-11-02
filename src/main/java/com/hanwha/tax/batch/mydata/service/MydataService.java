@@ -382,21 +382,6 @@ public class MydataService {
             if (mo.getSeq() == seq)  mydataOutgoingPk.add(mo);
         }
 
-        log.info("========================================");
-        log.info("▶▶▶︎︎︎ total");
-        listMydataOutgoing.forEach(t -> {
-            log.info("▶▶▶︎︎︎ [{}]", t.toString());
-        });
-        log.info("▶▶▶︎︎︎ ori");
-        mydataOutgoingOri.forEach(ori -> {
-            log.info("▶▶▶︎︎︎ [{}]", ori.toString());
-        });
-        log.info("▶▶▶︎︎︎ pk");
-        mydataOutgoingPk.forEach(pk -> {
-            log.info("▶▶▶︎︎︎ [{}]", pk.toString());
-        });
-        log.info("========================================");
-
         if (1 < mydataOutgoingOri.size()) {
             log.error("※※※ 마이데이터 경비 원본 데이터가 올바르지 않습니다.\n[{}]", mydataOutgoing.toString());
             return null;
@@ -652,9 +637,9 @@ public class MydataService {
      */
     private void saveMydataCardCD03(String modelName, String row) {
         // 카드(원본) : 국내 승인내역 저장
-//        if (mydataCardCd03Repository.save(new MydataCardCd03(row)) == null) {
-//            log.error("카드(원본) : 국내 승인내역 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
-//        }
+        if (mydataCardCd03Repository.save(new MydataCardCd03(row)) == null) {
+            log.error("카드(원본) : 국내 승인내역 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+        }
 
         // 마이데이터 카드(원본) 클래스 생성
         CardCD03 card = (CardCD03) getMydataObjByName(modelName);
