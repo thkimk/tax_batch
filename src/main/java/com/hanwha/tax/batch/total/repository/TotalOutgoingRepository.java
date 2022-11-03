@@ -72,4 +72,13 @@ public interface TotalOutgoingRepository extends JpaRepository<TotalOutgoing, Lo
      */
     @Query(value="select SUM(tout.amount) from total_outgoing tout where tout.cust_id = :custId and tout.`year` = :year", nativeQuery=true)
     Long getTotalOutgoing(String custId, int year);
+
+    /**
+     * 전체(경비) 테이블 초기화
+     * @return
+     */
+    @Transactional
+    @Modifying
+    @Query(value="truncate table total_outgoing", nativeQuery = true)
+    int truncateTotalOutgoing();
 }

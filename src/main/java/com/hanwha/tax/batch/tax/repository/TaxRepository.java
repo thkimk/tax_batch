@@ -19,4 +19,13 @@ public interface TaxRepository extends JpaRepository<Tax, TaxId> {
     @Modifying
     @Query(value="delete from tax t where t.cust_id=:custId", nativeQuery = true)
     int deleteByCustId(String custId);
+
+    /**
+     * 소득세정보 일괄 삭제
+     * @return
+     */
+    @Transactional
+    @Modifying
+    @Query(value="delete from tax", nativeQuery = true)
+    int deleteTax();
 }

@@ -6,8 +6,11 @@ import com.hanwha.tax.batch.cust.service.CustService;
 import com.hanwha.tax.batch.entity.*;
 import com.hanwha.tax.batch.mydata.model.*;
 import com.hanwha.tax.batch.mydata.repository.*;
+import com.hanwha.tax.batch.tax.repository.TaxRepository;
 import com.hanwha.tax.batch.tax.service.CalcTax;
 import com.hanwha.tax.batch.tax.service.TaxService;
+import com.hanwha.tax.batch.total.repository.TotalIncomeRepository;
+import com.hanwha.tax.batch.total.repository.TotalOutgoingRepository;
 import com.hanwha.tax.batch.total.service.TotalService;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
@@ -100,6 +103,15 @@ public class MydataService {
 
     @Autowired
     MydataCardCd33Repository mydataCardCd33Repository;
+
+    @Autowired
+    TotalIncomeRepository totalIncomeRepository;
+
+    @Autowired
+    TotalOutgoingRepository totalOutgoingRepository;
+
+    @Autowired
+    TaxRepository taxRepository;
 
     @Autowired
     AuthService authService;
@@ -920,5 +932,75 @@ public class MydataService {
      */
     public List<MydataOutgoing> getMydataOutgoingByCardInfo(String orgCode, String cardId, String apprNum) {
         return mydataOutgoingRepository.findByOrgCodeAndCardIdAndApprNumOrderByTransDtimeAscSeqAsc(orgCode, cardId, apprNum);
+    }
+
+    public void resetMydata() {
+        // 은행(원본) 테이블 초기화
+        log.info("★★★ {}", mydataBankBa01Repository.findAll().size());
+        mydataBankBa01Repository.truncateBA01();
+        log.info("★★★ {}", mydataBankBa01Repository.findAll().size());
+//        mydataBankBa01Repository.truncateBA02();
+//        mydataBankBa01Repository.truncateBA03();
+//        mydataBankBa01Repository.truncateBA04();
+//        mydataBankBa01Repository.truncateBA11();
+//        mydataBankBa01Repository.truncateBA12();
+//        mydataBankBa01Repository.truncateBA13();
+//        mydataBankBa01Repository.truncateBA21();
+//        mydataBankBa01Repository.truncateBA22();
+//        mydataBankBa01Repository.truncateBA23();
+//        // 카드(원본) 테이블 초기화
+//        mydataCardCd01Repository.truncateCD01();
+//        mydataCardCd01Repository.truncateCD03();
+//        mydataCardCd01Repository.truncateCD04();
+//        mydataCardCd01Repository.truncateCD11();
+//        mydataCardCd01Repository.truncateCD21();
+//        mydataCardCd01Repository.truncateCD22();
+//        mydataCardCd01Repository.truncateCD23();
+//        mydataCardCd01Repository.truncateCD24();
+//        mydataCardCd01Repository.truncateCD31();
+//        mydataCardCd01Repository.truncateCD32();
+//        mydataCardCd01Repository.truncateCD33();
+//        // 은행(수입) 테이블 초기화
+//        mydataIncomeRepository.truncateMydataIncome();
+//        // 카드(경비) 테이블 초기화
+//        mydataOutgoingRepository.truncateMydataOutgoing();
+//        // total(수입) 테이블 초기화
+//        totalIncomeRepository.truncateTotalIncome();
+//        // total(경비) 테이블 초기화
+//        totalOutgoingRepository.truncateTotalOutgoing();
+//        // tax 정보 삭제
+//        taxRepository.deleteTax();
+    }
+
+    /**
+     * 은행(수입) 중복 내역 조회
+     * @return
+     */
+    public List<MydataIncome> getMydataIncomeDuplicate() {
+        return mydataIncomeRepository.getMydataIncomeDuplicate();
+    }
+
+    /**
+     * 카드(경비) 중복 내역 조회
+     * @return
+     */
+    public List<MydataOutgoing> getMydataOutgoingDuplicate() {
+        return mydataOutgoingRepository.getMydataOutgoingDuplicate();
+    }
+
+    /**
+     * 고객번호로 은행(수입) 내역 조회
+     * @return
+     */
+    public List<MydataIncome> getMydataIncomeByCustId(String custId) {
+        return mydataIncomeRepository.findByCustId(custId);
+    }
+
+    /**
+     * 고객번호로 카드(경비) 내역 조회
+     * @return
+     */
+    public List<MydataOutgoing> getMydataOutgoingByCustId(String custId) {
+        return mydataOutgoingRepository.findByCustId(custId);
     }
 }

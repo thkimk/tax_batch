@@ -19,4 +19,30 @@ public interface MydataIncomeRepository extends JpaRepository<MydataIncome, Long
     @Modifying
     @Query(value="delete from mydata_income mi where mi.cust_id=:custId", nativeQuery = true)
     int deleteByCustId(String custId);
+
+    /**
+     * 은행(수입) 테이블 초기화
+     * @return
+     */
+    @Transactional
+    @Modifying
+    @Query(value="truncate table mydata_income", nativeQuery = true)
+    int truncateMydataIncome();
+
+    /**
+     * 은행(수입) 중복내역 조회
+     * @return
+     */
+    @Query(value="select * from (" +
+            "select row_number() over(partition by cust_id, org_code, account_num, seq_no, trans_dtime, trans_no, trans_type, trans_class, currency_code, trans_amt, balance_amt) as rn, mi.* " +
+            "from mydata_income mi) tmp" +
+            "where tmp.rn != 1", nativeQuery=true)
+    List<MydataIncome> getMydataIncomeDuplicate();
+
+    /**
+     * 고객번호로 은행(수입) 내역 조회
+     * @param custId
+     * @return
+     */
+    List<MydataIncome> findByCustId(String custId);
 }

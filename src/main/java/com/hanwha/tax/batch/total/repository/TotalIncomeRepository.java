@@ -83,4 +83,13 @@ public interface TotalIncomeRepository extends JpaRepository<TotalIncome, Long> 
      */
     @Query(value="select * from total_income tin where tin.cust_id = :custId group by tin.cust_id, tin.`year`", nativeQuery=true)
     List<TotalIncome> getTotalIncomeByCustId(String custId);
+
+    /**
+     * 전체(수입) 테이블 초기화
+     * @return
+     */
+    @Transactional
+    @Modifying
+    @Query(value="truncate table total_income", nativeQuery = true)
+    int truncateTotalIncome();
 }
