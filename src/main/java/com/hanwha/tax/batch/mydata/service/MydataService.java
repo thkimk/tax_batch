@@ -936,9 +936,12 @@ public class MydataService {
 
     public void resetMydata() {
         // 은행(원본) 테이블 초기화
-        log.info("★★★ {}", mydataBankBa01Repository.findAll().size());
-        mydataBankBa01Repository.truncateBA01();
-        log.info("★★★ {}", mydataBankBa01Repository.findAll().size());
+        log.info("★★★ ba01 건수 : [{}]", mydataBankBa01Repository.findAll().size());
+        mydataBankBa01Repository.deleteBA01();
+        log.info("★★★ ba01 건수 : [{}]", mydataBankBa01Repository.findAll().size());
+        mydataBankBa01Repository.resetSequenceBA01();
+        mydataBankBa01Repository.checkSequenceBA01();
+        log.info("★★★ 시퀀스정보 : [{}]", mydataBankBa01Repository.checkSequenceBA01());
 //        mydataBankBa01Repository.truncateBA02();
 //        mydataBankBa01Repository.truncateBA03();
 //        mydataBankBa01Repository.truncateBA04();
