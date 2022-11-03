@@ -25,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -935,52 +936,78 @@ public class MydataService {
     }
 
     public void resetMydata() {
-        // 은행(원본) 테이블 초기화
-        log.info("★★★ ba01 건수 : [{}]", mydataBankBa01Repository.findAll().size());
+        // 은행(원본) 정보 삭제
         mydataBankBa01Repository.deleteBA01();
-        log.info("★★★ ba01 건수 : [{}]", mydataBankBa01Repository.findAll().size());
+        mydataBankBa01Repository.deleteBA02();
+        mydataBankBa01Repository.deleteBA03();
+        mydataBankBa01Repository.deleteBA04();
+        mydataBankBa01Repository.deleteBA11();
+        mydataBankBa01Repository.deleteBA12();
+        mydataBankBa01Repository.deleteBA13();
+        mydataBankBa01Repository.deleteBA21();
+        mydataBankBa01Repository.deleteBA22();
+        mydataBankBa01Repository.deleteBA23();
+        // 카드(원본) 정보 삭제
+        mydataCardCd01Repository.deleteCD01();
+        mydataCardCd01Repository.deleteCD03();
+        mydataCardCd01Repository.deleteCD04();
+        mydataCardCd01Repository.deleteCD11();
+        mydataCardCd01Repository.deleteCD21();
+        mydataCardCd01Repository.deleteCD22();
+        mydataCardCd01Repository.deleteCD23();
+        mydataCardCd01Repository.deleteCD24();
+        mydataCardCd01Repository.deleteCD31();
+        mydataCardCd01Repository.deleteCD32();
+        mydataCardCd01Repository.deleteCD33();
+        // 은행(수입) 정보 삭제
+        mydataIncomeRepository.deleteMydataIncome();
+        // 카드(경비) 정보 삭제
+        mydataOutgoingRepository.deleteMydataOutgoing();
+        // total(수입) 정보 삭제
+        totalIncomeRepository.deleteTotalIncome();
+        // total(경비) 정보 삭제
+        totalOutgoingRepository.deleteTotalOutgoing();
+        // tax 정보 삭제
+        taxRepository.deleteTax();
+
+        // 은행(원본) 시퀀스 초기화
         mydataBankBa01Repository.resetSequenceBA01();
-        mydataBankBa01Repository.checkSequenceBA01().forEach(m -> {
-            log.info("★★★ 시퀀스정보 : [{}]", m);
-        });
-//        mydataBankBa01Repository.truncateBA02();
-//        mydataBankBa01Repository.truncateBA03();
-//        mydataBankBa01Repository.truncateBA04();
-//        mydataBankBa01Repository.truncateBA11();
-//        mydataBankBa01Repository.truncateBA12();
-//        mydataBankBa01Repository.truncateBA13();
-//        mydataBankBa01Repository.truncateBA21();
-//        mydataBankBa01Repository.truncateBA22();
-//        mydataBankBa01Repository.truncateBA23();
-//        // 카드(원본) 테이블 초기화
-//        mydataCardCd01Repository.truncateCD01();
-//        mydataCardCd01Repository.truncateCD03();
-//        mydataCardCd01Repository.truncateCD04();
-//        mydataCardCd01Repository.truncateCD11();
-//        mydataCardCd01Repository.truncateCD21();
-//        mydataCardCd01Repository.truncateCD22();
-//        mydataCardCd01Repository.truncateCD23();
-//        mydataCardCd01Repository.truncateCD24();
-//        mydataCardCd01Repository.truncateCD31();
-//        mydataCardCd01Repository.truncateCD32();
-//        mydataCardCd01Repository.truncateCD33();
-//        // 은행(수입) 테이블 초기화
-//        mydataIncomeRepository.truncateMydataIncome();
-//        // 카드(경비) 테이블 초기화
-//        mydataOutgoingRepository.truncateMydataOutgoing();
-//        // total(수입) 테이블 초기화
-//        totalIncomeRepository.truncateTotalIncome();
-//        // total(경비) 테이블 초기화
-//        totalOutgoingRepository.truncateTotalOutgoing();
-//        // tax 정보 삭제
-//        taxRepository.deleteTax();
+        mydataBankBa01Repository.resetSequenceBA02();
+        mydataBankBa01Repository.resetSequenceBA03();
+        mydataBankBa01Repository.resetSequenceBA04();
+        mydataBankBa01Repository.resetSequenceBA11();
+        mydataBankBa01Repository.resetSequenceBA12();
+        mydataBankBa01Repository.resetSequenceBA13();
+        mydataBankBa01Repository.resetSequenceBA21();
+        mydataBankBa01Repository.resetSequenceBA22();
+        mydataBankBa01Repository.resetSequenceBA23();
+        // 카드(원본) 시퀀스 초기화
+        mydataCardCd01Repository.resetSequenceCD01();
+        mydataCardCd01Repository.resetSequenceCD03();
+        mydataCardCd01Repository.resetSequenceCD04();
+        mydataCardCd01Repository.resetSequenceCD11();
+        mydataCardCd01Repository.resetSequenceCD21();
+        mydataCardCd01Repository.resetSequenceCD22();
+        mydataCardCd01Repository.resetSequenceCD23();
+        mydataCardCd01Repository.resetSequenceCD24();
+        mydataCardCd01Repository.resetSequenceCD31();
+        mydataCardCd01Repository.resetSequenceCD32();
+        mydataCardCd01Repository.resetSequenceCD33();
+        // 은행(수입) 시퀀스 초기화
+        mydataIncomeRepository.resetSequenceMydataIncome();
+        // 카드(경비) 시퀀스 초기화
+        mydataOutgoingRepository.resetSequenceMydataOutgoing();
+        // total(수입) 시퀀스 초기화
+        totalIncomeRepository.resetSequenceTotalIncome();
+        // total(경비) 시퀀스 초기화
+        totalOutgoingRepository.resetSequenceTotalOutgoing();
     }
 
     /**
      * 은행(수입) 중복 내역 조회
      * @return
      */
-    public List<MydataIncome> getMydataIncomeDuplicate() {
+    public List<Map<String,String>> getMydataIncomeDuplicate() {
         return mydataIncomeRepository.getMydataIncomeDuplicate();
     }
 
@@ -988,7 +1015,7 @@ public class MydataService {
      * 카드(경비) 중복 내역 조회
      * @return
      */
-    public List<MydataOutgoing> getMydataOutgoingDuplicate() {
+    public List<Map<String,String>> getMydataOutgoingDuplicate() {
         return mydataOutgoingRepository.getMydataOutgoingDuplicate();
     }
 

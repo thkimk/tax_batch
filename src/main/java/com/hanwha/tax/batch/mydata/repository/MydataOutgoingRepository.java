@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface MydataOutgoingRepository extends JpaRepository<MydataOutgoing, Long>, MydataOutgoingCustomRepository {
@@ -37,18 +38,24 @@ public interface MydataOutgoingRepository extends JpaRepository<MydataOutgoing, 
      */
     @Transactional
     @Modifying
-    @Query(value="truncate table mydata_outgoing", nativeQuery = true)
-    int truncateMydataOutgoing();
+    @Query(value="delete from mydata_outgoing", nativeQuery = true)
+    int deleteMydataOutgoing();
+
+    /**
+     * 카드(경비) 시퀀스 초기화
+     */
+    @Transactional
+    @Modifying
+    @Query(value="alter table mydata_outgoing auto_increment = 1", nativeQuery = true)
+    void resetSequenceMydataOutgoing();
 
     /**
      * 카드(경비) 중복내역 조회
      * @return
      */
-    @Query(value="select * from (" +
-            "select row_number() over(partition by cust_id, org_code, card_id, appr_num, appr_dtime, status, pay_type, trans_dtime, appr_amt) as rn, mo.* " +
-            "from mydata_outgoing mo) tmp" +
-            "where tmp.rn != 1", nativeQuery=true)
-    List<MydataOutgoing> getMydataOutgoingDuplicate();
+    @Query(value="select row_number() over(partition by cust_id, org_code, card_id, appr_num, appr_dtime, status, pay_type, trans_dtime, appr_amt) as rn, mo.* " +
+            "from mydata_outgoing mo", nativeQuery=true)
+    List<Map<String, String>> getMydataOutgoingDuplicate();
 
     /**
      * 고객번호로 카드(지출) 내역 조회

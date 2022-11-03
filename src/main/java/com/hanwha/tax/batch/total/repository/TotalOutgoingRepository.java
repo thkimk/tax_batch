@@ -79,6 +79,14 @@ public interface TotalOutgoingRepository extends JpaRepository<TotalOutgoing, Lo
      */
     @Transactional
     @Modifying
-    @Query(value="truncate table total_outgoing", nativeQuery = true)
-    int truncateTotalOutgoing();
+    @Query(value="delete from total_outgoing", nativeQuery = true)
+    int deleteTotalOutgoing();
+
+    /**
+     * 전체(경비) 시퀀스 초기화
+     */
+    @Transactional
+    @Modifying
+    @Query(value="alter table total_outgoing auto_increment = 1", nativeQuery = true)
+    void resetSequenceTotalOutgoing();
 }

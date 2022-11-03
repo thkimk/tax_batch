@@ -85,11 +85,19 @@ public interface TotalIncomeRepository extends JpaRepository<TotalIncome, Long> 
     List<TotalIncome> getTotalIncomeByCustId(String custId);
 
     /**
-     * 전체(수입) 테이블 초기화
+     * 전체(수입) 정보 삭제
      * @return
      */
     @Transactional
     @Modifying
-    @Query(value="truncate table total_income", nativeQuery = true)
-    int truncateTotalIncome();
+    @Query(value="delete from total_income", nativeQuery = true)
+    int deleteTotalIncome();
+
+    /**
+     * 전체(수입) 시퀀스 초기화
+     */
+    @Transactional
+    @Modifying
+    @Query(value="alter table total_income auto_increment = 1", nativeQuery = true)
+    void resetSequenceTotalIncome();
 }
