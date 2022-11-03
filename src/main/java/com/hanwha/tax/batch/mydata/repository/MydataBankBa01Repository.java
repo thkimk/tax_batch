@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 public interface MydataBankBa01Repository extends JpaRepository<MydataBankBa01, Long> {
@@ -59,7 +60,7 @@ public interface MydataBankBa01Repository extends JpaRepository<MydataBankBa01, 
      * @return
      */
     @Query(value="alter table mydata_bank_ba01 auto_increment = 1", nativeQuery = true)
-    int resetSequenceBA01();
+    void resetSequenceBA01();
     @Query(value="show table status where name = 'mydata_bank_ba01'", nativeQuery = true)
-    Map<String, String> checkSequenceBA01();
+    List<Map<String, String>> checkSequenceBA01();
 }

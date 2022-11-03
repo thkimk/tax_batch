@@ -940,8 +940,9 @@ public class MydataService {
         mydataBankBa01Repository.deleteBA01();
         log.info("★★★ ba01 건수 : [{}]", mydataBankBa01Repository.findAll().size());
         mydataBankBa01Repository.resetSequenceBA01();
-        mydataBankBa01Repository.checkSequenceBA01();
-        log.info("★★★ 시퀀스정보 : [{}]", mydataBankBa01Repository.checkSequenceBA01());
+        mydataBankBa01Repository.checkSequenceBA01().forEach(m -> {
+            log.info("★★★ 시퀀스정보 : [{}]", m);
+        });
 //        mydataBankBa01Repository.truncateBA02();
 //        mydataBankBa01Repository.truncateBA03();
 //        mydataBankBa01Repository.truncateBA04();
