@@ -173,4 +173,28 @@ public class TotalService {
     public List<TotalIncome> getTotalIncomeByCustId(String custId) {
         return totalIncomeRepository.getTotalIncomeByCustId(custId);
     }
+
+    /**
+     * 월별 total 수입 금액/건수 조회
+     * @param custId
+     * @param year
+     * @param month
+     * @param is33
+     * @return
+     */
+    public Map<String,String> getTotalIncomeByMonth(String custId, int year, int month, char is33) {
+        return totalIncomeRepository.getTotalIncomeByMonth(custId, year, month, is33);
+    }
+
+    /**
+     * 월별 total 경비 금액/건수 조회
+     * @param custId
+     * @param year
+     * @param month
+     * @param category
+     * @return
+     */
+    public Map<String,String> getTotalOutgoingByMonth(String custId, int year, int month, String category) {
+        return totalOutgoingRepository.getTotalOutgoingByMonth(custId, year, month, category);
+    }
 }

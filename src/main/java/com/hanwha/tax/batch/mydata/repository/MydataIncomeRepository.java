@@ -31,14 +31,6 @@ public interface MydataIncomeRepository extends JpaRepository<MydataIncome, Long
     int deleteMydataIncome();
 
     /**
-     * 은행(수입) 시퀀스 초기화
-     */
-    @Transactional
-    @Modifying
-    @Query(value="alter table mydata_income auto_increment = 1", nativeQuery = true)
-    void resetSequenceMydataIncome();
-
-    /**
      * 은행(수입) 중복내역 조회
      * @return
      */

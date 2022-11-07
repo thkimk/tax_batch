@@ -47,6 +47,8 @@ dependencies {
 	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
 	// sftp
 	implementation group: 'com.jcraft', name: 'jsch', version: '0.1.54'
+	// json
+	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
 
 	// security & JWT
 //	implementation 'org.springframework.boot:spring-boot-starter-security'

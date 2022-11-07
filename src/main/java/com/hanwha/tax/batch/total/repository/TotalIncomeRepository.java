@@ -94,10 +94,13 @@ public interface TotalIncomeRepository extends JpaRepository<TotalIncome, Long> 
     int deleteTotalIncome();
 
     /**
-     * 전체(수입) 시퀀스 초기화
+     * 쿠콘 마이데이터 월별 수입 금액 확인
+     * @param custId
+     * @param year
+     * @param month
+     * @param is33
+     * @return
      */
-    @Transactional
-    @Modifying
-    @Query(value="alter table total_income auto_increment = 1", nativeQuery = true)
-    void resetSequenceTotalIncome();
+    @Query(value="select SUM(tin.amount) as total, COUNT(*) as `count` from total_income tin where tin.flag_fk = 'M' and tin.cust_id = :custId and tin.`year` = :year and tin.`month` = :month and tin.is_33 = :is33", nativeQuery=true)
+    Map<String, String> getTotalIncomeByMonth(String custId, int year, int month, char is33);
 }

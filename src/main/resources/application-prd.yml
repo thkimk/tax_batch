@@ -29,6 +29,8 @@ logging:
     org.mybatis: WARN
 
 tax:
+  api:
+    domain: https://api.socratax.io
   sftp:
     user: IS000001
     pwd: 81qAlJDvsA

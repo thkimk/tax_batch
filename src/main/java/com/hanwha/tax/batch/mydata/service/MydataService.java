@@ -969,38 +969,6 @@ public class MydataService {
         totalOutgoingRepository.deleteTotalOutgoing();
         // tax 정보 삭제
         taxRepository.deleteTax();
-
-        // 은행(원본) 시퀀스 초기화
-        mydataBankBa01Repository.resetSequenceBA01();
-        mydataBankBa01Repository.resetSequenceBA02();
-        mydataBankBa01Repository.resetSequenceBA03();
-        mydataBankBa01Repository.resetSequenceBA04();
-        mydataBankBa01Repository.resetSequenceBA11();
-        mydataBankBa01Repository.resetSequenceBA12();
-        mydataBankBa01Repository.resetSequenceBA13();
-        mydataBankBa01Repository.resetSequenceBA21();
-        mydataBankBa01Repository.resetSequenceBA22();
-        mydataBankBa01Repository.resetSequenceBA23();
-        // 카드(원본) 시퀀스 초기화
-        mydataCardCd01Repository.resetSequenceCD01();
-        mydataCardCd01Repository.resetSequenceCD03();
-        mydataCardCd01Repository.resetSequenceCD04();
-        mydataCardCd01Repository.resetSequenceCD11();
-        mydataCardCd01Repository.resetSequenceCD21();
-        mydataCardCd01Repository.resetSequenceCD22();
-        mydataCardCd01Repository.resetSequenceCD23();
-        mydataCardCd01Repository.resetSequenceCD24();
-        mydataCardCd01Repository.resetSequenceCD31();
-        mydataCardCd01Repository.resetSequenceCD32();
-        mydataCardCd01Repository.resetSequenceCD33();
-        // 은행(수입) 시퀀스 초기화
-        mydataIncomeRepository.resetSequenceMydataIncome();
-        // 카드(경비) 시퀀스 초기화
-        mydataOutgoingRepository.resetSequenceMydataOutgoing();
-        // total(수입) 시퀀스 초기화
-        totalIncomeRepository.resetSequenceTotalIncome();
-        // total(경비) 시퀀스 초기화
-        totalOutgoingRepository.resetSequenceTotalOutgoing();
     }
 
     /**

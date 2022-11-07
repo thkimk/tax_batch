@@ -54,49 +54,4 @@ public interface MydataBankBa01Repository extends JpaRepository<MydataBankBa01, 
     @Modifying
     @Query(value="delete from mydata_bank_ba23", nativeQuery = true)
     int deleteBA23();
-
-    /**
-     * 은행(원본) 시퀀스 초기화
-     * @return
-     */
-    @Transactional
-    @Modifying
-    @Query(value="alter table mydata_bank_ba01 auto_increment = 1", nativeQuery = true)
-    void resetSequenceBA01();
-    @Transactional
-    @Modifying
-    @Query(value="alter table mydata_bank_ba02 auto_increment = 1", nativeQuery = true)
-    void resetSequenceBA02();
-    @Transactional
-    @Modifying
-    @Query(value="alter table mydata_bank_ba03 auto_increment = 1", nativeQuery = true)
-    void resetSequenceBA03();
-    @Transactional
-    @Modifying
-    @Query(value="alter table mydata_bank_ba04 auto_increment = 1", nativeQuery = true)
-    void resetSequenceBA04();
-    @Transactional
-    @Modifying
-    @Query(value="alter table mydata_bank_ba11 auto_increment = 1", nativeQuery = true)
-    void resetSequenceBA11();
-    @Transactional
-    @Modifying
-    @Query(value="alter table mydata_bank_ba12 auto_increment = 1", nativeQuery = true)
-    void resetSequenceBA12();
-    @Transactional
-    @Modifying
-    @Query(value="alter table mydata_bank_ba13 auto_increment = 1", nativeQuery = true)
-    void resetSequenceBA13();
-    @Transactional
-    @Modifying
-    @Query(value="alter table mydata_bank_ba21 auto_increment = 1", nativeQuery = true)
-    void resetSequenceBA21();
-    @Transactional
-    @Modifying
-    @Query(value="alter table mydata_bank_ba22 auto_increment = 1", nativeQuery = true)
-    void resetSequenceBA22();
-    @Transactional
-    @Modifying
-    @Query(value="alter table mydata_bank_ba23 auto_increment = 1", nativeQuery = true)
-    void resetSequenceBA23();
 }

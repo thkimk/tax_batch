@@ -42,14 +42,6 @@ public interface MydataOutgoingRepository extends JpaRepository<MydataOutgoing, 
     int deleteMydataOutgoing();
 
     /**
-     * 카드(경비) 시퀀스 초기화
-     */
-    @Transactional
-    @Modifying
-    @Query(value="alter table mydata_outgoing auto_increment = 1", nativeQuery = true)
-    void resetSequenceMydataOutgoing();
-
-    /**
      * 카드(경비) 중복내역 조회
      * @return
      */

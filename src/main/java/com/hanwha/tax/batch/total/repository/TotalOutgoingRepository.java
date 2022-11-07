@@ -83,10 +83,13 @@ public interface TotalOutgoingRepository extends JpaRepository<TotalOutgoing, Lo
     int deleteTotalOutgoing();
 
     /**
-     * 전체(경비) 시퀀스 초기화
+     * 쿠콘 마이데이터 월별 경비 금액 확인
+     * @param custId
+     * @param year
+     * @param month
+     * @param category
+     * @return
      */
-    @Transactional
-    @Modifying
-    @Query(value="alter table total_outgoing auto_increment = 1", nativeQuery = true)
-    void resetSequenceTotalOutgoing();
+    @Query(value="select SUM(tout.amount) as total, COUNT(*) as `count` from total_outgoing tout where tout.flag_fk = 'M' and tout.cust_id = :custId and tout.`year` = :year and tout.`month` = :month and IFNULL(tout.category,'99') = :category", nativeQuery=true)
+    Map<String, String> getTotalOutgoingByMonth(String custId, int year, int month, String category);
 }

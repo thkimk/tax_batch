@@ -22,7 +22,7 @@ public class TestJob extends BaseJob {
 		log.info("============= QUARTZ 테스트 시작 [{}] =============", Utils.getCurrentDateTime());
 
 		// 기존 정보 삭제
-		mydataService.resetMydata();
+//		mydataService.resetMydata();
 
 		int startDate = 20221023;
 		String yesterday = Utils.getYesterday();

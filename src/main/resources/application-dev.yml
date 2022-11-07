@@ -29,6 +29,8 @@ logging:
     org.mybatis: WARN
 
 tax:
+  api:
+    domain: http://52.78.119.207:8090
   sftp:
     user: IS000001
     pwd: d1OryUJJr3
