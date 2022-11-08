@@ -40,8 +40,8 @@ public class TestJob extends BaseJob {
 				log.info("▶︎▶︎▶ 마이데이터 은행(수입) 확인 [{}]", String.valueOf(i));
 				mydataService.procMydataInfo(BANK_TRANS_FILE, String.valueOf(i));	// 은행(수입) 파일 확인
 			}
-//			log.info("▶︎▶︎▶ 마이데이터 카드(경비) 확인 [{}]", String.valueOf(i));
-//			mydataService.procMydataInfo(CARD_APPR_FILE, String.valueOf(i));	// 카드(경비) 파일 확인
+			log.info("▶︎▶︎▶ 마이데이터 카드(경비) 확인 [{}]", String.valueOf(i));
+			mydataService.procMydataInfo(CARD_APPR_FILE, String.valueOf(i));	// 카드(경비) 파일 확인
 		}
 
 		log.info("▶︎▶︎▶ 마이데이터 은행(원본) 확인 [20221107]");

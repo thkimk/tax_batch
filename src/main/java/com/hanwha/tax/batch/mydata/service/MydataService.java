@@ -328,7 +328,6 @@ public class MydataService {
      */
     public MydataIncome saveMydataIncome(MydataIncome mydataIncome) {
         Integer seq = mydataIncome.getSeq();
-        log.info("★★★ 비교 seq [{}]", seq);
 
         // 마이데이터 수입 원본 데이터 조회
         mydataIncome.setSeq(null);
@@ -342,6 +341,7 @@ public class MydataService {
             if (mi.getSeq() == null)   mydataIncomeOri.add(mi);
             if (mi.getSeq() == seq)  mydataIncomePk.add(mi);
         }
+        mydataIncome.setSeq(seq);
 
         if (1 < mydataIncomeOri.size()) {
             log.error("※※※ 마이데이터 수입 원본 데이터가 올바르지 않습니다.\n[{}]", mydataIncome.toString());
@@ -355,6 +355,7 @@ public class MydataService {
 
         // 기존 매핑된 마이데이터 이력이 있고 등록할 데이터가 원본 데이터인 경우 skip
         log.info("====== ★★★ 기준 데이터 [{}]", mydataIncome.toString());
+        log.info("★★★ 비교 seq [{}]", seq);
         if (0 < listMydataIncome.size())    log.info("★★★ 동일 이력 [{}]", listMydataIncome.get(0));
         if (0 < mydataIncomeOri.size())    log.info("★★★ ori 이력 [{}]", mydataIncomeOri.get(0));
         if (0 < mydataIncomePk.size())    log.info("★★★ pk 이력 [{}]", mydataIncomePk.get(0));
@@ -399,6 +400,7 @@ public class MydataService {
             if (mo.getSeq() == null)   mydataOutgoingOri.add(mo);
             if (mo.getSeq() == seq)  mydataOutgoingPk.add(mo);
         }
+        mydataOutgoing.setSeq(seq);
 
         if (1 < mydataOutgoingOri.size()) {
             log.error("※※※ 마이데이터 경비 원본 데이터가 올바르지 않습니다.\n[{}]", mydataOutgoing.toString());
@@ -895,7 +897,7 @@ public class MydataService {
                     // 본처리
                     if (isIng) {
                         try {
-                            if ("BA04".equals(vals[1]) || "BT01".equals(vals[1])) {
+                            if ("BA04".equals(vals[1]) || "BT01".equals(vals[1]) || "CA01".equals(vals[1])) {
                                 Method method = this.getClass().getDeclaredMethod("saveMydata"+modelName+vals[1], String.class, String.class);
                                 method.invoke(this, modelName+vals[1], str);
                             }
