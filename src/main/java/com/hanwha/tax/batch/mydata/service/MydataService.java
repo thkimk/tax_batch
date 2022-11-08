@@ -353,6 +353,10 @@ public class MydataService {
         }
 
         // 기존 매핑된 마이데이터 이력이 있고 등록할 데이터가 원본 데이터인 경우 skip
+        log.info("====== 기준 데이터 [{}]", mydataIncome.toString());
+        if (0 < listMydataIncome.size())    log.info("★★★ 동일 이력 [{}]", listMydataIncome.get(0));
+        if (0 < mydataIncomeOri.size())    log.info("★★★ ori 이력 [{}]", mydataIncomeOri.get(0));
+        if (0 < mydataIncomePk.size())    log.info("★★★ pk 이력 [{}]", mydataIncomePk.get(0));
         if (0 < listMydataIncome.size() && mydataIncomeOri.size() == 0 && mydataIncomePk.size() == 0) {
             log.info("▶▶▶︎ 기존 데이터가 존재하여 원본 데이터 저장하지 않습니다.\n[{}]", mydataIncome.toString());
             return null;

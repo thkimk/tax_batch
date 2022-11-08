@@ -31,10 +31,10 @@ public class TestJob extends BaseJob {
 			if (i == 20221032)	i = 20221101;
 			if (i == 20221131)	i = 20221201;
 
-			log.info("▶︎▶︎▶ 마이데이터 은행(원본) 확인 [{}]", String.valueOf(i));
-			mydataService.procMydataInfo(BANK_FILE, String.valueOf(i));			// 은행(원본) 파일 확인
-			log.info("▶︎▶︎▶ 마이데이터 카드(원본) 확인 [{}]", String.valueOf(i));
-			mydataService.procMydataInfo(CARD_FILE, String.valueOf(i));			// 카드(원본) 파일 확인
+//			log.info("▶︎▶︎▶ 마이데이터 은행(원본) 확인 [{}]", String.valueOf(i));
+//			mydataService.procMydataInfo(BANK_FILE, String.valueOf(i));			// 은행(원본) 파일 확인
+//			log.info("▶︎▶︎▶ 마이데이터 카드(원본) 확인 [{}]", String.valueOf(i));
+//			mydataService.procMydataInfo(CARD_FILE, String.valueOf(i));			// 카드(원본) 파일 확인
 
 			if (20221101 < i) {
 				log.info("▶︎▶︎▶ 마이데이터 은행(수입) 확인 [{}]", String.valueOf(i));
@@ -57,16 +57,16 @@ public class TestJob extends BaseJob {
 			}
 		});
 
-		// 수입/경비 내역 조회
-		String custId = "2210576542";
-		log.info("▶▶▶ 마이데이터 은행(수입) My내역");
-		mydataService.getMydataIncomeByCustId(custId).forEach(mi -> {
-			log.info("{}", mi.toString());
-		});
-		log.info("▶▶▶ 마이데이터 카드(경비) My내역");
-		mydataService.getMydataOutgoingByCustId(custId).forEach(mo -> {
-			log.info("{}", mo.toString());
-		});
+//		// 수입/경비 내역 조회
+//		String custId = "2210576542";
+//		log.info("▶▶▶ 마이데이터 은행(수입) My내역");
+//		mydataService.getMydataIncomeByCustId(custId).forEach(mi -> {
+//			log.info("{}", mi.toString());
+//		});
+//		log.info("▶▶▶ 마이데이터 카드(경비) My내역");
+//		mydataService.getMydataOutgoingByCustId(custId).forEach(mo -> {
+//			log.info("{}", mo.toString());
+//		});
 
 		log.info("============= QUARTZ 테스트 종료 [{}] =============", Utils.getCurrentDateTime());
 	}
