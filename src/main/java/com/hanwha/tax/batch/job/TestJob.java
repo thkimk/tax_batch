@@ -44,6 +44,9 @@ public class TestJob extends BaseJob {
 			mydataService.procMydataInfo(CARD_APPR_FILE, String.valueOf(i));	// 카드(경비) 파일 확인
 		}
 
+		log.info("▶︎▶︎▶ 마이데이터 은행(원본) 확인 [20221107]");
+		mydataService.procMydataInfo(BANK_FILE, "20221107");			// 은행(원본) 파일 확인
+
 		// 중복 값 조회
 		log.info("▶▶▶ 마이데이터 은행(수입) 중복 내역");
 		mydataService.getMydataIncomeDuplicate().forEach(mi -> {
