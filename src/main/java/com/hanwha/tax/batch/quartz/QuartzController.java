@@ -2,6 +2,7 @@ package com.hanwha.tax.batch.quartz;
 
 import com.hanwha.tax.batch.HttpUtil;
 import com.hanwha.tax.batch.Utils;
+import com.hanwha.tax.batch.entity.MydataOutgoing;
 import com.hanwha.tax.batch.total.service.TotalService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -147,15 +148,20 @@ public class QuartzController {
                     long total = (long) jobjInfo.get("total");
                     long count = (long) jobjInfo.get("count");
 
-                    Map<String, String> outgoingMap = totalService.getTotalOutgoingByMonth(cid, year, month, Utils.lpadByte(category,2,"0"));
+                    // 경비제외는 검증하지 않는다.
+                    if (!MydataOutgoing.CardCategory.경비제외.getCode().equals(category)) {
+                        Map<String, String> outgoingMap = totalService.getTotalOutgoingByMonth(cid, year, month, Utils.lpadByte(category,2,"0"));
+                        long outTotal = "null".equals(String.valueOf(outgoingMap.get("total"))) ? 0 : Long.parseLong(String.valueOf(outgoingMap.get("total")));
+                        long outCount = "null".equals(String.valueOf(outgoingMap.get("count"))) ? 0 : Long.parseLong(String.valueOf(outgoingMap.get("count")));
 
-                    log.debug("★★★ 금액 [totalApi={}, totalOutgoing={}]", total, outgoingMap.get("total"));
-                    if (total != Long.parseLong(String.valueOf(outgoingMap.get("total")))) {
-                        log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 금액을 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", cid, year, month, category, total, outgoingMap.get("total"));
-                    }
-                    log.debug("★★★︎ 건수 [totalApi={}, totalIncome={}]", count, outgoingMap.get("count"));
-                    if (count != Long.parseLong(String.valueOf(outgoingMap.get("count")))) {
-                        log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 건수를 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", cid, year, month, category, count, outgoingMap.get("count"));
+                        log.debug("★★★ 금액 [totalApi={}, totalOutgoing={}]", total, outgoingMap.get("total"));
+                        if (total != outTotal) {
+                            log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 금액을 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", cid, year, month, category, total, outgoingMap.get("total"));
+                        }
+                        log.debug("★★★︎ 건수 [totalApi={}, totalIncome={}]", count, outgoingMap.get("count"));
+                        if (count != outCount) {
+                            log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 건수를 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", cid, year, month, category, count, outgoingMap.get("count"));
+                        }
                     }
                 }
             }
