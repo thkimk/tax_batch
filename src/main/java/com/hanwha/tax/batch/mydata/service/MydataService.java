@@ -328,6 +328,7 @@ public class MydataService {
      */
     public MydataIncome saveMydataIncome(MydataIncome mydataIncome) {
         Integer seq = mydataIncome.getSeq();
+        log.info("★★★ 비교 seq [{}]", seq);
 
         // 마이데이터 수입 원본 데이터 조회
         mydataIncome.setSeq(null);
@@ -353,7 +354,7 @@ public class MydataService {
         }
 
         // 기존 매핑된 마이데이터 이력이 있고 등록할 데이터가 원본 데이터인 경우 skip
-        log.info("====== 기준 데이터 [{}]", mydataIncome.toString());
+        log.info("====== ★★★ 기준 데이터 [{}]", mydataIncome.toString());
         if (0 < listMydataIncome.size())    log.info("★★★ 동일 이력 [{}]", listMydataIncome.get(0));
         if (0 < mydataIncomeOri.size())    log.info("★★★ ori 이력 [{}]", mydataIncomeOri.get(0));
         if (0 < mydataIncomePk.size())    log.info("★★★ pk 이력 [{}]", mydataIncomePk.get(0));
@@ -474,9 +475,9 @@ public class MydataService {
      */
     private void saveMydataBankBA04(String modelName, String row) {
         // 은행(원본) : 은행 수신 계좌 거래내역 저장
-        if (mydataBankBa04Repository.save(new MydataBankBa04(row)) == null) {
-            log.error("은행(원본) : 은행 수신 계좌 거래내역 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
-        }
+//        if (mydataBankBa04Repository.save(new MydataBankBa04(row)) == null) {
+//            log.error("은행(원본) : 은행 수신 계좌 거래내역 저장에 실패하였습니다.\n[Mydata{}][{}]", modelName, row);
+//        }
 
         // 마이데이터 은행(원본) 클래스 생성
         BankBA04 bank = (BankBA04) getMydataObjByName(modelName);
@@ -495,6 +496,8 @@ public class MydataService {
             log.error("CI 값에 해당하는 고객정보가 존재하지 않습니다. [{}]", bank.getCI());
             return;
         }
+
+        if (!"2210576542".equals(custId)) return;
 
         // 마이데이터 수입 정보 저장
         saveMydataIncome(new MydataIncome().convertByBank(custId, bank));
@@ -892,8 +895,10 @@ public class MydataService {
                     // 본처리
                     if (isIng) {
                         try {
-                            Method method = this.getClass().getDeclaredMethod("saveMydata"+modelName+vals[1], String.class, String.class);
-                            method.invoke(this, modelName+vals[1], str);
+                            if ("BA04".equals(vals[1]) || "BT01".equals(vals[1])) {
+                                Method method = this.getClass().getDeclaredMethod("saveMydata"+modelName+vals[1], String.class, String.class);
+                                method.invoke(this, modelName+vals[1], str);
+                            }
                         } catch (NoSuchMethodException e) {
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             e.printStackTrace();
