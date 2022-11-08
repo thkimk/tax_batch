@@ -91,5 +91,5 @@ public interface TotalOutgoingRepository extends JpaRepository<TotalOutgoing, Lo
      * @return
      */
     @Query(value="select SUM(tout.amount) as total, COUNT(*) as `count` from total_outgoing tout where tout.flag_fk = 'M' and tout.cust_id = :custId and tout.`year` = :year and tout.`month` = :month and IFNULL(tout.category,'99') = :category", nativeQuery=true)
-    Map<String, String> getTotalOutgoingByMonth(String custId, int year, int month, String category);
+    Map<String, String> getTotalOutgoingByMonth(String custId, long year, long month, String category);
 }

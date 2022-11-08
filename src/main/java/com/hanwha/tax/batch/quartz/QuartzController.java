@@ -1,6 +1,7 @@
 package com.hanwha.tax.batch.quartz;
 
 import com.hanwha.tax.batch.HttpUtil;
+import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.total.service.TotalService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -105,20 +106,20 @@ public class QuartzController {
 
                 for (int i = 0; i < jArrList.size(); i++) {
                     JSONObject jobjInfo = (JSONObject) jArrList.get(i);
-                    int year = (int) jobjInfo.get("year");
-                    int month = (int) jobjInfo.get("month");
+                    long year = (long) jobjInfo.get("year");
+                    long month = (long) jobjInfo.get("month");
                     String tyle = (String) jobjInfo.get("tyle");// 1 : 3.3% 포함, 0 : 미포함
-                    String total = (String) jobjInfo.get("total");
-                    String count = (String) jobjInfo.get("count");
+                    long total = (long) jobjInfo.get("total");
+                    long count = (long) jobjInfo.get("count");
 
                     Map<String, String> incomeMap = totalService.getTotalIncomeByMonth(cid, year, month, "1".equals(tyle) ? 'Y' : 'N');
 
                     log.debug("★★★ 금액 [totalApi={}, totalIncome={}]", total, incomeMap.get("total"));
-                    if (!total.equals(incomeMap.get("total"))) {
+                    if (total != Long.parseLong(String.valueOf(incomeMap.get("total")))) {
                         log.error("▶︎▶︎▶︎ TOTAL_INCOME 금액을 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", cid, year, month, tyle, total, incomeMap.get("total"));
                     }
                     log.debug("★★★︎ 건수 [totalApi={}, totalIncome={}]", count, incomeMap.get("count"));
-                    if (!count.equals(incomeMap.get("count"))) {
+                    if (count != Long.parseLong(String.valueOf(incomeMap.get("count")))) {
                         log.error("▶︎▶︎▶︎ TOTAL_INCOME 건수를 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", cid, year, month, tyle, count, incomeMap.get("count"));
                     }
                 }
@@ -140,20 +141,20 @@ public class QuartzController {
 
                 for (int i = 0; i < jArrList.size(); i++) {
                     JSONObject jobjInfo = (JSONObject) jArrList.get(i);
-                    int year = (int) jobjInfo.get("year");
-                    int month = (int) jobjInfo.get("month");
+                    long year = (long) jobjInfo.get("year");
+                    long month = (long) jobjInfo.get("month");
                     String category = (String) jobjInfo.get("category");
-                    String total = (String) jobjInfo.get("total");
-                    String count = (String) jobjInfo.get("count");
+                    long total = (long) jobjInfo.get("total");
+                    long count = (long) jobjInfo.get("count");
 
-                    Map<String, String> outgoingMap = totalService.getTotalOutgoingByMonth(cid, year, month, category);
+                    Map<String, String> outgoingMap = totalService.getTotalOutgoingByMonth(cid, year, month, Utils.lpadByte(category,2,"0"));
 
                     log.debug("★★★ 금액 [totalApi={}, totalOutgoing={}]", total, outgoingMap.get("total"));
-                    if (!total.equals(outgoingMap.get("total"))) {
+                    if (total != Long.parseLong(String.valueOf(outgoingMap.get("total")))) {
                         log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 금액을 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", cid, year, month, category, total, outgoingMap.get("total"));
                     }
                     log.debug("★★★︎ 건수 [totalApi={}, totalIncome={}]", count, outgoingMap.get("count"));
-                    if (!count.equals(outgoingMap.get("count"))) {
+                    if (count != Long.parseLong(String.valueOf(outgoingMap.get("count")))) {
                         log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 건수를 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", cid, year, month, category, count, outgoingMap.get("count"));
                     }
                 }

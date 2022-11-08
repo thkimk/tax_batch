@@ -102,5 +102,5 @@ public interface TotalIncomeRepository extends JpaRepository<TotalIncome, Long> 
      * @return
      */
     @Query(value="select SUM(tin.amount) as total, COUNT(*) as `count` from total_income tin where tin.flag_fk = 'M' and tin.cust_id = :custId and tin.`year` = :year and tin.`month` = :month and tin.is_33 = :is33", nativeQuery=true)
-    Map<String, String> getTotalIncomeByMonth(String custId, int year, int month, char is33);
+    Map<String, String> getTotalIncomeByMonth(String custId, long year, long month, char is33);
 }

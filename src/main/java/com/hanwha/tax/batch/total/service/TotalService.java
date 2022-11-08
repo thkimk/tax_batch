@@ -182,7 +182,7 @@ public class TotalService {
      * @param is33
      * @return
      */
-    public Map<String,String> getTotalIncomeByMonth(String custId, int year, int month, char is33) {
+    public Map<String,String> getTotalIncomeByMonth(String custId, long year, long month, char is33) {
         return totalIncomeRepository.getTotalIncomeByMonth(custId, year, month, is33);
     }
 
@@ -194,7 +194,7 @@ public class TotalService {
      * @param category
      * @return
      */
-    public Map<String,String> getTotalOutgoingByMonth(String custId, int year, int month, String category) {
+    public Map<String,String> getTotalOutgoingByMonth(String custId, long year, long month, String category) {
         return totalOutgoingRepository.getTotalOutgoingByMonth(custId, year, month, category);
     }
 }
