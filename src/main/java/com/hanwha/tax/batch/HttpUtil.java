@@ -22,7 +22,7 @@ public class HttpUtil {
 	 * @return
 	 */
 	public static String sendReqGETJson(String targetUrl, HashMap<String, String> headerMap) {
-		String result = "실패";
+		String result = Constants.CODE_RET_NOK;
 		String returnMsg = "";
 
 		if (Utils.isEmpty(targetUrl)) {
@@ -58,7 +58,7 @@ public class HttpUtil {
 					while ((strLine=in.readLine())!= null) {
 						returnMsg+=strLine;
 					}
-					result = "성공";
+					result = Constants.CODE_RET_OK;
 				} else {
 					returnMsg = "전송 실패("+httpResponse.getStatusLine().getStatusCode()+")";
 				}
@@ -79,10 +79,10 @@ public class HttpUtil {
 			}
 		}
 
-		log.info("2. 요청 처리 결과 메시지 [{}][{}]", result, returnMsg);
-
-		if ("실패".equals(result))
+		if (Constants.CODE_RET_NOK.equals(result))
 			return "";
+
+		log.info("2. 요청 처리 결과 메시지 [{}]", returnMsg);
 
 		return returnMsg;
 	}
@@ -95,7 +95,7 @@ public class HttpUtil {
 	 * @return
 	 */
 	public static String sendReqPOSTJson(String targetUrl, String param, HashMap<String, String> headerMap) {
-		String result = "실패";
+		String result = Constants.CODE_RET_NOK;
 		String returnMsg = "";
 
 		if (Utils.isEmpty(targetUrl)) {
@@ -133,7 +133,7 @@ public class HttpUtil {
 					while ((strLine=in.readLine())!= null) {
 						returnMsg+=strLine;
 					}
-					result = "성공";
+					result = Constants.CODE_RET_OK;
 				} else {
 					returnMsg = "전송 실패("+httpResponse.getStatusLine().getStatusCode()+")";
 				}
@@ -154,10 +154,10 @@ public class HttpUtil {
 			}
 		}
 
-		log.info("2. 요청 처리 결과 메시지 [{}][{}]", result, returnMsg);
-
-		if ("실패".equals(result))
+		if (Constants.CODE_RET_NOK.equals(result))
 			return "";
+
+		log.info("2. 요청 처리 결과 메시지 [{}]", returnMsg);
 
 		return returnMsg;
 	}
@@ -170,7 +170,7 @@ public class HttpUtil {
 	 * @return
 	 */
 	public static String sendReqPUTJson(String targetUrl, String param, HashMap<String, String> headerMap) {
-		String result = "실패";
+		String result = Constants.CODE_RET_NOK;
 		String returnMsg = "";
 
 		if (Utils.isEmpty(targetUrl)) {
@@ -208,7 +208,7 @@ public class HttpUtil {
 					while ((strLine=in.readLine())!= null) {
 						returnMsg+=strLine;
 					}
-					result = "성공";
+					result = Constants.CODE_RET_OK;
 				} else {
 					returnMsg = "전송 실패("+httpResponse.getStatusLine().getStatusCode()+")";
 				}
@@ -229,10 +229,10 @@ public class HttpUtil {
 			}
 		}
 
-		log.info("2. 요청 처리 결과 메시지 [{}][{}]", result, returnMsg);
-
-		if ("실패".equals(result))
+		if (Constants.CODE_RET_NOK.equals(result))
 			return "";
+
+		log.info("2. 요청 처리 결과 메시지 [{}]", returnMsg);
 
 		return returnMsg;
 	}
@@ -244,7 +244,7 @@ public class HttpUtil {
 	 * @return
 	 */
 	public static String sendReqDELETEJson(String targetUrl, HashMap<String, String> headerMap) {
-		String result = "실패";
+		String result = Constants.CODE_RET_NOK;
 		String returnMsg = "";
 
 		if (targetUrl == null || targetUrl.trim() == "") {
@@ -268,7 +268,7 @@ public class HttpUtil {
 			CloseableHttpResponse httpResponse = httpClient.execute(httpDelete);
 
 			log.info("1. 요청 URL[{}]", targetUrl);
-			log.info("==== 요청 처리 결과 리턴 [{}]: \r\n[{}]\r\n[{}]", httpResponse.getStatusLine().getStatusCode(), targetUrl);
+			log.info("==== 요청 처리 결과 리턴 [{}]: \r\n[{}]", httpResponse.getStatusLine().getStatusCode(), targetUrl);
 
 			try {
 				// 데이터 수신
@@ -280,7 +280,7 @@ public class HttpUtil {
 					while ((strLine=in.readLine())!= null) {
 						returnMsg+=strLine;
 					}
-					result = "성공";
+					result = Constants.CODE_RET_OK;
 				} else {
 					returnMsg = "전송 실패("+httpResponse.getStatusLine().getStatusCode()+")";
 				}
@@ -301,10 +301,10 @@ public class HttpUtil {
 			}
 		}
 
-		log.info("2. 요청 처리 결과 메시지 [{}][{}]", result, returnMsg);
-
-		if ("실패".equals(result))
+		if (Constants.CODE_RET_NOK.equals(result))
 			return "";
+
+		log.info("2. 요청 처리 결과 메시지 [{}]", returnMsg);
 
 		return returnMsg;
 	}

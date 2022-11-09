@@ -114,13 +114,15 @@ public class QuartzController {
                     long count = (long) jobjInfo.get("count");
 
                     Map<String, String> incomeMap = totalService.getTotalIncomeByMonth(cid, year, month, "1".equals(tyle) ? 'Y' : 'N');
+                    long inTotal = "null".equals(String.valueOf(incomeMap.get("total"))) ? 0 : Long.parseLong(String.valueOf(incomeMap.get("total")));
+                    long inCount = "null".equals(String.valueOf(incomeMap.get("count"))) ? 0 : Long.parseLong(String.valueOf(incomeMap.get("count")));
 
                     log.debug("★★★ 금액 [totalApi={}, totalIncome={}]", total, incomeMap.get("total"));
-                    if (total != Long.parseLong(String.valueOf(incomeMap.get("total")))) {
+                    if (total != inTotal) {
                         log.error("▶︎▶︎▶︎ TOTAL_INCOME 금액을 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", cid, year, month, tyle, total, incomeMap.get("total"));
                     }
                     log.debug("★★★︎ 건수 [totalApi={}, totalIncome={}]", count, incomeMap.get("count"));
-                    if (count != Long.parseLong(String.valueOf(incomeMap.get("count")))) {
+                    if (count != inCount) {
                         log.error("▶︎▶︎▶︎ TOTAL_INCOME 건수를 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", cid, year, month, tyle, count, incomeMap.get("count"));
                     }
                 }

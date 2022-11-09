@@ -282,6 +282,15 @@ public class CustService {
     }
 
     /**
+     * 회원 상태/등급 별 회원리스트 조회
+     * @param custStatus
+     * @return
+     */
+    public List<Cust> getCustListByStatusGrade(String custStatus, String custGrade) {
+        return custRepository.findByCustStatusAndCustGrade(custStatus, custGrade);
+    }
+
+    /**
      * 회원 번호로 회원 마스터정보 조회
      *
      * @param custId

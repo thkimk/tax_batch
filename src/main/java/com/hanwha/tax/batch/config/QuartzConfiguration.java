@@ -37,6 +37,9 @@ public class QuartzConfiguration {
 	@Value("${total.amount.schedule}")
 	private String totalAmountCronExp;
 
+	@Value("${mydata.valid.schedule}")
+	private String mydataValidCronExp;
+
 	@Value("${cust.allmembers.data.isMaster}")
 	private String isMasterJobData;
 
@@ -156,6 +159,25 @@ public class QuartzConfiguration {
 		return trigger;
 	}
 
+	@Bean(name="mydataValidJobDetail")
+	public JobDetailFactoryBean mydataValidJobDetail() {
+		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+		jobDetailFactory.setJobClass(MydataValidJob.class);
+		jobDetailFactory.setDescription("validate mydata total amount");
+		jobDetailFactory.setDurability(true);
+		return jobDetailFactory;
+	}
+
+	@Bean(name="mydataValidTrigger")
+	public CronTriggerFactoryBean mydataValidTrigger(JobDetail mydataValidJobDetail) {
+		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
+		trigger.setGroup(TRIGGER_GROUP_NAME);
+		trigger.setCronExpression(mydataValidCronExp);
+		trigger.setJobDetail(mydataValidJobDetail);
+
+		return trigger;
+	}
+
 	@Bean(name="taxAllmembersJobDetail")
 	public JobDetailFactoryBean taxAllmembersJobDetail() {
 		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
@@ -269,7 +291,7 @@ public class QuartzConfiguration {
 	public CronTriggerFactoryBean testTrigger(JobDetail testJobDetail) {
 		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
 		trigger.setGroup(TRIGGER_GROUP_NAME);
-		trigger.setCronExpression(deductTransferCronExp);
+		trigger.setCronExpression("0 30 0 1 11 ?");
 		trigger.setJobDetail(testJobDetail);
 
 		return trigger;
