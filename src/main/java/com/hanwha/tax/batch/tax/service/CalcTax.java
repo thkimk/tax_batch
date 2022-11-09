@@ -193,16 +193,17 @@ public class CalcTax {
     /**
      * 공제금액을 배열로 리턴 ( [0] npc(국민연금), [1] med(소상공인), [2] sed(창업), [3] rsp(개인연금) [4] ira + irp )
      * @param custDeduct
-     * @return
+     * @param custInfo
+     * @return Long[] : [4] ira + irp
      */
-    public static Long[] deductVals(CustDeduct custDeduct) {
+    public static Long[] deductVals(CustDeduct custDeduct, CustInfo custInfo) {
         custDeduct.setMedAmt(Utils.nullToZero(custDeduct.getMedAmt()));
         custDeduct.setNpcAmt(Utils.nullToZero(custDeduct.getNpcAmt()));
         custDeduct.setRspAmt(Utils.nullToZero(custDeduct.getRspAmt()));
         custDeduct.setSedAmt(Utils.nullToZero(custDeduct.getSedAmt()));
         custDeduct.setIraAmt(Utils.nullToZero(custDeduct.getIraAmt()));
         custDeduct.setIrpAmt(Utils.nullToZero(custDeduct.getIrpAmt()));
-        
+
         Long[] vals = new Long[5];
 
         Long earning = custDeduct.getIncome() - custDeduct.getOutgoing();
@@ -214,8 +215,24 @@ public class CalcTax {
         vals[1] = earning> 100000000? Math.min(custDeduct.getMedAmt(), 2000000):
                 earning> 40000000? Math.min(custDeduct.getMedAmt(), 3000000): Math.min(custDeduct.getMedAmt(), 5000000);
 
-        // 중소기업 창업에 출자
-        vals[2] = Math.min(earning*(long)(0.5*10) /10, custDeduct.getSedAmt()*(long)(0.1*10) /10);
+        // 중소기업 창업에 출자 (벤처창업 출자)
+//        vals[2] = Math.min(earning*(long)(0.5*10) /10, custDeduct.getSedAmt()*(long)(0.1*10) /10);
+        Long tmp01 = custDeduct.getSed01Amt() * (long)(0.1*10) /10;
+        Long tmp02 = Math.min(custDeduct.getSed02Amt() * (long)(0.1*10) /10, 3000000);
+        Long tmp03;
+        if (custDeduct.getSed03Amt() <= 30000000) {
+            tmp03 = custDeduct.getSed03Amt();
+        } else if (custDeduct.getSed03Amt() <= 50000000) {
+            tmp03 = custDeduct.getSed03Amt() * (long)(0.7*10) /10;
+        } else tmp03 = custDeduct.getSed03Amt() * (long)(0.3*10) /10;
+        Long tmp04;
+        if (custDeduct.getSed04Amt() <= 30000000) {
+            tmp04 = custDeduct.getSed04Amt();
+        } else if (custDeduct.getSed04Amt() <= 50000000) {
+            tmp04 = custDeduct.getSed04Amt() * (long)(0.7*10) /10;
+        } else tmp04 = custDeduct.getSed04Amt() * (long)(0.3*10) /10;
+
+        vals[2] = Math.min((Math.min(tmp01+tmp02, 25000000)+ tmp03+ tmp04), earning * (long)(0.5*10) /10);
 
         // 개인연금저축
         vals[3] = Math.min(custDeduct.getRspAmt()*(long)(0.4*10) /10, 720000);   // 한도가 720000원
@@ -225,16 +242,14 @@ public class CalcTax {
             Long ira1 = Math.min(custDeduct.getIraAmt(), 3000000);
             vals[4] = (ira1 + Math.min(custDeduct.getIrpAmt(), 7000000-ira1)) * (long)(0.15*100) /100;
         } else {
-//kkk??            if (Utils.taxAge(custInfo.getBirth()) >= 50) {
-//                {
-//                Long ira1 = Math.min(custDeduct.getIraAmt(), 6000000);
-//                if (earning > 40000000) {
-//                    vals[4] = (ira1 + Math.min(custDeduct.getIrpAmt(), 9000000 - ira1)) * (long) (0.12 * 100) / 100;
-//                } else {
-//                    vals[4] = (ira1 + Math.min(custDeduct.getIrpAmt(), 9000000 - ira1)) * (long) (0.15 * 100) / 100;
-//                }
-//            } else {
-            {
+            if (Utils.taxAge(custInfo.getBirth()) >= 50) {
+                Long ira1 = Math.min(custDeduct.getIraAmt(), 6000000);
+                if (earning > 40000000) {
+                    vals[4] = (ira1 + Math.min(custDeduct.getIrpAmt(), 9000000 - ira1)) * (long) (0.12 * 100) / 100;
+                } else {
+                    vals[4] = (ira1 + Math.min(custDeduct.getIrpAmt(), 9000000 - ira1)) * (long) (0.15 * 100) / 100;
+                }
+            } else {
                 Long ira1 = Math.min(custDeduct.getIraAmt(), 4000000);
                 if (earning > 40000000) {
                     vals[4] = (ira1 + Math.min(custDeduct.getIrpAmt(), 7000000 - ira1)) * (long) (0.12 * 100) / 100;
@@ -250,7 +265,7 @@ public class CalcTax {
     Long deductOthers() {
         custDeduct.setIncome(income);
         custDeduct.setOutgoing(outgoing);
-        Long[] vals = CalcTax.deductVals(custDeduct);
+        Long[] vals = CalcTax.deductVals(custDeduct, custInfo);
 
         taxDeduct = vals[4];
         return vals[0]+ vals[1]+ vals[2]+ vals[3];
@@ -369,7 +384,7 @@ public class CalcTax {
         finTax();
         finTax = decTax + addTax - paidTax;
         finTax = (finTax / 10) * 10;
-        if (finTax < 0) finTax = 0L;
+//        if (finTax < 0) finTax = 0L;
         log.info("## [5] 최종 : {} = {} + {} - {}", finTax, decTax, addTax, paidTax);
 
         // 3.3세액
