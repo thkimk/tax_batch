@@ -200,9 +200,13 @@ public class CalcTax {
         custDeduct.setMedAmt(Utils.nullToZero(custDeduct.getMedAmt()));
         custDeduct.setNpcAmt(Utils.nullToZero(custDeduct.getNpcAmt()));
         custDeduct.setRspAmt(Utils.nullToZero(custDeduct.getRspAmt()));
-        custDeduct.setSedAmt(Utils.nullToZero(custDeduct.getSedAmt()));
+//        custDeduct.setSedAmt(Utils.nullToZero(custDeduct.getSedAmt()));
         custDeduct.setIraAmt(Utils.nullToZero(custDeduct.getIraAmt()));
         custDeduct.setIrpAmt(Utils.nullToZero(custDeduct.getIrpAmt()));
+        custDeduct.setSed01Amt(Utils.nullToZero(custDeduct.getSed01Amt()));
+        custDeduct.setSed02Amt(Utils.nullToZero(custDeduct.getSed02Amt()));
+        custDeduct.setSed03Amt(Utils.nullToZero(custDeduct.getSed03Amt()));
+        custDeduct.setSed04Amt(Utils.nullToZero(custDeduct.getSed04Amt()));
 
         Long[] vals = new Long[5];
 
