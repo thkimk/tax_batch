@@ -57,6 +57,7 @@ public interface CustRepository extends JpaRepository<Cust, String> {
     /**
      * 회원 상태/등급으로 회원리스트 조회
      * @param custStatus
+     * @param custGrade
      * @return
      */
     List<Cust> findByCustStatusAndCustGrade(String custStatus, String custGrade);
