@@ -35,7 +35,7 @@ public class TaxService {
             tax.setRateMyDeduct(calcTax.getDeductMe());
             tax.setRateFamilyDeduct(calcTax.getDeductFamily());
             tax.setRateOtherDeduct(calcTax.getDeductOthers());
-            tax.setRateIraDeduct(0);
+            tax.setRateIraDeduct(calcTax.getTaxDeductIra());
 
             // 간편장부 기반 소득세 및 공제금액 세팅
             calcTax.init(custId, year);
@@ -44,7 +44,7 @@ public class TaxService {
             tax.setBookMyDeduct(calcTax.getDeductMe());
             tax.setBookFamilyDeduct(calcTax.getDeductFamily());
             tax.setBookOtherDeduct(calcTax.getDeductOthers());
-            tax.setBookIraDeduct(0);
+            tax.setBookIraDeduct(calcTax.getTaxDeductIra());
         }
 
         return taxRepository.save(tax);

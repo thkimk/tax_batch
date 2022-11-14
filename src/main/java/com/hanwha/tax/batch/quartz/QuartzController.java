@@ -189,7 +189,7 @@ public class QuartzController {
 
         if (Utils.isEmpty(ymd)) {
             // 정상 상태의 전체 고객리스트 조회
-            custService.getCustListByStatus(Cust.CustStatus.정상.getCode()).forEach(c -> {
+            custService.getCustListByStatusGrade(Cust.CustStatus.정상.getCode(), Cust.CustGrade.정회원.getCode()).forEach(c -> {
                 // 해당 고객의 연도 별 수입이력 조회
                 totalService.getTotalIncomeByCustId(c.getCustId()).forEach(t -> {
                     // 소득세 계산 및 저장
@@ -212,6 +212,8 @@ public class QuartzController {
 
     private void calcTaxByCustId(String custId, int year) {
         Tax tax = new Tax();
+        tax.setCustId(custId);
+        tax.setYear(year);
 
         // 경비율 기반 소득세 및 공제금액 세팅
         calcTax.init(custId, year);
@@ -221,7 +223,7 @@ public class QuartzController {
         tax.setRateMyDeduct(calcTax.getDeductMe());
         tax.setRateFamilyDeduct(calcTax.getDeductFamily());
         tax.setRateOtherDeduct(calcTax.getDeductOthers());
-        tax.setRateIraDeduct(0);
+        tax.setRateIraDeduct(calcTax.getTaxDeductIra());
 
         // 간편장부 기반 소득세 및 공제금액 세팅
         calcTax.init(custId, year);
@@ -230,7 +232,7 @@ public class QuartzController {
         tax.setBookMyDeduct(calcTax.getDeductMe());
         tax.setBookFamilyDeduct(calcTax.getDeductFamily());
         tax.setBookOtherDeduct(calcTax.getDeductOthers());
-        tax.setBookIraDeduct(0);
+        tax.setBookIraDeduct(calcTax.getTaxDeductIra());
 
         log.info("★★★ tax : [{}]", tax);
     }
@@ -244,7 +246,7 @@ public class QuartzController {
 
         // 고객번호가 비어있는 경우 정상 상태의 전체 고객리스트 조회
         if (Utils.isEmpty(cid)) {
-            custService.getCustListByStatus(Cust.CustStatus.정상.getCode()).forEach(c -> {
+            custService.getCustListByStatusGrade(Cust.CustStatus.정상.getCode(), Cust.CustGrade.정회원.getCode()).forEach(c -> {
                 calcTaxByCustId(c.getCustId(), year);
             });
         } else {
