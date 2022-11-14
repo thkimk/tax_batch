@@ -1,5 +1,6 @@
 package com.hanwha.tax.batch.entity;
 
+import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.cust.model.CustDeductId;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,4 +46,18 @@ public class CustDeduct implements Serializable {
 	private Long   sed04Amt;		// 벤처기업 및 크라우드 펀딩
 	private String createDt;		// 등록일시
 	private String updateDt;		// 변경일시
+
+	public void updateNull() {
+		npcAmt = Utils.nullToZero(npcAmt);
+		rspAmt = Utils.nullToZero(rspAmt);
+		medAmt = Utils.nullToZero(medAmt);
+		sedAmt = Utils.nullToZero(sedAmt);
+		iraAmt = Utils.nullToZero(iraAmt);
+		irpAmt = Utils.nullToZero(irpAmt);
+
+		sed01Amt = Utils.nullToZero(sed01Amt);
+		sed02Amt = Utils.nullToZero(sed02Amt);
+		sed03Amt = Utils.nullToZero(sed03Amt);
+		sed04Amt = Utils.nullToZero(sed04Amt);
+	}
 }

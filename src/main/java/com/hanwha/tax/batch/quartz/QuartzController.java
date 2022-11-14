@@ -2,7 +2,11 @@ package com.hanwha.tax.batch.quartz;
 
 import com.hanwha.tax.batch.HttpUtil;
 import com.hanwha.tax.batch.Utils;
-import com.hanwha.tax.batch.entity.MydataOutgoing;
+import com.hanwha.tax.batch.cust.service.CustService;
+import com.hanwha.tax.batch.entity.*;
+import com.hanwha.tax.batch.mydata.service.MydataService;
+import com.hanwha.tax.batch.tax.service.CalcTax;
+import com.hanwha.tax.batch.tax.service.TaxService;
 import com.hanwha.tax.batch.total.service.TotalService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
 @Controller
@@ -31,7 +36,19 @@ public class QuartzController {
     SchedulerFactoryBean sfb;
 
     @Autowired
+    CustService custService;
+
+    @Autowired
+    MydataService mydataService;
+
+    @Autowired
     TotalService totalService;
+
+    @Autowired
+    TaxService taxService;
+
+    @Autowired
+    CalcTax calcTax;
 
     @Value("${tax.api.domain}")
     private String domainApi;
@@ -82,11 +99,168 @@ public class QuartzController {
         return lRet;
     }
 
-    @RequestMapping(value = "/checkAmount", method = RequestMethod.GET)
-    public String checkAmount(@RequestParam(name = "cid", required = true) String cid
+    @RequestMapping(value = "/totalMydata", method = RequestMethod.GET)
+    public String totalMydata(@RequestParam(name = "ymd", required = true) String ymd
+            , HttpServletRequest req) {
+
+        log.info("## QuartzController.java [totalMydata] Starts");
+
+        // 간편장부, 마이데이터 수입 변경내역 조회
+        log.info("▶▶▶ TOTAL 수입정보 저장");
+        totalService.getTotalIncomeTarget(ymd).forEach(ti -> {
+            // 전체수입정보
+            TotalIncome totalIncome = new TotalIncome().convertByMydataMap(ti);
+
+            // 총 수입금액 저장
+            totalService.saveTotalIncome(totalIncome);
+        });
+
+        // 간편장부, 마이데이터 지출 변경내역 조회
+        log.info("▶▶▶ TOTAL 지출정보 저장");
+        totalService.getTotalOutgoingTarget(ymd).forEach(to -> {
+            // 전체지출정보
+            TotalOutgoing totalOutgoing = new TotalOutgoing().convertByMydataMap(to);
+
+            // 마이데이터 지출정보인 경우만 금액 계산
+            if (!Utils.isEmpty(to.get("appr_num"))) {
+                // 지출금액
+                AtomicLong amount = new AtomicLong();
+
+                // 마이데이터 승인번호 별 카드이력 조회
+                mydataService.getMydataOutgoingByCardInfo(to.get("org_code"), to.get("card_id"), to.get("appr_num")).forEach(mo -> {
+                    // ★★★ 테스트 데이터 중복되어 코드 추가 함
+                    if (!mo.getCustId().equals(to.get("cust_id")))
+                        return;
+
+                    // 경비제외가 아닌 경우 지출금액 계산 ( ★★★ 원본 데이터 삽입 시 경비코드 빈값으로 셋팅됨 )
+                    if (Utils.isEmpty(mo.getCategory()) || MydataOutgoing.CardCategory.경비제외.getCode().equals(mo.getCategory()))
+                        return;
+
+                    // 승인, 승인취소, 정정에 따른 지출금액 계산
+                    if (MydataOutgoing.ApprStatus.승인.getCode().equals(mo.getStatus())) {
+                        amount.set(amount.get()+mo.getApprAmt());
+
+                        // 최초 승인내역 기준으로 외래키 세팅
+                        totalOutgoing.setFk(totalOutgoing.getFk() < mo.getId() ? totalOutgoing.getFk() : mo.getId());
+                    } else if (MydataOutgoing.ApprStatus.승인취소.getCode().equals(mo.getStatus())) {
+                        amount.set(amount.get()-mo.getApprAmt());
+                    } else {
+                        amount.set(mo.getModAmt());
+                    }
+                });
+
+                // 총 지출금액 세팅
+                totalOutgoing.setAmount(amount.get());
+            }
+
+            // 총 지출금액 저장 ( 금액이 있는 경우만 저장/갱신하고 0원인 경우 삭제 )
+            if (0 < totalOutgoing.getAmount()) {
+                totalService.saveTotalOutgoing(totalOutgoing);
+            } else {
+                totalService.deleteTotalOutgoingByFkAndFlagFk(totalOutgoing.getFk(), totalOutgoing.getFlagFk());
+            }
+        });
+
+        log.info("## QuartzController.java [totalMydata] End");
+
+        return "";
+    }
+
+    /**
+     * 고객 별 소득세 계산하여 저장
+     * @param custId
+     * @param yearStr
+     */
+    private void procTax(String custId, String yearStr) {
+        int year = Integer.parseInt(yearStr);
+
+        log.info("▶︎▶︎▶︎ 회원번호 : [{}] 연도 : [{}]", custId, year);
+
+        // 경비율, 간편장부 소득세 계산하여 소득세 저장
+        taxService.saveTax(custId, year, calcTax);
+    }
+
+    @RequestMapping(value = "/taxAllmembers", method = RequestMethod.GET)
+    public String taxAllmembers(@RequestParam(name = "year", required = true) int year
+            , @RequestParam(name = "ymd", required = false, defaultValue = "") String ymd
+            , HttpServletRequest req) {
+
+        log.info("## QuartzController.java [taxAllmembers] Starts");
+
+        if (Utils.isEmpty(ymd)) {
+            // 정상 상태의 전체 고객리스트 조회
+            custService.getCustListByStatus(Cust.CustStatus.정상.getCode()).forEach(c -> {
+                // 해당 고객의 연도 별 수입이력 조회
+                totalService.getTotalIncomeByCustId(c.getCustId()).forEach(t -> {
+                    // 소득세 계산 및 저장
+                    procTax(t.getCustId(), String.valueOf(t.getYear()));
+                });
+            });
+        } else {
+            // 전체 수입/지출 변경이력 조회 ( 수입/지출 뿐만 아니라 ★★★직종이 변경되는 경우 소득세 결과가 달라질 수 있음 )
+            totalService.getTotalChangeList(ymd).forEach(t -> {
+                // 소득세 계산 및 저장
+                procTax(t.get("cust_id"), String.valueOf(t.get("year")));
+            });
+        }
+
+
+        log.info("## QuartzController.java [taxAllmembers] End");
+
+        return "";
+    }
+
+    private void calcTaxByCustId(String custId, int year) {
+        Tax tax = new Tax();
+
+        // 경비율 기반 소득세 및 공제금액 세팅
+        calcTax.init(custId, year);
+        tax.setRateTax(calcTax.calRateTax());
+        tax.setIncome(calcTax.getIncome());
+        tax.setRateOutgo(calcTax.getOutgoing());
+        tax.setRateMyDeduct(calcTax.getDeductMe());
+        tax.setRateFamilyDeduct(calcTax.getDeductFamily());
+        tax.setRateOtherDeduct(calcTax.getDeductOthers());
+        tax.setRateIraDeduct(0);
+
+        // 간편장부 기반 소득세 및 공제금액 세팅
+        calcTax.init(custId, year);
+        tax.setBookTax(calcTax.calBookTax());
+        tax.setBookOutgo(calcTax.getOutgoing());
+        tax.setBookMyDeduct(calcTax.getDeductMe());
+        tax.setBookFamilyDeduct(calcTax.getDeductFamily());
+        tax.setBookOtherDeduct(calcTax.getDeductOthers());
+        tax.setBookIraDeduct(0);
+
+        log.info("★★★ tax : [{}]", tax);
+    }
+
+    @RequestMapping(value = "/calcTax", method = RequestMethod.GET)
+    public String calcTax(@RequestParam(name = "cid", required = false, defaultValue = "") String cid
+            , @RequestParam(name = "year", required = true) int year
+            , HttpServletRequest req) {
+
+        log.info("## QuartzController.java [calcTax] Starts");
+
+        // 고객번호가 비어있는 경우 정상 상태의 전체 고객리스트 조회
+        if (Utils.isEmpty(cid)) {
+            custService.getCustListByStatus(Cust.CustStatus.정상.getCode()).forEach(c -> {
+                calcTaxByCustId(c.getCustId(), year);
+            });
+        } else {
+            calcTaxByCustId(cid, year);
+        }
+
+        log.info("## QuartzController.java [calcTax] End");
+
+        return "";
+    }
+
+    @RequestMapping(value = "/validMydata", method = RequestMethod.GET)
+    public String validMydata(@RequestParam(name = "cid", required = true) String cid
             , HttpServletRequest req) throws ParseException {
 
-        log.info("## QuartzController.java [checkAmount] Starts..");
+        log.info("## QuartzController.java [validMydata] Starts");
 
         HashMap<String, String> headerMap = new HashMap<>();
         headerMap.put("User-Agent","1.0;iPhone;IOS;16.0.1");
@@ -171,7 +345,7 @@ public class QuartzController {
             e.printStackTrace();
         }
 
-        log.info("## QuartzController.java [checkAmount] End..");
+        log.info("## QuartzController.java [validMydata] End");
         return "";
     }
 }
