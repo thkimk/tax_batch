@@ -285,21 +285,21 @@ public class QuartzController {
                     JSONObject jobjInfo = (JSONObject) jArrList.get(i);
                     long year = (long) jobjInfo.get("year");
                     long month = (long) jobjInfo.get("month");
-                    String tyle = (String) jobjInfo.get("tyle");// 1 : 3.3% 포함, 0 : 미포함
+                    char is33 = "1".equals(String.valueOf(jobjInfo.get("tyle"))) ? 'Y' : 'N';// 1 : 3.3% 포함, 0 : 미포함
                     long total = (long) jobjInfo.get("total");
                     long count = (long) jobjInfo.get("count");
 
-                    Map<String, String> incomeMap = totalService.getTotalIncomeByMonth(cid, year, month, "1".equals(tyle) ? 'Y' : 'N');
+                    Map<String, String> incomeMap = totalService.getTotalIncomeByMonth(cid, year, month, is33);
                     long inTotal = "null".equals(String.valueOf(incomeMap.get("total"))) ? 0 : Long.parseLong(String.valueOf(incomeMap.get("total")));
                     long inCount = "null".equals(String.valueOf(incomeMap.get("count"))) ? 0 : Long.parseLong(String.valueOf(incomeMap.get("count")));
 
                     log.debug("★★★ 금액 [totalApi={}, totalIncome={}]", total, incomeMap.get("total"));
                     if (total != inTotal) {
-                        log.error("▶︎▶︎▶︎ TOTAL_INCOME 금액을 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", cid, year, month, tyle, total, incomeMap.get("total"));
+                        log.error("▶︎▶︎▶︎ TOTAL_INCOME 금액을 확인해 주시기 바랍니다. [cust_id='{}' and year={} and month={} and is_33='{}'][totalApi={}, totalIncome={}]", cid, year, month, is33, total, incomeMap.get("total"));
                     }
                     log.debug("★★★︎ 건수 [totalApi={}, totalIncome={}]", count, incomeMap.get("count"));
                     if (count != inCount) {
-                        log.error("▶︎▶︎▶︎ TOTAL_INCOME 건수를 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", cid, year, month, tyle, count, incomeMap.get("count"));
+                        log.error("▶︎▶︎▶︎ TOTAL_INCOME 건수를 확인해 주시기 바랍니다. [cust_id='{}' and year={} and month={} and is_33='{}'][totalApi={}, totalIncome={}]", cid, year, month, is33, count, incomeMap.get("count"));
                     }
                 }
             }
@@ -322,23 +322,23 @@ public class QuartzController {
                     JSONObject jobjInfo = (JSONObject) jArrList.get(i);
                     long year = (long) jobjInfo.get("year");
                     long month = (long) jobjInfo.get("month");
-                    String category = (String) jobjInfo.get("category");
+                    String category = Utils.lpadByte(String.valueOf(jobjInfo.get("category")),2,"0");
                     long total = (long) jobjInfo.get("total");
                     long count = (long) jobjInfo.get("count");
 
                     // 경비제외는 검증하지 않는다.
                     if (!MydataOutgoing.CardCategory.경비제외.getCode().equals(category)) {
-                        Map<String, String> outgoingMap = totalService.getTotalOutgoingByMonth(cid, year, month, Utils.lpadByte(category,2,"0"));
+                        Map<String, String> outgoingMap = totalService.getTotalOutgoingByMonth(cid, year, month, category);
                         long outTotal = "null".equals(String.valueOf(outgoingMap.get("total"))) ? 0 : Long.parseLong(String.valueOf(outgoingMap.get("total")));
                         long outCount = "null".equals(String.valueOf(outgoingMap.get("count"))) ? 0 : Long.parseLong(String.valueOf(outgoingMap.get("count")));
 
                         log.debug("★★★ 금액 [totalApi={}, totalOutgoing={}]", total, outgoingMap.get("total"));
                         if (total != outTotal) {
-                            log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 금액을 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", cid, year, month, category, total, outgoingMap.get("total"));
+                            log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 금액을 확인해 주시기 바랍니다. [cust_id='{}' and year={} and month={} and category='{}'][totalApi={}, totalIncome={}]", cid, year, month, category, total, outgoingMap.get("total"));
                         }
                         log.debug("★★★︎ 건수 [totalApi={}, totalIncome={}]", count, outgoingMap.get("count"));
                         if (count != outCount) {
-                            log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 건수를 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", cid, year, month, category, count, outgoingMap.get("count"));
+                            log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 건수를 확인해 주시기 바랍니다. [cust_id='{}' and year={} and month={} and category='{}'][totalApi={}, totalIncome={}]", cid, year, month, category, count, outgoingMap.get("count"));
                         }
                     }
                 }
@@ -348,6 +348,38 @@ public class QuartzController {
         }
 
         log.info("## QuartzController.java [validMydata] End");
+        return "";
+    }
+
+    @RequestMapping(value = "/selectMydataIncome", method = RequestMethod.GET)
+    public String selectMydataIncome(@RequestParam(name = "cid", required = true) String cid
+            , HttpServletRequest req) {
+
+        log.info("## QuartzController.java [selectMydataIncome] Starts");
+
+        // 마이데이터 수입내역 조회
+        mydataService.getMydataIncomeByCustId(cid).forEach(mi -> {
+            log.info("[{}]", mi.toString());
+        });
+
+        log.info("## QuartzController.java [selectMydataIncome] End");
+
+        return "";
+    }
+
+    @RequestMapping(value = "/selectMydataOutgoing", method = RequestMethod.GET)
+    public String selectMydataOutgoing(@RequestParam(name = "cid", required = true) String cid
+            , HttpServletRequest req) {
+
+        log.info("## QuartzController.java [selectMydataOutgoing] Starts");
+
+        // 마이데이터 경비내역 조회
+        mydataService.getMydataOutgoingByCustId(cid).forEach(mo -> {
+            log.info("[{}]", mo.toString());
+        });
+
+        log.info("## QuartzController.java [selectMydataOutgoing] End");
+
         return "";
     }
 }
