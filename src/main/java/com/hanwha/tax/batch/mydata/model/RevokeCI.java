@@ -15,8 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 @ToString
 public class RevokeCI extends AbstractMydataCoocon {
 
-	protected String CI;
-	protected String 요청일시;
+	private String CI;
+	private String 요청일시;
 
 	/**
 	 * data 부 파싱

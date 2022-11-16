@@ -17,10 +17,10 @@ import java.util.Map;
 public class TotalService {
 
     @Autowired
-    TotalIncomeRepository totalIncomeRepository;
+    private TotalIncomeRepository totalIncomeRepository;
 
     @Autowired
-    TotalOutgoingRepository totalOutgoingRepository;
+    private TotalOutgoingRepository totalOutgoingRepository;
 
     /**
      * 회원번호로 전체 수입 삭제

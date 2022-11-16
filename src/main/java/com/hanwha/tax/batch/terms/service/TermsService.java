@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class TermsService {
 
     @Autowired
-    TermsHstRepository termsHstRepository;
+    private TermsHstRepository termsHstRepository;
 
     /**
      * 고객번호로 약관동의이력 삭제

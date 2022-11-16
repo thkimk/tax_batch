@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class DevService {
 
     @Autowired
-    DevRepository devRepository;
+    private DevRepository devRepository;
 
     /**
      * 고객번호로 단말기정보 삭제

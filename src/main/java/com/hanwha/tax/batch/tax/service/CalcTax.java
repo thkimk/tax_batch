@@ -19,61 +19,61 @@ import java.util.List;
 public class CalcTax {
 
     @Autowired
-    CustService custService;
+    private CustService custService;
 
     @Autowired
-    IndustryService industryService;
+    private IndustryService industryService;
 
     @Autowired
-    TotalService totalService;
+    private TotalService totalService;
 
     /*
     기준정보
      */
-    String custId;
-    int year;
-    Character isNewBusin;
-    String taxFlag = Constants.TAX_FLAG_SBSTR;
+    private String custId;
+    private int year;
+    private Character isNewBusin;
+    private String taxFlag = Constants.TAX_FLAG_SBSTR;
 
-    CustInfo custInfo = null;
-    CustInfoDtl custInfoDtl = null;
-    List<CustFamily> custFamilyList = null;
-    CustDeduct custDeduct = null;
-    Industry industry = null;
+    private CustInfo custInfo = null;
+    private CustInfoDtl custInfoDtl = null;
+    private List<CustFamily> custFamilyList = null;
+    private CustDeduct custDeduct = null;
+    private Industry industry = null;
 
     /*
     01.소득(earning) = 수입 - 지출
      */
-    Long earning = 0L;
-    long income = 0L;
-    long outgoing = 0L;
-    long preIncome = 0L;
+    private Long earning = 0L;
+    private long income = 0L;
+    private long outgoing = 0L;
+    private long preIncome = 0L;
 
     /*
     02.과세표준(taxBase) = 01.소득 - 소득공제
      */
-    Long taxBase = 0L;
-    Long deduct = 0L;
-    Long deductMe=0L, deductFamily=0L, deductOthers=0L;
+    private Long taxBase = 0L;
+    private Long deduct = 0L;
+    private Long deductMe=0L, deductFamily=0L, deductOthers=0L;
 
     /*
     03.산출세액(calTax) = 02.과표 * 세율(6%~45%)
      */
-    Long calTax = 0L;
-    Float taxRate = 0f;
+    private Long calTax = 0L;
+    private Float taxRate = 0f;
 
     /*
     04.결정세액(decTax)
      */
-    Long decTax = 0L;
-    Long taxDeduct=0L, taxDeductFamily=0L, taxDeductIra=0L;
+    private Long decTax = 0L;
+    private Long taxDeduct=0L, taxDeductFamily=0L, taxDeductIra=0L;
 
     /*
     05.최종세액(finTax)
      */
-    Long finTax = 0L;
-    Long addTax = 0L;
-    Long paidTax = 0L;
+    private Long finTax = 0L;
+    private Long addTax = 0L;
+    private Long paidTax = 0L;
 
     /**
      * 소득세 산출 flag 추출

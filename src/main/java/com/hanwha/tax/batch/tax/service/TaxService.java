@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class TaxService {
 
     @Autowired
-    TaxRepository taxRepository;
+    private TaxRepository taxRepository;
 
     public Tax saveTax(String custId, int year, CalcTax calcTax) {
         Tax tax = taxRepository.findById(new TaxId(custId, year)).orElse(null);

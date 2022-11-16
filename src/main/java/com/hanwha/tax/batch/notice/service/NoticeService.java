@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 public class NoticeService {
 
     @Autowired
-    NotiSettingRepository notiSettingRepository;
+    private NotiSettingRepository notiSettingRepository;
 
     @Autowired
-    NotiTargetRepository notiTargetRepository;
+    private NotiTargetRepository notiTargetRepository;
 
     /**
      * 고객번호로 알람설정 삭제

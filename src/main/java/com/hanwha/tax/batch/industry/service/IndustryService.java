@@ -13,7 +13,7 @@ import java.util.Optional;
 public class IndustryService {
 
     @Autowired
-    IndustryRepository industryRepository;
+    private IndustryRepository industryRepository;
 
     /**
      * 업종코드로 업종정보 조회

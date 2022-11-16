@@ -32,7 +32,7 @@ public class CustDestroyDormancyJob extends BaseJob {
 				custService.deleteCustData(cust.getCustId());
 			}
 		} catch(Exception e) {
-			e.printStackTrace();
+			log.error("※※※ Exception : {}", e);
 		}
 
 		log.info("============= 휴면회원 파기 QUARTZ 종료 [{}] =============", Utils.getCurrentDateTime());

@@ -15,11 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 @ToString
 public class ThirdpartyCI extends AbstractMydataCoocon {
 
-	protected String CI;
-	protected String 쿠콘제3자제공동의1;	// 서비스
-	protected String 쿠콘제3자제공동의2;	// 연구개발
-	protected String 최종변경일시;
-	protected String 변경구분;
+	private String CI;
+	private String 쿠콘제3자제공동의1;	// 서비스
+	private String 쿠콘제3자제공동의2;	// 연구개발
+	private String 최종변경일시;
+	private String 변경구분;
 
 	/**
 	 * data 부 파싱

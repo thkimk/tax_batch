@@ -15,16 +15,16 @@ import lombok.extern.slf4j.Slf4j;
 @ToString
 public class BankBA01 extends AbstractMydataCoocon {
 
-	protected String CI;
-	protected String 정보제공자_기관코드;
-	protected String 계좌번호;
-	protected String 상품명;
-	protected String 회차번호;
-	protected String 외화계좌여부;
-	protected String 마이너스약정여부;
-	protected String 계좌구분;
-	protected String 계좌상태;
-	protected String 조회일시;
+	private String CI;
+	private String 정보제공자_기관코드;
+	private String 계좌번호;
+	private String 상품명;
+	private String 회차번호;
+	private String 외화계좌여부;
+	private String 마이너스약정여부;
+	private String 계좌구분;
+	private String 계좌상태;
+	private String 조회일시;
 
 	/**
 	 * data 부 파싱

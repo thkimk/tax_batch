@@ -57,12 +57,13 @@ dependencies {
 	//언어 설정
 //	implementation 'net.rakugakibox.util:yaml-resource-bundle:1.1'
 
-	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
-	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
-
 	// httpClient
 	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
 
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 }
 
 tasks.named('test') {

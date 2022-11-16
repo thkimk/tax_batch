@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class LoginService {
 
     @Autowired
-    LoginHstRepository loginHstRepository;
+    private LoginHstRepository loginHstRepository;
 
     /**
      * 고객번호로 로그인이력 삭제

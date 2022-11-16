@@ -280,7 +280,7 @@ public class Utils {
 
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("※※※ Exception : {}", e);
         }
 
         return "";

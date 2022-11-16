@@ -67,14 +67,12 @@ public class HttpUtil {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			log.error("**** 요청 처리 실패 {}", e);
 		} finally {
 			try	{
 				// 연결 종료
 				httpClient.close();
 			} catch(Exception e) {
-				e.getStackTrace();
 				log.error("**** 연결 종료 실패 {}", e);
 			}
 		}
@@ -142,14 +140,12 @@ public class HttpUtil {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			log.error("**** 요청 처리 실패 {}", e);
 		} finally {
 			try	{
 				// 연결 종료
 				httpClient.close();
 			} catch(Exception e) {
-				e.getStackTrace();
 				log.error("**** 연결 종료 실패 {}", e);
 			}
 		}
@@ -217,14 +213,12 @@ public class HttpUtil {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			log.error("**** 요청 처리 실패 {}", e);
 		} finally {
 			try	{
 				// 연결 종료
 				httpClient.close();
 			} catch(Exception e) {
-				e.getStackTrace();
 				log.error("**** 연결 종료 실패 {}", e);
 			}
 		}
@@ -289,14 +283,12 @@ public class HttpUtil {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			log.error("**** 요청 처리 실패 {}", e);
 		} finally {
 			try	{
 				// 연결 종료
 				httpClient.close();
 			} catch(Exception e) {
-				e.getStackTrace();
 				log.error("**** 연결 종료 실패 {}", e);
 			}
 		}

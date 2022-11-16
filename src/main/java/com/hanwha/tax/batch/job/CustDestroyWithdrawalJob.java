@@ -40,7 +40,7 @@ public class CustDestroyWithdrawalJob extends BaseJob {
 				custService.deleteCustData(cust.getCustId());
 			}
 		} catch(Exception e) {
-			e.printStackTrace();
+			log.error("※※※ Exception : {}", e);
 		}
 
 		log.info("============= 탈퇴회원 파기 QUARTZ 종료 [{}] =============", Utils.getCurrentDateTime());

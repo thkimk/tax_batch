@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 public class BookService {
 
     @Autowired
-    BookIncomeRepository bookIncomeRepository;
+    private BookIncomeRepository bookIncomeRepository;
 
     @Autowired
-    BookOutgoingRepository bookOutgoingRepository;
+    private BookOutgoingRepository bookOutgoingRepository;
 
     /**
      * 고객번호로 수입정보 삭제

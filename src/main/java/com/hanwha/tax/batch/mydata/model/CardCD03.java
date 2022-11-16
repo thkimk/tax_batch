@@ -15,20 +15,20 @@ import lombok.extern.slf4j.Slf4j;
 @ToString
 public class CardCD03 extends AbstractMydataCoocon {
 
-	protected String CI;
-	protected String 정보제공자_기관코드;
-	protected String 카드식별자;
-	protected String 승인번호;
-	protected String 승인일시;
-	protected String 순번_랭크;
-	protected String 결제상태_코드;
-	protected String 사용구분_코드;
-	protected String 정정일시;
-	protected String 가맹점명;
-	protected String 이용금액;
-	protected String 정정후금액;
-	protected String 전체_할부회차;
-	protected String 조회일시;
+	private String CI;
+	private String 정보제공자_기관코드;
+	private String 카드식별자;
+	private String 승인번호;
+	private String 승인일시;
+	private String 순번_랭크;
+	private String 결제상태_코드;
+	private String 사용구분_코드;
+	private String 정정일시;
+	private String 가맹점명;
+	private String 이용금액;
+	private String 정정후금액;
+	private String 전체_할부회차;
+	private String 조회일시;
 
 	/**
 	 * data 부 파싱

@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 public class HelpdeskService {
 
     @Autowired
-    HelpdeskRepository helpdeskRepository;
+    private HelpdeskRepository helpdeskRepository;
 
     @Autowired
-    HelpdeskAnsRepository helpdeskAnsRepository;
+    private HelpdeskAnsRepository helpdeskAnsRepository;
 
     /**
      * 고객번호로 안내데스크 삭제
