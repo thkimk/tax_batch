@@ -33,4 +33,13 @@ public class BookService {
     public int deleteBookOutgoingByCustId(String custId) {
         return bookOutgoingRepository.deleteByCustId(custId);
     }
+
+    /**
+     * 특정 연도 간편장부 지출 금액 조회
+     * @param custId
+     * @return
+     */
+    public long getInvalByYear(String custId, int year) {
+        return bookOutgoingRepository.getInvalByYear(custId, year);
+    }
 }

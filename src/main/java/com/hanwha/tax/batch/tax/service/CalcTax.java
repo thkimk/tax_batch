@@ -2,6 +2,7 @@ package com.hanwha.tax.batch.tax.service;
 
 import com.hanwha.tax.batch.Constants;
 import com.hanwha.tax.batch.Utils;
+import com.hanwha.tax.batch.book.service.BookService;
 import com.hanwha.tax.batch.cust.service.CustService;
 import com.hanwha.tax.batch.entity.*;
 import com.hanwha.tax.batch.industry.service.IndustryService;
@@ -25,6 +26,9 @@ public class CalcTax {
     private IndustryService industryService;
 
     @Autowired
+    private BookService bookService;
+
+    @Autowired
     private TotalService totalService;
 
     /*
@@ -32,6 +36,7 @@ public class CalcTax {
      */
     private String custId;
     private int year;
+    private String bookFlag = "복식부기";
     private Character isNewBusin;
     private String taxFlag = Constants.TAX_FLAG_SBSTR;
 
@@ -198,6 +203,7 @@ public class CalcTax {
      * @return Long[] : [4] ira + irp
      */
     public static Long[] deductVals(CustDeduct custDeduct, CustInfo custInfo) {
+        log.info("#### kkk: deductVals(): {}, {}", custDeduct.toString(), custInfo.toString());
         Long[] vals = new Long[5];
         Long earning = custDeduct.getIncome() - custDeduct.getOutgoing();
 
@@ -252,6 +258,7 @@ public class CalcTax {
             }
         }
 
+        log.info("#### kkk: deductVals(): {}, {}, {}, {}, {}", vals[0], vals[1], vals[2], vals[3], vals[4]);
         return vals;
     }
 
@@ -362,9 +369,13 @@ public class CalcTax {
     }
 
     void finTax() {
-        // 가산세 : 계속사업자이고 직전년도 소득이 4800만 이상인 경우
-        if (isNewBusin == 'N' && preIncome >= 48000000) {
-            addTax = calTax * (long)(0.2*10) /10;
+        // 경비율 가산세 : 계속사업자이고 직전년도 수입이 4800만 이상인 경우 산출세액의 20%
+        // 간편장부 가산세 : 비적격증빙 경비 합의 2%%
+//        log.info("#### finTax(): {}, {}", isNewBusin, preIncome);
+        if (!"간편장부".equals(bookFlag)) {
+            if (isNewBusin == 'N' && preIncome >= 48000000) {
+                addTax = calTax * 2 / 10;
+            }
         }
 
         // 기납부세액 : 수입금액의 3% --> income에는 모두 3% 기납부세액이 포함되어있어야 함 (미포함시, income계산때 강제 추가)
@@ -426,12 +437,12 @@ public class CalcTax {
 
         // 경비율 기반으로, 지출 재계산
         if ((Integer.parseInt(taxFlag)%10) == 1) {
-//            bookFlag = "단순경비율";
+            bookFlag = "단순경비율";
             Float bookRate = industry.getSimpleExrt();
             Float bookRateExc = industry.getSimpleExrtExc();
             outgoing = (Math.min(income, 40000000) * (long)(bookRate*100) + Math.max(income-40000000, 0) * (long)(bookRateExc*100))/100 /100;
         } else {
-//            bookFlag = "기준경비율";
+            bookFlag = "기준경비율";
             Float bookRate = industry.getStandardExrt();
             outgoing = (long)((income * (long)(bookRate*100))/100 /100);
         }
@@ -441,7 +452,12 @@ public class CalcTax {
 
     public Long calBookTax() {
         log.info("## 소득세 계산(calBookTax) : CustId {}, taxFlag {}", custId, taxFlag);
-//        bookFlag = "간편장부";
+        bookFlag = "간편장부";
+
+        if (custId != null) {
+            long tmp = bookService.getInvalByYear(custId, year);
+            addTax = tmp * 2 /100;
+        }
 
         return calTax();
     }
