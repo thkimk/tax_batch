@@ -44,9 +44,9 @@ public class RevokeCI extends AbstractMydataCoocon {
 	public String getData() {
 		StringBuffer sb = new StringBuffer();
 
-		sb.append(ROW_TYPE.데이터레코드부.getCode());sb.append("|");
-		sb.append(CI);sb.append("|");
-		sb.append(요청일시);sb.append("|");
+		sb.append(ROW_TYPE.데이터레코드부.getCode());sb.append('|');
+		sb.append(CI);sb.append('|');
+		sb.append(요청일시);sb.append('|');
 		sb.append("\n");
 
 		return sb.toString();

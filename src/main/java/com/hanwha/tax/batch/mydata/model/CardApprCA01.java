@@ -72,23 +72,23 @@ public class CardApprCA01 extends AbstractMydataCoocon {
 	public String getData() {
 		StringBuffer sb = new StringBuffer();
 
-		sb.append(CI);sb.append("|");
-		sb.append(ROW_TYPE.국내매핑승인내역.getCode());sb.append("|");
-		sb.append(정보제공자_기관코드);sb.append("|");
-		sb.append(카드식별자);sb.append("|");
-		sb.append(승인번호);sb.append("|");
-		sb.append(승인일시);sb.append("|");
-		sb.append(순번_랭크);sb.append("|");
-		sb.append(결제상태_코드);sb.append("|");
-		sb.append(사용구분_코드);sb.append("|");
-		sb.append(정정일시);sb.append("|");
-		sb.append(가맹점명);sb.append("|");
-		sb.append(경비코드);sb.append("|");
-		sb.append(가맹점사업자등록번호);sb.append("|");
-		sb.append(이용금액);sb.append("|");
-		sb.append(정정후금액);sb.append("|");
-		sb.append(조회일시);sb.append("|");
-		sb.append(수정일시);sb.append("|");
+		sb.append(CI);sb.append('|');
+		sb.append(ROW_TYPE.국내매핑승인내역.getCode());sb.append('|');
+		sb.append(정보제공자_기관코드);sb.append('|');
+		sb.append(카드식별자);sb.append('|');
+		sb.append(승인번호);sb.append('|');
+		sb.append(승인일시);sb.append('|');
+		sb.append(순번_랭크);sb.append('|');
+		sb.append(결제상태_코드);sb.append('|');
+		sb.append(사용구분_코드);sb.append('|');
+		sb.append(정정일시);sb.append('|');
+		sb.append(가맹점명);sb.append('|');
+		sb.append(경비코드);sb.append('|');
+		sb.append(가맹점사업자등록번호);sb.append('|');
+		sb.append(이용금액);sb.append('|');
+		sb.append(정정후금액);sb.append('|');
+		sb.append(조회일시);sb.append('|');
+		sb.append(수정일시);sb.append('|');
 		sb.append("\n");
 
 		return sb.toString();

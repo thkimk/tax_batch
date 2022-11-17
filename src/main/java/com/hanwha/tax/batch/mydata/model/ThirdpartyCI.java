@@ -50,12 +50,12 @@ public class ThirdpartyCI extends AbstractMydataCoocon {
 	public String getData() {
 		StringBuffer sb = new StringBuffer();
 
-		sb.append(ROW_TYPE.데이터레코드부.getCode());sb.append("|");
-		sb.append(CI);sb.append("|");
-		sb.append(쿠콘제3자제공동의1);sb.append("|");
-		sb.append(쿠콘제3자제공동의2);sb.append("|");
-		sb.append(최종변경일시);sb.append("|");
-		sb.append(변경구분);sb.append("|");
+		sb.append(ROW_TYPE.데이터레코드부.getCode());sb.append('|');
+		sb.append(CI);sb.append('|');
+		sb.append(쿠콘제3자제공동의1);sb.append('|');
+		sb.append(쿠콘제3자제공동의2);sb.append('|');
+		sb.append(최종변경일시);sb.append('|');
+		sb.append(변경구분);sb.append('|');
 		sb.append("\n");
 
 		return sb.toString();

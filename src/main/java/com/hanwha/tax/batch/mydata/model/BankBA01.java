@@ -60,17 +60,17 @@ public class BankBA01 extends AbstractMydataCoocon {
 	public String getData() {
 		StringBuffer sb = new StringBuffer();
 
-		sb.append(CI);sb.append("|");
-		sb.append(ROW_TYPE.은행계좌목록.getCode());sb.append("|");
-		sb.append(정보제공자_기관코드);sb.append("|");
-		sb.append(계좌번호);sb.append("|");
-		sb.append(상품명);sb.append("|");
-		sb.append(회차번호);sb.append("|");
-		sb.append(외화계좌여부);sb.append("|");
-		sb.append(마이너스약정여부);sb.append("|");
-		sb.append(계좌구분);sb.append("|");
-		sb.append(계좌상태);sb.append("|");
-		sb.append(조회일시);sb.append("|");
+		sb.append(CI);sb.append('|');
+		sb.append(ROW_TYPE.은행계좌목록.getCode());sb.append('|');
+		sb.append(정보제공자_기관코드);sb.append('|');
+		sb.append(계좌번호);sb.append('|');
+		sb.append(상품명);sb.append('|');
+		sb.append(회차번호);sb.append('|');
+		sb.append(외화계좌여부);sb.append('|');
+		sb.append(마이너스약정여부);sb.append('|');
+		sb.append(계좌구분);sb.append('|');
+		sb.append(계좌상태);sb.append('|');
+		sb.append(조회일시);sb.append('|');
 		sb.append("\n");
 
 		return sb.toString();

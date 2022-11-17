@@ -90,10 +90,10 @@ public abstract class AbstractMydataCoocon {
 	public String getHeader() {
 		StringBuffer sb = new StringBuffer();
 
-		sb.append(ROW_TYPE.헤더레코드부.getCode());sb.append("|");
-		sb.append(파일구분);sb.append("|");
-		sb.append(기관코드);sb.append("|");
-		sb.append(생성일자);sb.append("|");
+		sb.append(ROW_TYPE.헤더레코드부.getCode());sb.append('|');
+		sb.append(파일구분);sb.append('|');
+		sb.append(기관코드);sb.append('|');
+		sb.append(생성일자);sb.append('|');
 		sb.append("\n");
 
 		return sb.toString();
@@ -125,8 +125,8 @@ public abstract class AbstractMydataCoocon {
 	public String getTailer() {
 		StringBuffer sb = new StringBuffer();
 
-		sb.append(ROW_TYPE.테일레코드부.getCode());sb.append("|");
-		sb.append(전송레코드수);sb.append("|");
+		sb.append(ROW_TYPE.테일레코드부.getCode());sb.append('|');
+		sb.append(전송레코드수);sb.append('|');
 		sb.append("\n");
 
 		return sb.toString();
