@@ -28,6 +28,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static com.hanwha.tax.batch.Constants.BANK_FILE;
+import static com.hanwha.tax.batch.Constants.CARD_FILE;
+import static com.hanwha.tax.batch.Constants.BANK_TRANS_FILE;
+import static com.hanwha.tax.batch.Constants.CARD_APPR_FILE;
+import static com.hanwha.tax.batch.Constants.THIRDPARTY_FILE;
+
 @Slf4j
 @Controller
 public class QuartzController {
@@ -97,6 +103,34 @@ public class QuartzController {
         }
 
         return lRet;
+    }
+
+    @RequestMapping(value = "/saveMydata", method = RequestMethod.GET)
+    public String saveMydata(@RequestParam(name = "ymd", required = true) String ymd
+            , HttpServletRequest req) {
+
+        log.info("## QuartzController.java [saveMydata] Starts");
+
+        // 원본이력 데이터 삭제
+        log.info("▶︎▶︎▶ 마이데이터 원본 삭제 [{}]", ymd);
+        mydataService.resetMydata(ymd);
+
+        log.info("▶︎▶︎▶ 마이데이터 은행(원본) 확인 [{}]",ymd);
+        mydataService.procMydataInfo(BANK_FILE, ymd);			// 은행(원본) 파일 확인
+        log.info("▶︎▶︎▶ 마이데이터 카드(원본) 확인 [{}]",ymd);
+        mydataService.procMydataInfo(CARD_FILE, ymd);			// 카드(원본) 파일 확인
+
+        log.info("▶︎▶︎▶ 마이데이터 은행(수입) 확인 [{}]",ymd);
+        mydataService.procMydataInfo(BANK_TRANS_FILE, ymd);	// 은행(수입) 파일 확인
+        log.info("▶︎▶︎▶ 마이데이터 카드(경비) 확인 [{}]",ymd);
+        mydataService.procMydataInfo(CARD_APPR_FILE, ymd);	// 카드(경비) 파일 확인
+
+        log.info("▶︎▶︎▶ 마이데이터 제3자 제공동의 확인 [{}]",ymd);
+        mydataService.procMydataInfo(THIRDPARTY_FILE, ymd);	// 제3자 제공동의 파일 확인
+
+        log.info("## QuartzController.java [saveMydata] End");
+
+        return "";
     }
 
     @RequestMapping(value = "/totalMydata", method = RequestMethod.GET)

@@ -937,40 +937,40 @@ public class MydataService {
         return mydataOutgoingRepository.findByOrgCodeAndCardIdAndApprNumOrderByTransDtimeAscSeqAsc(orgCode, cardId, apprNum);
     }
 
-    public void resetMydata() {
+    public void resetMydata(String ymd) {
         // 은행(원본) 정보 삭제
-        mydataBankBa01Repository.deleteBA01();
-        mydataBankBa01Repository.deleteBA02();
-        mydataBankBa01Repository.deleteBA03();
-        mydataBankBa01Repository.deleteBA04();
-        mydataBankBa01Repository.deleteBA11();
-        mydataBankBa01Repository.deleteBA12();
-        mydataBankBa01Repository.deleteBA13();
-        mydataBankBa01Repository.deleteBA21();
-        mydataBankBa01Repository.deleteBA22();
-        mydataBankBa01Repository.deleteBA23();
+        mydataBankBa01Repository.deleteBA01(ymd);
+        mydataBankBa01Repository.deleteBA02(ymd);
+        mydataBankBa01Repository.deleteBA03(ymd);
+        mydataBankBa01Repository.deleteBA04(ymd);
+        mydataBankBa01Repository.deleteBA11(ymd);
+        mydataBankBa01Repository.deleteBA12(ymd);
+        mydataBankBa01Repository.deleteBA13(ymd);
+        mydataBankBa01Repository.deleteBA21(ymd);
+        mydataBankBa01Repository.deleteBA22(ymd);
+        mydataBankBa01Repository.deleteBA23(ymd);
         // 카드(원본) 정보 삭제
-        mydataCardCd01Repository.deleteCD01();
-        mydataCardCd01Repository.deleteCD03();
-        mydataCardCd01Repository.deleteCD04();
-        mydataCardCd01Repository.deleteCD11();
-        mydataCardCd01Repository.deleteCD21();
-        mydataCardCd01Repository.deleteCD22();
-        mydataCardCd01Repository.deleteCD23();
-        mydataCardCd01Repository.deleteCD24();
-        mydataCardCd01Repository.deleteCD31();
-        mydataCardCd01Repository.deleteCD32();
-        mydataCardCd01Repository.deleteCD33();
-        // 은행(수입) 정보 삭제
-        mydataIncomeRepository.deleteMydataIncome();
-        // 카드(경비) 정보 삭제
-        mydataOutgoingRepository.deleteMydataOutgoing();
-        // total(수입) 정보 삭제
-        totalIncomeRepository.deleteTotalIncome();
-        // total(경비) 정보 삭제
-        totalOutgoingRepository.deleteTotalOutgoing();
-        // tax 정보 삭제
-        taxRepository.deleteTax();
+        mydataCardCd01Repository.deleteCD01(ymd);
+        mydataCardCd01Repository.deleteCD03(ymd);
+        mydataCardCd01Repository.deleteCD04(ymd);
+        mydataCardCd01Repository.deleteCD11(ymd);
+        mydataCardCd01Repository.deleteCD21(ymd);
+        mydataCardCd01Repository.deleteCD22(ymd);
+        mydataCardCd01Repository.deleteCD23(ymd);
+        mydataCardCd01Repository.deleteCD24(ymd);
+        mydataCardCd01Repository.deleteCD31(ymd);
+        mydataCardCd01Repository.deleteCD32(ymd);
+        mydataCardCd01Repository.deleteCD33(ymd);
+//        // 은행(수입) 정보 삭제
+//        mydataIncomeRepository.deleteMydataIncome();
+//        // 카드(경비) 정보 삭제
+//        mydataOutgoingRepository.deleteMydataOutgoing();
+//        // total(수입) 정보 삭제
+//        totalIncomeRepository.deleteTotalIncome();
+//        // total(경비) 정보 삭제
+//        totalOutgoingRepository.deleteTotalOutgoing();
+//        // tax 정보 삭제
+//        taxRepository.deleteTax();
     }
 
     /**
