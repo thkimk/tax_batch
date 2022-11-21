@@ -49,7 +49,7 @@ public class MydataOutgoing {
     	신용("01"),
     	체크("02");
 		
-    	private final String code;
+    	private String code;
 		PayType(String code) { this.code = code; }
 		public String getCode() { return this.code; }
 	}
@@ -62,7 +62,7 @@ public class MydataOutgoing {
 		승인취소("02"),
 		정정("03");
 
-		private final String code;
+		private String code;
 		ApprStatus(String code) { this.code = code; }
 		public String getCode() { return this.code; }
 	}
@@ -83,7 +83,7 @@ public class MydataOutgoing {
 		승인취소("10"),
 		경비제외("99");
 
-		private final String code;
+		private String code;
 		CardCategory(String code) { this.code = code; }
 		public String getCode() { return this.code; }
 	}

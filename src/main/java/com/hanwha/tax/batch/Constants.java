@@ -3,7 +3,7 @@ package com.hanwha.tax.batch;
 import org.springframework.beans.factory.annotation.Value;
 
 public class Constants {
-    public static String APP_NAME = "TAX";
+    public String APP_NAME = "TAX";
 
     @Value("${spring.application.name}")
     public void setAppName(String value) {

@@ -48,13 +48,13 @@ public class CustFamily {
 		위탁자녀("08"),
 		RECEIVER("09");
 
-		private final String code;
+		private String code;
 		TypeFamily(String code) { this.code = code; }
 		public String getCode() { return this.code; }
 	}
 
 	public static boolean existPartner(List<CustFamily> custFamilyList) {
-		for (CustFamily custFamily : custFamilyList) {
+		for (final CustFamily custFamily : custFamilyList) {
 			if (TypeFamily.배우자.getCode().equals(custFamily.getFamily())) return true;
 		}
 		return false;

@@ -55,7 +55,7 @@ public class MydataIncome {
     	기타_입금("98"),
     	기타_출금("99");
 		
-    	private final String code;
+    	private String code;
 		TransType(String code) { this.code = code; }
 		public String getCode() { return this.code; }
 	}

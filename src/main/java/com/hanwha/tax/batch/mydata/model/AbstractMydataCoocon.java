@@ -35,10 +35,9 @@ public abstract class AbstractMydataCoocon {
 		은행수신계좌매핑거래내역("BT01"),
 		국내승인내역("CD03"),
 		국내매핑승인내역("CA01");
-		private final String code;
+		private String code;
 		ROW_TYPE(String code){this.code = code;}
 		public String getCode(){return this.code;}
-		public boolean equals(String code){return this.code.equals(code);}
 	}
 
 	/**
@@ -47,10 +46,9 @@ public abstract class AbstractMydataCoocon {
 	public static enum FILE_KIND {
 		쿠콘("01"),
 		이용기관("02");
-		private final String code;
+		private String code;
 		FILE_KIND(String code){this.code = code;}
 		public String getCode(){return this.code;}
-		public boolean equals(String code){return this.code.equals(code);}
 	}
 
 	/**

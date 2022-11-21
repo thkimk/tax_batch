@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 
 @Slf4j
-public class TotalAmountJob extends BaseJob {
+public class TotalAmountJob extends AbstractBaseJob {
 
 	private TotalService totalService;
 

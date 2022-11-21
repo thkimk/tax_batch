@@ -35,7 +35,7 @@ public class CustInfo {
 		남자("M"),
 		여자("F");
 
-		private final String code;
+		private String code;
 		Gender(String code) { this.code = code; }
 		public String getCode() { return this.code; }
 	}

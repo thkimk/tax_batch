@@ -7,11 +7,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import static com.hanwha.tax.batch.Constants.*;
-
+import static com.hanwha.tax.batch.Constants.BANK_FILE;
+import static com.hanwha.tax.batch.Constants.BANK_TRANS_FILE;
+import static com.hanwha.tax.batch.Constants.CARD_APPR_FILE;
+import static com.hanwha.tax.batch.Constants.CARD_FILE;
+import static com.hanwha.tax.batch.Constants.THIRDPARTY_FILE;
 
 @Slf4j
-public class MydataJob extends BaseJob {
+public class MydataJob extends AbstractBaseJob {
 
 	private MydataService mydataService;
 

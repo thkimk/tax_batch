@@ -9,7 +9,7 @@ import org.quartz.JobExecutionException;
 
 
 @Slf4j
-public class CustGradeStatusJob extends BaseJob {
+public class CustGradeStatusJob extends AbstractBaseJob {
 
 	private CustService custService;
 

@@ -7,11 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import static com.hanwha.tax.batch.Constants.*;
-
+import static com.hanwha.tax.batch.Constants.BANK_FILE;
+import static com.hanwha.tax.batch.Constants.BANK_TRANS_FILE;
+import static com.hanwha.tax.batch.Constants.CARD_APPR_FILE;
+import static com.hanwha.tax.batch.Constants.CARD_FILE;
 
 @Slf4j
-public class TestJob extends BaseJob {
+public class TestJob extends AbstractBaseJob {
 
 	private MydataService mydataService;
 
@@ -28,9 +30,9 @@ public class TestJob extends BaseJob {
 
 	private void testMydata() {
 		int startDate = 20221023;
-		String yesterday = Utils.getYesterday();
+		int fromDate = Integer.parseInt(Utils.getYesterday());
 
-		for (int i = startDate; i <= Integer.parseInt(yesterday); i++) {
+		for (int i = startDate; i <= fromDate; i++) {
 			if (i == 20220832)	i = 20220901;
 			if (i == 20220931)	i = 20221001;
 			if (i == 20221032)	i = 20221101;

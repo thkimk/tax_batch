@@ -14,7 +14,7 @@ import org.quartz.JobExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
-public class TaxAllmembersJob extends BaseJob {
+public class TaxAllmembersJob extends AbstractBaseJob {
 
     private CustService custService;
     private TotalService totalService;

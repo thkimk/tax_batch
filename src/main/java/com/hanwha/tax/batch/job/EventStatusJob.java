@@ -9,7 +9,7 @@ import org.quartz.JobExecutionException;
 
 
 @Slf4j
-public class EventStatusJob extends BaseJob {
+public class EventStatusJob extends AbstractBaseJob {
 
 	private EventService eventService;
 

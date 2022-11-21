@@ -13,7 +13,7 @@ import java.util.List;
 
 
 @Slf4j
-public class NotiTargetJob extends BaseJob {
+public class NotiTargetJob extends AbstractBaseJob {
 
 	private CustService custService;
 

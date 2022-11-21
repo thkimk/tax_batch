@@ -1,15 +1,19 @@
 package com.hanwha.tax.batch;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HTTP;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 
@@ -33,13 +37,14 @@ public class HttpUtil {
 		//http client 생성
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
+		BufferedReader in = null;
 		try {
 
 			HttpGet httpGet = new HttpGet(targetUrl);
 
 			// 헤더값 설정
 			httpGet.addHeader("Content-Type", "Application/json; charset=UTF-8");
-			for (String key : headerMap.keySet()) {
+			for (final String key : headerMap.keySet()) {
 				httpGet.addHeader(key, headerMap.get(key));
 			}
 
@@ -48,32 +53,33 @@ public class HttpUtil {
 			log.info("1. 요청 URL [{}]", targetUrl);
 			log.info("==== 요청 처리 결과 리턴 [{}]: \r\n[{}]", httpResponse.getStatusLine().getStatusCode(), targetUrl);
 
-			try {
-				// 데이터 수신
-				if (httpResponse.getStatusLine().getStatusCode() == HttpURLConnection.HTTP_OK) {
-					BufferedReader in = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent(), "utf-8"));
-					// 리턴되는 메시지를 읽는다 .
+			// 데이터 수신
+			if (httpResponse.getStatusLine().getStatusCode() == HttpURLConnection.HTTP_OK) {
+				in = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent(), "utf-8"));
+				// 리턴되는 메시지를 읽는다 .
 
-					String strLine ="";
-					while ((strLine=in.readLine())!= null) {
-						returnMsg+=strLine;
-					}
-					result = Constants.CODE_RET_OK;
-				} else {
-					returnMsg = "전송 실패("+httpResponse.getStatusLine().getStatusCode()+")";
+				String strLine ="";
+				while ((strLine=in.readLine())!= null) {
+					returnMsg+=strLine;
 				}
-			} catch (ConnectException ex) {
-				returnMsg = "[" + httpResponse + "] 연결 실패("+httpResponse.getStatusLine().getStatusCode()+")";
+				result = Constants.CODE_RET_OK;
+			} else {
+				returnMsg = "전송 실패("+httpResponse.getStatusLine().getStatusCode()+")";
 			}
 
-		} catch (Exception e) {
-			log.error("**** 요청 처리 실패 {}", e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		} finally {
-			try	{
+			try {
+				// 자원 해제
+				if (in != null) {
+					in.close();
+				}
+
 				// 연결 종료
 				httpClient.close();
-			} catch(Exception e) {
-				log.error("**** 연결 종료 실패 {}", e);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -104,6 +110,7 @@ public class HttpUtil {
 		//http client 생성
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
+		BufferedReader in = null;
 		try {
 
 			HttpPost httpPost = new HttpPost(targetUrl);
@@ -112,7 +119,7 @@ public class HttpUtil {
 
 			// 헤더값 설정
 			httpPost.addHeader("Content-Type", "Application/json; charset=UTF-8");
-			for (String key : headerMap.keySet()) {
+			for (final String key : headerMap.keySet()) {
 				httpPost.addHeader(key, headerMap.get(key));
 			}
 
@@ -121,32 +128,33 @@ public class HttpUtil {
 			log.info("1. 요청 URL[{}]", targetUrl);
 			log.info("==== 요청 처리 결과 리턴 [{}]: \r\n[{}]\r\n[{}]", httpResponse.getStatusLine().getStatusCode(), targetUrl, param);
 
-			try {
-				// 데이터 수신
-				if (httpResponse.getStatusLine().getStatusCode() == HttpURLConnection.HTTP_OK) {
-					BufferedReader in = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent(), "utf-8"));
-					// 리턴되는 메시지를 읽는다 .
+			// 데이터 수신
+			if (httpResponse.getStatusLine().getStatusCode() == HttpURLConnection.HTTP_OK) {
+				in = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent(), "utf-8"));
+				// 리턴되는 메시지를 읽는다 .
 
-					String strLine ="";
-					while ((strLine=in.readLine())!= null) {
-						returnMsg+=strLine;
-					}
-					result = Constants.CODE_RET_OK;
-				} else {
-					returnMsg = "전송 실패("+httpResponse.getStatusLine().getStatusCode()+")";
+				String strLine ="";
+				while ((strLine=in.readLine())!= null) {
+					returnMsg+=strLine;
 				}
-			} catch (ConnectException ex) {
-				returnMsg = "[" + httpResponse + "] 연결 실패("+httpResponse.getStatusLine().getStatusCode()+")";
+				result = Constants.CODE_RET_OK;
+			} else {
+				returnMsg = "전송 실패("+httpResponse.getStatusLine().getStatusCode()+")";
 			}
 
-		} catch (Exception e) {
-			log.error("**** 요청 처리 실패 {}", e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		} finally {
-			try	{
+			try {
+				// 자원 해제
+				if (in != null) {
+					in.close();
+				}
+
 				// 연결 종료
 				httpClient.close();
-			} catch(Exception e) {
-				log.error("**** 연결 종료 실패 {}", e);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -177,6 +185,7 @@ public class HttpUtil {
 		//http client 생성
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
+		BufferedReader in = null;
 		try {
 
 			HttpPut httpPut = new HttpPut(targetUrl);
@@ -185,7 +194,7 @@ public class HttpUtil {
 
 			// 헤더값 설정
 			httpPut.addHeader("Content-Type", "Application/json; charset=UTF-8");
-			for (String key : headerMap.keySet()) {
+			for (final String key : headerMap.keySet()) {
 				httpPut.addHeader(key, headerMap.get(key));
 			}
 
@@ -194,32 +203,33 @@ public class HttpUtil {
 			log.info("1. 요청 URL[{}]", targetUrl);
 			log.info("==== 요청 처리 결과 리턴 [{}]: \r\n[{}]\r\n[{}]", httpResponse.getStatusLine().getStatusCode(), targetUrl, param);
 
-			try {
-				// 데이터 수신
-				if (httpResponse.getStatusLine().getStatusCode() == HttpURLConnection.HTTP_OK) {
-					BufferedReader in = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent(), "utf-8"));
-					// 리턴되는 메시지를 읽는다 .
+			// 데이터 수신
+			if (httpResponse.getStatusLine().getStatusCode() == HttpURLConnection.HTTP_OK) {
+				in = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent(), "utf-8"));
+				// 리턴되는 메시지를 읽는다 .
 
-					String strLine ="";
-					while ((strLine=in.readLine())!= null) {
-						returnMsg+=strLine;
-					}
-					result = Constants.CODE_RET_OK;
-				} else {
-					returnMsg = "전송 실패("+httpResponse.getStatusLine().getStatusCode()+")";
+				String strLine ="";
+				while ((strLine=in.readLine())!= null) {
+					returnMsg+=strLine;
 				}
-			} catch (ConnectException ex) {
-				returnMsg = "[" + httpResponse + "] 연결 실패("+httpResponse.getStatusLine().getStatusCode()+")";
+				result = Constants.CODE_RET_OK;
+			} else {
+				returnMsg = "전송 실패("+httpResponse.getStatusLine().getStatusCode()+")";
 			}
 
-		} catch (Exception e) {
-			log.error("**** 요청 처리 실패 {}", e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		} finally {
-			try	{
+			try {
+				// 자원 해제
+				if (in != null) {
+					in.close();
+				}
+
 				// 연결 종료
 				httpClient.close();
-			} catch(Exception e) {
-				log.error("**** 연결 종료 실패 {}", e);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -249,13 +259,14 @@ public class HttpUtil {
 		//http client 생성
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
+		BufferedReader in = null;
 		try {
 
 			HttpDelete httpDelete = new HttpDelete(targetUrl);
 
 			// 헤더값 설정
 			httpDelete.addHeader("Content-Type", "Application/json; charset=UTF-8");
-			for (String key : headerMap.keySet()) {
+			for (final String key : headerMap.keySet()) {
 				httpDelete.addHeader(key, headerMap.get(key));
 			}
 
@@ -264,31 +275,32 @@ public class HttpUtil {
 			log.info("1. 요청 URL[{}]", targetUrl);
 			log.info("==== 요청 처리 결과 리턴 [{}]: \r\n[{}]", httpResponse.getStatusLine().getStatusCode(), targetUrl);
 
-			try {
-				// 데이터 수신
-				if (httpResponse.getStatusLine().getStatusCode() == HttpURLConnection.HTTP_OK) {
-					BufferedReader in = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent(), "utf-8"));
-					// 리턴되는 메시지를 읽는다 .
+			// 데이터 수신
+			if (httpResponse.getStatusLine().getStatusCode() == HttpURLConnection.HTTP_OK) {
+				in = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent(), "utf-8"));
+				// 리턴되는 메시지를 읽는다 .
 
-					String strLine ="";
-					while ((strLine=in.readLine())!= null) {
-						returnMsg+=strLine;
-					}
-					result = Constants.CODE_RET_OK;
-				} else {
-					returnMsg = "전송 실패("+httpResponse.getStatusLine().getStatusCode()+")";
+				String strLine ="";
+				while ((strLine=in.readLine())!= null) {
+					returnMsg+=strLine;
 				}
-			} catch (ConnectException ex) {
-				returnMsg = "[" + httpResponse + "] 연결 실패("+httpResponse.getStatusLine().getStatusCode()+")";
+				result = Constants.CODE_RET_OK;
+			} else {
+				returnMsg = "전송 실패("+httpResponse.getStatusLine().getStatusCode()+")";
 			}
 
 		} catch (Exception e) {
 			log.error("**** 요청 처리 실패 {}", e);
 		} finally {
-			try	{
+			try {
+				// 자원 해제
+				if (in != null) {
+					in.close();
+				}
+
 				// 연결 종료
 				httpClient.close();
-			} catch(Exception e) {
+			} catch (IOException e) {
 				log.error("**** 연결 종료 실패 {}", e);
 			}
 		}

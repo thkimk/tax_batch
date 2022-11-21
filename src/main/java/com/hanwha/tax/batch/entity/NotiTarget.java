@@ -40,7 +40,7 @@ public class NotiTarget {
 		정회원("01"),
 		준회원("02");
 
-		private final String code;
+		private String code;
 		CustGrade(String code) { this.code = code; }
 		public String getCode() { return this.code; }
 	}
@@ -53,7 +53,7 @@ public class NotiTarget {
 		남자("01"),
 		여자("02");
 
-		private final String code;
+		private String code;
 		Gender(String code) { this.code = code; }
 		public String getCode() { return this.code; }
 	}
@@ -71,7 +71,7 @@ public class NotiTarget {
 		육십대("06"),
 		칠십대이상("07");
 
-		private final String code;
+		private String code;
 		Age(String code) { this.code = code; }
 		public String getCode() { return this.code; }
 	}
@@ -84,7 +84,7 @@ public class NotiTarget {
 		기혼("01"),
 		미혼("02");
 
-		private final String code;
+		private String code;
 		Marriage(String code) { this.code = code; }
 		public String getCode() { return this.code; }
 	}
@@ -100,7 +100,7 @@ public class NotiTarget {
 		네명("04"),
 		다섯명이상("05");
 
-		private final String code;
+		private String code;
 		Family(String code) { this.code = code; }
 		public String getCode() { return this.code; }
 	}
@@ -119,7 +119,7 @@ public class NotiTarget {
 		칠천만원("07"),
 		칠천오백만원이상("08");
 
-		private final String code;
+		private String code;
 		Income(String code) { this.code = code; }
 		public String getCode() { return this.code; }
 	}
@@ -132,7 +132,7 @@ public class NotiTarget {
 		신규사업자("01"),
 		계속사업자("02");
 
-		private final String code;
+		private String code;
 		NewBusin(String code) { this.code = code; }
 		public String getCode() { return this.code; }
 	}

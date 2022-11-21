@@ -38,7 +38,7 @@ public class Cust {
 		탈회("02"),
 		휴면("03");
 
-		private final String code;
+		private String code;
 		CustStatus(String code) { this.code = code; }
 		public String getCode() { return this.code; }
 	}
@@ -51,7 +51,7 @@ public class Cust {
 		준회원("01"),
 		정회원("02");
 
-		private final String code;
+		private String code;
 		CustGrade(String code) { this.code = code; }
 		public String getCode() { return this.code; }
 	}

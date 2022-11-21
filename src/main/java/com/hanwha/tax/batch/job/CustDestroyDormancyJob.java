@@ -12,7 +12,7 @@ import java.util.List;
 
 
 @Slf4j
-public class CustDestroyDormancyJob extends BaseJob {
+public class CustDestroyDormancyJob extends AbstractBaseJob {
 
 	private CustService custService;
 
@@ -28,7 +28,7 @@ public class CustDestroyDormancyJob extends BaseJob {
 		// 2. 고객 관련 정보 순차적으로 삭제
 		try {
 			log.info("▶▶▶ 휴면회원 파기 대상 건수 : {} 건", custDormancyList.size());
-			for (Cust cust :  custDormancyList) {
+			for (final Cust cust :  custDormancyList) {
 				custService.deleteCustData(cust.getCustId());
 			}
 		} catch(Exception e) {

@@ -9,7 +9,7 @@ import org.quartz.JobExecutionException;
 
 
 @Slf4j
-public class CustDormancyJob extends BaseJob {
+public class CustDormancyJob extends AbstractBaseJob {
 
 	private CustService custService;
 

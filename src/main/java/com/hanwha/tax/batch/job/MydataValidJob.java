@@ -21,7 +21,7 @@ import java.util.Map;
 
 
 @Slf4j
-public class MydataValidJob extends BaseJob {
+public class MydataValidJob extends AbstractBaseJob {
 
 	private TotalService totalService;
 
@@ -44,6 +44,7 @@ public class MydataValidJob extends BaseJob {
 
 		// 정상 상태의 정회원 리스트 조회
 		custService.getCustListByStatusGrade(Cust.CustStatus.정상.getCode(), Cust.CustGrade.정회원.getCode()).forEach(c -> {
+			log.info("▶︎▶︎▶︎ TOTAL 데이터 검증 [{}]", c.getCustId());
 			headerMap.put("cid",c.getCustId());
 
 			// 수입정보 요청

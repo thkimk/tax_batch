@@ -4,7 +4,11 @@ import com.hanwha.tax.batch.Constants;
 import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.book.service.BookService;
 import com.hanwha.tax.batch.cust.service.CustService;
-import com.hanwha.tax.batch.entity.*;
+import com.hanwha.tax.batch.entity.CustDeduct;
+import com.hanwha.tax.batch.entity.CustFamily;
+import com.hanwha.tax.batch.entity.CustInfo;
+import com.hanwha.tax.batch.entity.CustInfoDtl;
+import com.hanwha.tax.batch.entity.Industry;
 import com.hanwha.tax.batch.industry.service.IndustryService;
 import com.hanwha.tax.batch.total.service.TotalService;
 import lombok.Getter;
@@ -185,7 +189,7 @@ public class CalcTax {
 
     void deductFamily() {
         deductFamily = 0L;
-        for (CustFamily custFamily : custFamilyList) {
+        for (final CustFamily custFamily : custFamilyList) {
             int age = Utils.taxAge(custFamily.getBirth());
             if (age >= 60 || age <= 20 || CustFamily.TypeFamily.배우자.getCode().equals(custFamily.getFamily()) || custFamily.getIsDisorder() == 'Y') {
                 deductFamily += 1500000;
@@ -341,7 +345,7 @@ public class CalcTax {
         // 당해년도 출생신고 : 한국나이 1세 자녀, 300000/ 500000/ 700000
         taxDeductFamily = 0L;
         int count = 0, countBorn = 0;
-        for (CustFamily custFamily : custFamilyList) {
+        for (final CustFamily custFamily : custFamilyList) {
             if (CustFamily.TypeFamily.자녀.getCode().equals(custFamily.getFamily()) && Utils.taxAge(custFamily.getBirth()) >= 7) {
                 count++;
                 if (count < 3) {

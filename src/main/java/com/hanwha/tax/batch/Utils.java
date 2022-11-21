@@ -161,8 +161,9 @@ public class Utils {
         StringBuilder result = new StringBuilder();
         boolean nextUpper = false;
         String allLower = str.toLowerCase();
+        int allLowerLen = allLower.length();
 
-        for (int i = 0; i < allLower.length(); i++) {
+        for (int i = 0; i < allLowerLen; i++) {
             char currentChar = allLower.charAt(i);
             if (currentChar == '_') {
                 nextUpper = true;

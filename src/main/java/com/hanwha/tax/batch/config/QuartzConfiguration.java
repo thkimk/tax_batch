@@ -58,7 +58,7 @@ public class QuartzConfiguration {
 	@Value("${cust.grade.status.schedule}")
 	private String custGradeStatusCronExp;
 
-	private final String TRIGGER_GROUP_NAME = "TAX_GROUP";
+	private static String TRIGGER_GROUP_NAME = "TAX_GROUP";
 
 
 	@Autowired
@@ -313,7 +313,7 @@ public class QuartzConfiguration {
     }
 	
 	@Bean
-	public SchedulerFactoryBean scheduler(Trigger[] triggers) throws Exception {
+	public SchedulerFactoryBean scheduler(Trigger[] triggers) {
 	    SchedulerFactoryBean schedulerFactory = new SchedulerFactoryBean();
 	    schedulerFactory.setOverwriteExistingJobs(true);
 	    schedulerFactory.setDataSource(quartzDataSource());

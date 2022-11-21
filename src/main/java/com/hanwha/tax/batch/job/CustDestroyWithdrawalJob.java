@@ -12,7 +12,7 @@ import java.util.List;
 
 
 @Slf4j
-public class CustDestroyWithdrawalJob extends BaseJob {
+public class CustDestroyWithdrawalJob extends AbstractBaseJob {
 
 	private CustService custService;
 
@@ -30,13 +30,13 @@ public class CustDestroyWithdrawalJob extends BaseJob {
 		try {
 			// 2-1. 준회원 데이터 삭제
 			log.info("▶▶▶ ︎︎︎준회원 파기 대상 건수 : {} 건", custAsctOutList.size());
-			for (Cust cust :  custAsctOutList) {
+			for (final Cust cust :  custAsctOutList) {
 				custService.deleteCustData(cust.getCustId());
 			}
 
 			// 2-2. 정회원 데이터 삭제
 			log.info("▶▶▶ 정회원 파기 대상 건수 : {} 건", custAsctOutList.size());
-			for (Cust cust :  custRegOutList) {
+			for (final Cust cust :  custRegOutList) {
 				custService.deleteCustData(cust.getCustId());
 			}
 		} catch(Exception e) {

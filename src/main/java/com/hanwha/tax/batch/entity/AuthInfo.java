@@ -43,7 +43,7 @@ public class AuthInfo implements Serializable {
     	잠김("01"),
     	만료("02");
 		
-    	private final String code;
+    	private String code;
 		AuthStatus(String code) { this.code = code; }
 		public String getCode() { return this.code; }
 	}
