@@ -359,6 +359,12 @@ public class MydataService {
             return null;
         }
 
+        // 원본데이터가 없고 매핑된 마이데이터를 등록하는 경우 skip
+        if (listMydataIncome.size() == 0 && seq != null) {
+            log.info("▶▶▶︎ 원본 데이터가 존재하지 않아 매핑 데이터 저장하지 않습니다.\n[{}]", mydataIncome.toString());
+            return null;
+        }
+
         // 기존 정보가 존재하는 경우 변경되지 않는 정보 세팅
         if (0 < mydataIncomeOri.size()) {
             mydataIncome.setId(mydataIncomeOri.get(0).getId());
@@ -410,6 +416,12 @@ public class MydataService {
         // 기존 매핑된 마이데이터 이력이 있고 등록할 데이터가 원본 데이터인 경우 skip
         if (0 < listMydataOutgoing.size() && mydataOutgoingOri.size() == 0 && mydataOutgoingPk.size() == 0) {
             log.debug("▶▶▶︎ 기존 데이터가 존재하여 원본 데이터 저장하지 않습니다.\n[{}]", mydataOutgoing.toString());
+            return null;
+        }
+
+        // 원본데이터가 없고 매핑된 마이데이터를 등록하는 경우 skip
+        if (listMydataOutgoing.size() == 0 && seq != null) {
+            log.info("▶▶▶︎ 원본 데이터가 존재하지 않아 매핑 데이터 저장하지 않습니다.\n[{}]", mydataOutgoing.toString());
             return null;
         }
 

@@ -39,7 +39,7 @@ public class MydataValidJob extends AbstractBaseJob {
 
 		HashMap<String, String> headerMap = new HashMap<>();
 		headerMap.put("User-Agent","1.0;iPhone;IOS;16.0.1");
-		headerMap.put("uid","635EC356-2AAD-4BD5-A4E6-89F2EACB5546");
+		headerMap.put("uid","thkim0740");
 		headerMap.put("jwt","eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGtpbTA3NDAiLCJwaW4iOiIxMjM0IiwiaWF0IjoxNjY4NDA5MzI1LCJleHAiOjE2OTk5NDUzMjV9.urADlxbD-gblm1LUJedbfiTsFbA0WzPt_jhgJaNcbHQ");
 
 		// 정상 상태의 정회원 리스트 조회
