@@ -110,10 +110,10 @@ public class MydataValidJob extends AbstractBaseJob {
 							long outCount = "null".equals(String.valueOf(outgoingMap.get("count"))) ? 0 : Long.parseLong(String.valueOf(outgoingMap.get("count")));
 
 							if (total != outTotal) {
-								log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 금액을 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", c.getCustId(), year, month, category, total, outgoingMap.get("total"));
+								log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 금액을 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalOutgoing={}]", c.getCustId(), year, month, category, total, outgoingMap.get("total"));
 							}
 							if (count != outCount) {
-								log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 건수를 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", c.getCustId(), year, month, category, count, outgoingMap.get("count"));
+								log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 건수를 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalOutgoing={}]", c.getCustId(), year, month, category, count, outgoingMap.get("count"));
 							}
 						}
 					}

@@ -2,6 +2,7 @@ package com.hanwha.tax.batch.quartz;
 
 import com.hanwha.tax.batch.HttpUtil;
 import com.hanwha.tax.batch.Utils;
+import com.hanwha.tax.batch.auth.service.AuthService;
 import com.hanwha.tax.batch.cust.service.CustService;
 import com.hanwha.tax.batch.entity.*;
 import com.hanwha.tax.batch.mydata.service.MydataService;
@@ -55,6 +56,9 @@ public class QuartzController {
 
     @Autowired
     CalcTax calcTax;
+
+    @Autowired
+    AuthService authService;
 
     @Value("${tax.api.domain}")
     private String domainApi;
@@ -413,6 +417,22 @@ public class QuartzController {
         });
 
         log.info("## QuartzController.java [selectMydataOutgoing] End");
+
+        return "";
+    }
+
+    @RequestMapping(value = "/selectAuth", method = RequestMethod.GET)
+    public String selectAuth(@RequestParam(name = "cid", required = true) String cid
+            , HttpServletRequest req) {
+
+        log.info("## QuartzController.java [selectAuth] Starts");
+
+        // 고객번호로 인증정보 조회
+        authService.getAuthInfoByCustId(cid).forEach(ai -> {
+            log.info("[{}]", ai.toString());
+        });
+
+        log.info("## QuartzController.java [selectAuth] End");
 
         return "";
     }

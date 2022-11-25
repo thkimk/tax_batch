@@ -13,7 +13,14 @@ import java.util.List;
 @Repository
 public interface AuthInfoRepository extends JpaRepository<AuthInfo, AuthId> {
     /**
-     * ci값으로 고객번호 조회
+     * 고객번호로로 인증정보 조회
+     * @param custId
+     * @return
+     */
+    List<AuthInfo> findByCustId(String custId);
+    
+    /**
+     * ci값으로 인증정보 조회
      * @param ci
      * @return
      */

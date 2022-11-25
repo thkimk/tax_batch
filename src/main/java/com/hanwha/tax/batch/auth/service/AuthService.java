@@ -6,12 +6,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service("authService")
 public class AuthService {
 
     @Autowired
     private AuthInfoRepository authInfoRepository;
+
+    /**
+     * 고객번호로 인증정보 조회
+     * @param custId
+     * @return
+     */
+    public List<AuthInfo> getAuthInfoByCustId(String custId) {
+        return authInfoRepository.findByCustId(custId);
+    }
 
     /**
      * ci값으로 고객번호 조회
