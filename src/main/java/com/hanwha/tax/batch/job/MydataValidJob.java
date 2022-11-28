@@ -69,13 +69,14 @@ public class MydataValidJob extends AbstractBaseJob {
 
 						Map<String, String> incomeMap = totalService.getTotalIncomeByMonth(c.getCustId(), year, month, "1".equals(tyle) ? 'Y' : 'N');
 						long inTotal = "null".equals(String.valueOf(incomeMap.get("total"))) ? 0 : Long.parseLong(String.valueOf(incomeMap.get("total")));
+						inTotal = "0".equals(tyle) ? inTotal*1000/967 : inTotal;
 						long inCount = "null".equals(String.valueOf(incomeMap.get("count"))) ? 0 : Long.parseLong(String.valueOf(incomeMap.get("count")));
 
 						if (total != inTotal) {
-							log.error("▶︎▶︎▶︎ TOTAL_INCOME 금액을 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", c.getCustId(), year, month, tyle, total, incomeMap.get("total"));
+							log.error("▶︎▶︎▶︎ TOTAL_INCOME 금액을 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", c.getCustId(), year, month, tyle, total, inTotal);
 						}
 						if (count != inCount) {
-							log.error("▶︎▶︎▶︎ TOTAL_INCOME 건수를 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", c.getCustId(), year, month, tyle, count, incomeMap.get("count"));
+							log.error("▶︎▶︎▶︎ TOTAL_INCOME 건수를 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", c.getCustId(), year, month, tyle, count, inCount);
 						}
 					}
 				}
@@ -110,10 +111,10 @@ public class MydataValidJob extends AbstractBaseJob {
 							long outCount = "null".equals(String.valueOf(outgoingMap.get("count"))) ? 0 : Long.parseLong(String.valueOf(outgoingMap.get("count")));
 
 							if (total != outTotal) {
-								log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 금액을 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalOutgoing={}]", c.getCustId(), year, month, category, total, outgoingMap.get("total"));
+								log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 금액을 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalOutgoing={}]", c.getCustId(), year, month, category, total, outTotal);
 							}
 							if (count != outCount) {
-								log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 건수를 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalOutgoing={}]", c.getCustId(), year, month, category, count, outgoingMap.get("count"));
+								log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 건수를 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalOutgoing={}]", c.getCustId(), year, month, category, count, outCount);
 							}
 						}
 					}

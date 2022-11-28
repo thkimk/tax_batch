@@ -336,15 +336,14 @@ public class QuartzController {
 
                     Map<String, String> incomeMap = totalService.getTotalIncomeByMonth(cid, year, month, is33);
                     long inTotal = "null".equals(String.valueOf(incomeMap.get("total"))) ? 0 : Long.parseLong(String.valueOf(incomeMap.get("total")));
+                    inTotal = "N".equals(is33) ? inTotal*1000/967 : inTotal;
                     long inCount = "null".equals(String.valueOf(incomeMap.get("count"))) ? 0 : Long.parseLong(String.valueOf(incomeMap.get("count")));
 
-                    log.debug("★★★ 금액 [totalApi={}, totalIncome={}]", total, incomeMap.get("total"));
                     if (total != inTotal) {
-                        log.error("▶︎▶︎▶︎ TOTAL_INCOME 금액을 확인해 주시기 바랍니다. [cust_id='{}' and year={} and month={} and is_33='{}'][totalApi={}, totalIncome={}]", cid, year, month, is33, total, incomeMap.get("total"));
+                        log.error("▶︎▶︎▶︎ TOTAL_INCOME 금액을 확인해 주시기 바랍니다. [cust_id='{}' and year={} and month={} and is_33='{}'][totalApi={}, totalIncome={}]", cid, year, month, is33, total, inTotal);
                     }
-                    log.debug("★★★︎ 건수 [totalApi={}, totalIncome={}]", count, incomeMap.get("count"));
                     if (count != inCount) {
-                        log.error("▶︎▶︎▶︎ TOTAL_INCOME 건수를 확인해 주시기 바랍니다. [cust_id='{}' and year={} and month={} and is_33='{}'][totalApi={}, totalIncome={}]", cid, year, month, is33, count, incomeMap.get("count"));
+                        log.error("▶︎▶︎▶︎ TOTAL_INCOME 건수를 확인해 주시기 바랍니다. [cust_id='{}' and year={} and month={} and is_33='{}'][totalApi={}, totalIncome={}]", cid, year, month, is33, count, inCount);
                     }
                 }
             }
@@ -377,13 +376,11 @@ public class QuartzController {
                         long outTotal = "null".equals(String.valueOf(outgoingMap.get("total"))) ? 0 : Long.parseLong(String.valueOf(outgoingMap.get("total")));
                         long outCount = "null".equals(String.valueOf(outgoingMap.get("count"))) ? 0 : Long.parseLong(String.valueOf(outgoingMap.get("count")));
 
-                        log.debug("★★★ 금액 [totalApi={}, totalOutgoing={}]", total, outgoingMap.get("total"));
                         if (total != outTotal) {
-                            log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 금액을 확인해 주시기 바랍니다. [cust_id='{}' and year={} and month={} and category='{}'][totalApi={}, totalIncome={}]", cid, year, month, category, total, outgoingMap.get("total"));
+                            log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 금액을 확인해 주시기 바랍니다. [cust_id='{}' and year={} and month={} and category='{}'][totalApi={}, totalIncome={}]", cid, year, month, category, total, outTotal);
                         }
-                        log.debug("★★★︎ 건수 [totalApi={}, totalIncome={}]", count, outgoingMap.get("count"));
                         if (count != outCount) {
-                            log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 건수를 확인해 주시기 바랍니다. [cust_id='{}' and year={} and month={} and category='{}'][totalApi={}, totalIncome={}]", cid, year, month, category, count, outgoingMap.get("count"));
+                            log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 건수를 확인해 주시기 바랍니다. [cust_id='{}' and year={} and month={} and category='{}'][totalApi={}, totalIncome={}]", cid, year, month, category, count, outCount);
                         }
                     }
                 }
