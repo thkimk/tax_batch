@@ -104,6 +104,11 @@ public class TotalService {
     public TotalIncome saveTotalIncome(TotalIncome totalIncome) {
         TotalIncome ti = totalIncomeRepository.findByFkAndFlagFk(totalIncome.getFk(), totalIncome.getFlagFk()).stream().findAny().orElse(null);
 
+        // 3.3% 미포함인 경우 포함금액으로 계산
+        if ("N".equals(totalIncome.getIs33())) {
+            totalIncome.setAmount(totalIncome.getAmount()*1000/967);
+        }
+
         if (ti != null) {
             totalIncome.setId(ti.getId());
             totalIncome.setCreateDt(ti.getCreateDt());

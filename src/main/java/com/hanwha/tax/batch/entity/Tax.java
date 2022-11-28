@@ -7,11 +7,11 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.DynamicInsert;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Column;
-
-import javax.persistence.*;
+import javax.persistence.IdClass;
+import javax.persistence.PrePersist;
 import java.io.Serializable;
 
 /**

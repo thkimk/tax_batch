@@ -804,6 +804,30 @@ public class MydataService {
     }
 
     /**
+     * 회원등급 변경( 정회원 -> 준회원 )
+     * @param cust
+     * @param regOutDt
+     */
+    private void transCustRegToAsct(Cust cust, String regOutDt) {
+        cust.setCustGrade(Cust.CustGrade.준회원.getCode());
+        cust.setRegOutDt(regOutDt);
+        custService.modifyCust(cust);
+
+        // 마이데이터 정보 파기
+        deleteMydataByCustId(cust.getCustId());
+
+        // 마이데이터 정보 파기에 따른 TOTAL 정보 업데이트
+        log.info("▶▶▶▶▶▶ 마이데이터 TOTAL 수입정보 식제 건수 : {} 건", totalService.deleteTotalIncomeByCustIdAndFlagFk(cust.getCustId()));
+        log.info("▶▶▶▶▶▶ 마이데이터 TOTAL 경비정보 식제 건수 : {} 건", totalService.deleteTotalOutgoingByCustIdAndFlagFk(cust.getCustId()));
+
+        // 해당 고객의 연도 별 수입이력 조회
+        totalService.getTotalIncomeByCustId(cust.getCustId()).forEach(t -> {
+            // 소득세 정보 갱신
+            taxService.saveTax(t.getCustId(), t.getYear(), calcTax);
+        });
+    }
+
+    /**
      * 마이데이터 파일 ROW 별 파싱 및 저장 (제3자 제공동의)
      * @param modelName
      * @param row
@@ -852,24 +876,46 @@ public class MydataService {
             // 정회원인데 제3자 제공 미동의한 경우
             if (Cust.CustGrade.정회원.getCode().equals(cust.getCustGrade())) {
                 log.info("▶︎▶︎▶︎ 준회원 등급 대상 고객 : {}", cust.getCustId());
-                cust.setCustGrade(Cust.CustGrade.준회원.getCode());
-                cust.setRegOutDt(currentDate);
-                custService.modifyCust(cust);
-
-                // 마이데이터 정보 파기
-                deleteMydataByCustId(cust.getCustId());
-
-                // 마이데이터 정보 파기에 따른 TOTAL 정보 업데이트
-                log.info("▶▶▶▶▶▶ 마이데이터 TOTAL 수입정보 식제 건수 : {} 건", totalService.deleteTotalIncomeByCustIdAndFlagFk(cust.getCustId()));
-                log.info("▶▶▶▶▶▶ 마이데이터 TOTAL 경비정보 식제 건수 : {} 건", totalService.deleteTotalOutgoingByCustIdAndFlagFk(cust.getCustId()));
-
-                // 해당 고객의 연도 별 수입이력 조회
-                totalService.getTotalIncomeByCustId(cust.getCustId()).forEach(t -> {
-                    // 소득세 정보 갱신
-                    taxService.saveTax(t.getCustId(), t.getYear(), calcTax);
-                });
+                transCustRegToAsct(cust, currentDate);
             }
         }
+    }
+
+    /**
+     * 마이데이터 파일 ROW 별 파싱 및 저장 (제3자 제공동의 철회)
+     * @param modelName
+     * @param row
+     */
+    private void saveMydataRevokeCI(String modelName, String row) {
+        // 마이데이터 제3자 제공동의 철회 회원 클래스 생성
+        RevokeCI revoke = (RevokeCI) getMydataObjByName(modelName);
+        if (revoke == null) {
+            log.error("제3자 제공동의 철회 회원 클래스를 확인해 주시기 바랍니다.");
+            return;
+        }
+
+        // 제3자 제공동의 철회 회원 전문 파싱
+        revoke.parseData(row);
+
+        // 고객정보 확인
+        String custId = authService.getCustIdByCi(revoke.getCI());
+
+        if (Utils.isEmpty(custId)) {
+            log.error("CI 값에 해당하는 고객정보가 존재하지 않습니다. [{}]", revoke.getCI());
+            return;
+        }
+
+        // 고객정보 조회
+        Cust cust = custService.getCust(custId).orElse(null);
+
+        if (cust == null) {
+            log.error("고객정보가 존재하지 않습니다. [{}]", custId);
+            return;
+        }
+
+        // 제3자 제공동의 철회 처리
+        log.info("▶︎▶︎▶︎ 쿠콘 회원 철회 대상 고객 : {}", cust.getCustId());
+        transCustRegToAsct(cust, Utils.getCurrentDateTime());
     }
 
     /**

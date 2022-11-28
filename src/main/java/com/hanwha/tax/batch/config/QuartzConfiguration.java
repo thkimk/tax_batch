@@ -1,6 +1,17 @@
 package com.hanwha.tax.batch.config;
 
-import com.hanwha.tax.batch.job.*;
+import com.hanwha.tax.batch.job.CustDestroyDormancyJob;
+import com.hanwha.tax.batch.job.CustDestroyWithdrawalJob;
+import com.hanwha.tax.batch.job.CustDormancyJob;
+import com.hanwha.tax.batch.job.CustGradeStatusJob;
+import com.hanwha.tax.batch.job.DeductTransferJob;
+import com.hanwha.tax.batch.job.EventStatusJob;
+import com.hanwha.tax.batch.job.MydataJob;
+import com.hanwha.tax.batch.job.MydataValidJob;
+import com.hanwha.tax.batch.job.NotiTargetJob;
+import com.hanwha.tax.batch.job.TaxAllmembersJob;
+import com.hanwha.tax.batch.job.TestJob;
+import com.hanwha.tax.batch.job.TotalAmountJob;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Trigger;

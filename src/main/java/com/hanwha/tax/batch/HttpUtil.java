@@ -68,7 +68,7 @@ public class HttpUtil {
 			}
 
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			log.error("**** 요청 처리 실패 {}", e);
 		} finally {
 			try {
 				// 자원 해제
@@ -143,7 +143,7 @@ public class HttpUtil {
 			}
 
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			log.error("**** 요청 처리 실패 {}", e);
 		} finally {
 			try {
 				// 자원 해제
@@ -218,7 +218,7 @@ public class HttpUtil {
 			}
 
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			log.error("**** 요청 처리 실패 {}", e);
 		} finally {
 			try {
 				// 자원 해제
@@ -251,7 +251,7 @@ public class HttpUtil {
 		String result = Constants.CODE_RET_NOK;
 		String returnMsg = "";
 
-		if (targetUrl == null || targetUrl.trim() == "") {
+		if (Utils.isEmpty(targetUrl)) {
 			log.info("==== 요청된 URL이 없습니다. ====");
 			return "";
 		}
@@ -290,7 +290,7 @@ public class HttpUtil {
 			}
 
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			log.error("**** 요청 처리 실패 {}", e);
 		} finally {
 			try {
 				// 자원 해제

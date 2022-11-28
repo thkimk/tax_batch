@@ -45,7 +45,7 @@ public class Constants {
     public final static String CARD_FILE = "CARD";              // 카드(원본)
     public final static String BANK_TRANS_FILE = "BANK_TRANS";  // 은행(수입)
     public final static String CARD_APPR_FILE = "CARD_APPR";    // 카드(경비)
-    public final static String REVOKE_FILE = "REVOKE";          // 제3자 제공동의 철회
+    public final static String REVOKE_FILE = "REVOKE";          // 쿠콘 탈회
     public final static String THIRDPARTY_FILE = "THIRDPARTY";  // 제3자 제공동의
 
     // 쿠콘 SFTP 파일 경로
