@@ -149,8 +149,12 @@ public class QuartzController {
             // 전체수입정보
             TotalIncome totalIncome = new TotalIncome().convertByMydataMap(ti);
 
-            // 총 수입금액 저장
-            totalService.saveTotalIncome(totalIncome);
+            // 총 수입금액 저장 ( 수입여부가 'Y'인 경우만 저장/'N'인 경우 삭제 )
+            if ("Y".equals(ti.get("is_income"))) {
+                totalService.saveTotalIncome(totalIncome);
+            } else {
+                totalService.deleteTotalIncomeByFkAndFlagFk(totalIncome.getFk(), totalIncome.getFlagFk());
+            }
         });
 
         // 간편장부, 마이데이터 지출 변경내역 조회

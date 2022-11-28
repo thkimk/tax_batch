@@ -33,12 +33,23 @@ public interface TotalIncomeRepository extends JpaRepository<TotalIncome, Long> 
     int deleteByCustIdAndFlagFk(String custId);
 
     /**
+     * 외래키 기준으로 수입 삭제
+     * @param fk
+     * @param flagFk
+     * @return
+     */
+    @Transactional
+    @Modifying
+    @Query(value="delete from total_income tin where tin.fk=:fk and tin.flag_fk = :flagFk", nativeQuery = true)
+    int deleteByFkAndFlagFk(long fk, char flagFk);
+
+    /**
      * 전체수입정보(간편장부+마이데이터) 기준일 변경내역 조회
      * @param ymdBasic
      * @return
      */
-    @Query(value="select mi.id as fk, 'M' as flag_fk, mi.cust_id, YEAR(mi.trans_dtime) as `year`, MONTH(mi.trans_dtime) as `month`, mi.trans_amt as amount, CONCAT(mi.is_33,'') as is_33 from mydata_income mi where mi.is_income = 'Y' and COALESCE(mi.update_dt, mi.create_dt) like CONCAT(:ymdBasic,'%') union all " +
-            "select bi.id as fk, 'B' as flag_fk, bi.cust_id, YEAR(bi.trans_dtime) as `year`, MONTH(bi.trans_dtime) as `month`, bi.trans_amt as amount, CONCAT(bi.is_33,'') as is_33 from book_income bi where COALESCE(bi.update_dt, bi.create_dt) like CONCAT(:ymdBasic,'%')", nativeQuery=true)
+    @Query(value="select mi.id as fk, 'M' as flag_fk, mi.cust_id, YEAR(mi.trans_dtime) as `year`, MONTH(mi.trans_dtime) as `month`, mi.trans_amt as amount, CONCAT(mi.is_33,'') as is_33, mi.is_income from mydata_income mi where COALESCE(mi.update_dt, mi.create_dt) like CONCAT(:ymdBasic,'%') union all " +
+            "select bi.id as fk, 'B' as flag_fk, bi.cust_id, YEAR(bi.trans_dtime) as `year`, MONTH(bi.trans_dtime) as `month`, bi.trans_amt as amount, CONCAT(bi.is_33,'') as is_33, 'Y' as is_income from book_income bi where COALESCE(bi.update_dt, bi.create_dt) like CONCAT(:ymdBasic,'%')", nativeQuery=true)
     List<Map<String,String>> getTotalIncomeTarget(String ymdBasic);
 
     /**

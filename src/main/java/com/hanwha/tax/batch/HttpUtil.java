@@ -79,7 +79,7 @@ public class HttpUtil {
 				// 연결 종료
 				httpClient.close();
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				log.error("**** 연결 종료 실패 {}", e);
 			}
 		}
 
@@ -154,7 +154,7 @@ public class HttpUtil {
 				// 연결 종료
 				httpClient.close();
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				log.error("**** 연결 종료 실패 {}", e);
 			}
 		}
 
@@ -229,7 +229,7 @@ public class HttpUtil {
 				// 연결 종료
 				httpClient.close();
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				log.error("**** 연결 종료 실패 {}", e);
 			}
 		}
 
@@ -289,8 +289,8 @@ public class HttpUtil {
 				returnMsg = "전송 실패("+httpResponse.getStatusLine().getStatusCode()+")";
 			}
 
-		} catch (Exception e) {
-			log.error("**** 요청 처리 실패 {}", e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		} finally {
 			try {
 				// 자원 해제

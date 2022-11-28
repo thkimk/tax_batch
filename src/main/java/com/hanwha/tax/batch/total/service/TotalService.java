@@ -59,6 +59,16 @@ public class TotalService {
     }
 
     /**
+     * 외래키로 마이데이터 수입 삭제
+     * @param fk
+     * @param flagFk
+     * @return
+     */
+    public int deleteTotalIncomeByFkAndFlagFk(long fk, char flagFk) {
+        return totalIncomeRepository.deleteByFkAndFlagFk(fk, flagFk);
+    }
+
+    /**
      * 외래키로 마이데이터 경비 삭제
      * @param fk
      * @param flagFk
