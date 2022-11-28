@@ -336,8 +336,8 @@ public class QuartzController {
 
                     Map<String, String> incomeMap = totalService.getTotalIncomeByMonth(cid, year, month, is33);
                     long inTotal = "null".equals(String.valueOf(incomeMap.get("total"))) ? 0 : Long.parseLong(String.valueOf(incomeMap.get("total")));
-                    inTotal = "N".equals(is33) ? inTotal*1000/967 : inTotal;
                     long inCount = "null".equals(String.valueOf(incomeMap.get("count"))) ? 0 : Long.parseLong(String.valueOf(incomeMap.get("count")));
+                    total = (is33 == 'N') ? total*1000/967 : total;
 
                     if (total != inTotal) {
                         log.error("▶︎▶︎▶︎ TOTAL_INCOME 금액을 확인해 주시기 바랍니다. [cust_id='{}' and year={} and month={} and is_33='{}'][totalApi={}, totalIncome={}]", cid, year, month, is33, total, inTotal);
