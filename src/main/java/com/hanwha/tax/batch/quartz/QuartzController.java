@@ -65,8 +65,8 @@ public class QuartzController {
     private String domainApi;
 
     @RequestMapping(value = "/manualExe", method = RequestMethod.GET)
-    public String manualExe(@RequestParam(name = "job", required = true) String job
-            , @RequestParam(name = "jobGroup", required = false, defaultValue = "DEFAULT") String jobGroup
+    public String manualExe(@RequestParam String job
+            , @RequestParam(value = "jobGroup", required = false, defaultValue = "DEFAULT") String jobGroup
             , HttpServletRequest req) {
 
         log.info("## QuartzController.java [manualExe] Starts..");
@@ -111,8 +111,7 @@ public class QuartzController {
     }
 
     @RequestMapping(value = "/saveMydata", method = RequestMethod.GET)
-    public String saveMydata(@RequestParam(name = "ymd", required = true) String ymd
-            , HttpServletRequest req) {
+    public String saveMydata(@RequestParam String ymd, HttpServletRequest req) {
 
         log.info("## QuartzController.java [saveMydata] Starts");
 
@@ -141,8 +140,7 @@ public class QuartzController {
     }
 
     @RequestMapping(value = "/totalMydata", method = RequestMethod.GET)
-    public String totalMydata(@RequestParam(name = "ymd", required = true) String ymd
-            , HttpServletRequest req) {
+    public String totalMydata(@RequestParam String ymd, HttpServletRequest req) {
 
         log.info("## QuartzController.java [totalMydata] Starts");
 
@@ -226,8 +224,8 @@ public class QuartzController {
     }
 
     @RequestMapping(value = "/taxAllmembers", method = RequestMethod.GET)
-    public String taxAllmembers(@RequestParam(name = "year", required = true) int year
-            , @RequestParam(name = "ymd", required = false, defaultValue = "") String ymd
+    public String taxAllmembers(@RequestParam int year
+            , @RequestParam(value = "ymd", required = false, defaultValue = "") String ymd
             , HttpServletRequest req) {
 
         log.info("## QuartzController.java [taxAllmembers] Starts");
@@ -283,8 +281,8 @@ public class QuartzController {
     }
 
     @RequestMapping(value = "/calcTax", method = RequestMethod.GET)
-    public String calcTax(@RequestParam(name = "cid", required = false, defaultValue = "") String cid
-            , @RequestParam(name = "year", required = true) int year
+    public String calcTax(@RequestParam(value = "cid", required = false, defaultValue = "") String cid
+            , @RequestParam int year
             , HttpServletRequest req) {
 
         log.info("## QuartzController.java [calcTax] Starts");
@@ -304,8 +302,7 @@ public class QuartzController {
     }
 
     @RequestMapping(value = "/validMydata", method = RequestMethod.GET)
-    public String validMydata(@RequestParam(name = "cid", required = true) String cid
-            , HttpServletRequest req) throws ParseException {
+    public String validMydata(@RequestParam String cid, HttpServletRequest req) throws ParseException {
 
         log.info("## QuartzController.java [validMydata] Starts");
 
@@ -394,8 +391,7 @@ public class QuartzController {
     }
 
     @RequestMapping(value = "/selectMydataIncome", method = RequestMethod.GET)
-    public String selectMydataIncome(@RequestParam(name = "cid", required = true) String cid
-            , HttpServletRequest req) {
+    public String selectMydataIncome(@RequestParam String cid, HttpServletRequest req) {
 
         log.info("## QuartzController.java [selectMydataIncome] Starts");
 
@@ -410,8 +406,7 @@ public class QuartzController {
     }
 
     @RequestMapping(value = "/selectMydataOutgoing", method = RequestMethod.GET)
-    public String selectMydataOutgoing(@RequestParam(name = "cid", required = true) String cid
-            , HttpServletRequest req) {
+    public String selectMydataOutgoing(@RequestParam String cid, HttpServletRequest req) {
 
         log.info("## QuartzController.java [selectMydataOutgoing] Starts");
 
@@ -426,8 +421,7 @@ public class QuartzController {
     }
 
     @RequestMapping(value = "/selectAuth", method = RequestMethod.GET)
-    public String selectAuth(@RequestParam(name = "cid", required = true) String cid
-            , HttpServletRequest req) {
+    public String selectAuth(@RequestParam String cid, HttpServletRequest req) {
 
         log.info("## QuartzController.java [selectAuth] Starts");
 
@@ -442,14 +436,12 @@ public class QuartzController {
     }
 
     @RequestMapping(value = "/selectTax", method = RequestMethod.GET)
-    public String selectTax(@RequestParam(name = "cid", required = true) String cid
-            , @RequestParam(name = "year", required = true) String year
-            , HttpServletRequest req) {
+    public String selectTax(@RequestParam String cid, @RequestParam int year, HttpServletRequest req) {
 
         log.info("## QuartzController.java [selectTax] Starts");
 
         // 소득세정보 조회
-        log.info("[{}]", taxService.getTax(cid, Integer.parseInt(year)).orElse(null));
+        log.info("[{}]", taxService.getTax(cid, year).orElse(null));
 
         log.info("## QuartzController.java [selectTax] End");
 
