@@ -16,8 +16,8 @@ import java.security.NoSuchAlgorithmException;
 
 @Slf4j
 public class CryptoUtil {
-	public static final String KEY = "5f497dfabaa403b9";
-	public static final String IV = "5f497dfabaa403b9";
+	public static final String KEY = "Yq3t6w9z$C&F)J@M";
+	public static final String IV = "Yq3t6w9z$C&F)J@M";
 
 	/**
 	 * 암호화 : AES/CBC/PKCS5Padding, Base64 Encoding
