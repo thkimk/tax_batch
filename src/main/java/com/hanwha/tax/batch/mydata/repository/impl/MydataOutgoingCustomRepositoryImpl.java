@@ -1,6 +1,5 @@
 package com.hanwha.tax.batch.mydata.repository.impl;
 
-import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.entity.MydataOutgoing;
 import com.hanwha.tax.batch.mydata.repository.MydataOutgoingCustomRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;

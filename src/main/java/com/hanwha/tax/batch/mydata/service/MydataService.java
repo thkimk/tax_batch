@@ -1,5 +1,6 @@
 package com.hanwha.tax.batch.mydata.service;
 
+import com.hanwha.tax.batch.CryptoUtil;
 import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.auth.service.AuthService;
 import com.hanwha.tax.batch.cust.service.CustService;
@@ -329,6 +330,9 @@ public class MydataService {
     public MydataIncome saveMydataIncome(MydataIncome mydataIncome) {
         Integer seq = mydataIncome.getSeq();
 
+        // 게좌번호 암호화
+        mydataIncome.setAccountNum(CryptoUtil.encodeAESCBC(mydataIncome.getAccountNum()));
+
         // 마이데이터 수입 원본 데이터 조회
         mydataIncome.setSeq(null);
         List<MydataIncome> listMydataIncome = mydataIncomeRepository.findByDataPk(mydataIncome);
@@ -388,6 +392,9 @@ public class MydataService {
      */
     private MydataOutgoing saveMydataOutgoing(MydataOutgoing mydataOutgoing) {
         Integer seq = mydataOutgoing.getSeq();
+
+        // 카드번호 암호화
+        mydataOutgoing.setCardId(CryptoUtil.encodeAESCBC(mydataOutgoing.getCardId()));
 
         // 마이데이터 경비 내역 조회
         mydataOutgoing.setSeq(null);
@@ -1061,5 +1068,21 @@ public class MydataService {
      */
     public List<MydataOutgoing> getMydataOutgoingByCustId(String custId) {
         return mydataOutgoingRepository.findByCustId(custId);
+    }
+
+    /**
+     * 마이데이터 전체 수입내역 조회
+     * @return
+     */
+    public List<MydataIncome> getMydataIncomeList() {
+        return mydataIncomeRepository.findAll();
+    }
+
+    /**
+     * 마이데이터 전체 경비내역 조회
+     * @return
+     */
+    public List<MydataOutgoing> getMydataOutgoingList() {
+        return mydataOutgoingRepository.findAll();
     }
 }

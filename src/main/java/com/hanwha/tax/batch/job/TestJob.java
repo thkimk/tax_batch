@@ -1,7 +1,10 @@
 package com.hanwha.tax.batch.job;
 
+import com.hanwha.tax.batch.CryptoUtil;
 import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.model.SpringApplicationContext;
+import com.hanwha.tax.batch.mydata.repository.MydataIncomeRepository;
+import com.hanwha.tax.batch.mydata.repository.MydataOutgoingRepository;
 import com.hanwha.tax.batch.mydata.service.MydataService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
@@ -16,14 +19,18 @@ import static com.hanwha.tax.batch.Constants.CARD_FILE;
 public class TestJob extends AbstractBaseJob {
 
 	private MydataService mydataService;
+	private MydataIncomeRepository mydataIncomeRepository;
+	private MydataOutgoingRepository mydataOutgoingRepository;
 
     @Override
 	protected void doExecute(JobExecutionContext context) throws JobExecutionException {
 		mydataService = (MydataService) SpringApplicationContext.getBean("mydataService");
+		mydataIncomeRepository = (MydataIncomeRepository) SpringApplicationContext.getBean("mydataIncomeRepository");
+		mydataOutgoingRepository = (MydataOutgoingRepository) SpringApplicationContext.getBean("mydataOutgoingRepository");
 
 		log.info("============= QUARTZ 테스트 시작 [{}] =============", Utils.getCurrentDateTime());
 
-		testMydata();
+		cryptMydata();
 
 		log.info("============= QUARTZ 테스트 종료 [{}] =============", Utils.getCurrentDateTime());
 	}
@@ -74,5 +81,17 @@ public class TestJob extends AbstractBaseJob {
 //		mydataService.getMydataOutgoingByCustId(custId).forEach(mo -> {
 //			log.info("{}", mo.toString());
 //		});
+	}
+
+	private void cryptMydata() {
+		mydataService.getMydataIncomeList().forEach(mi -> {
+			mi.setAccountNum(CryptoUtil.encodeAESCBC(mi.getAccountNum()));
+			mydataIncomeRepository.save(mi);
+		});
+
+		mydataService.getMydataOutgoingList().forEach(mo -> {
+			mo.setCardId(CryptoUtil.encodeAESCBC(mo.getCardId()));
+			mydataOutgoingRepository.save(mo);
+		});
 	}
 }
