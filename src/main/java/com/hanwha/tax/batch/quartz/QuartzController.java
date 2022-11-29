@@ -440,4 +440,19 @@ public class QuartzController {
 
         return "";
     }
+
+    @RequestMapping(value = "/selectTax", method = RequestMethod.GET)
+    public String selectTax(@RequestParam(name = "cid", required = true) String cid
+            , @RequestParam(name = "year", required = true) String year
+            , HttpServletRequest req) {
+
+        log.info("## QuartzController.java [selectTax] Starts");
+
+        // 소득세정보 조회
+        log.info("[{}]", taxService.getTax(cid, Integer.parseInt(year)).orElse(null));
+
+        log.info("## QuartzController.java [selectTax] End");
+
+        return "";
+    }
 }

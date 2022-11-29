@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Slf4j
 @Service("taxService")
 public class TaxService {
@@ -57,5 +59,15 @@ public class TaxService {
      */
     public int deleteTaxByCustId(String custId) {
         return taxRepository.deleteByCustId(custId);
+    }
+
+    /**
+     * 소득세정보 조회
+     * @param custId
+     * @param year
+     * @return
+     */
+    public Optional<Tax> getTax(String custId, int year) {
+        return taxRepository.findById(new TaxId(custId, year));
     }
 }

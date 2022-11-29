@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Repository
 public interface TaxRepository extends JpaRepository<Tax, TaxId> {
     /**
@@ -28,4 +30,11 @@ public interface TaxRepository extends JpaRepository<Tax, TaxId> {
     @Modifying
     @Query(value="delete from tax", nativeQuery = true)
     int deleteTax();
+
+    /**
+     * 소득세정보 조회
+     * @param taxId
+     * @return
+     */
+    Optional<Tax> findById(TaxId taxId);
 }
