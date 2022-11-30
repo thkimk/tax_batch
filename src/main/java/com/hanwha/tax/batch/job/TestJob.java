@@ -30,7 +30,7 @@ public class TestJob extends AbstractBaseJob {
 
 		log.info("============= QUARTZ 테스트 시작 [{}] =============", Utils.getCurrentDateTime());
 
-		cryptMydata();
+		encryptMydata();
 
 		log.info("============= QUARTZ 테스트 종료 [{}] =============", Utils.getCurrentDateTime());
 	}
@@ -83,15 +83,17 @@ public class TestJob extends AbstractBaseJob {
 //		});
 	}
 
-	private void cryptMydata() {
+	private void encryptMydata() {
 		mydataService.getMydataIncomeList().forEach(mi -> {
 			mi.setAccountNum(CryptoUtil.encodeAESCBC(mi.getAccountNum()));
 			mydataIncomeRepository.save(mi);
 		});
+	}
 
-		mydataService.getMydataOutgoingList().forEach(mo -> {
-			mo.setCardId(CryptoUtil.encodeAESCBC(mo.getCardId()));
-			mydataOutgoingRepository.save(mo);
+	private void decryptMydata() {
+		mydataService.getMydataIncomeList().forEach(mi -> {
+			mi.setAccountNum(CryptoUtil.decodeAESCBC(mi.getAccountNum()));
+			mydataIncomeRepository.save(mi);
 		});
 	}
 }

@@ -1,10 +1,12 @@
 package com.hanwha.tax.batch.quartz;
 
+import com.hanwha.tax.batch.CryptoUtil;
 import com.hanwha.tax.batch.HttpUtil;
 import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.auth.service.AuthService;
 import com.hanwha.tax.batch.cust.service.CustService;
 import com.hanwha.tax.batch.entity.*;
+import com.hanwha.tax.batch.mydata.repository.MydataIncomeRepository;
 import com.hanwha.tax.batch.mydata.service.MydataService;
 import com.hanwha.tax.batch.tax.service.CalcTax;
 import com.hanwha.tax.batch.tax.service.TaxService;
@@ -48,6 +50,9 @@ public class QuartzController {
 
     @Autowired
     MydataService mydataService;
+
+    @Autowired
+    MydataIncomeRepository mydataIncomeRepository;
 
     @Autowired
     TotalService totalService;
@@ -444,6 +449,52 @@ public class QuartzController {
         log.info("[{}]", taxService.getTax(cid, year).orElse(null));
 
         log.info("## QuartzController.java [selectTax] End");
+
+        return "";
+    }
+
+    @RequestMapping(value = "/encryptMydata", method = RequestMethod.GET)
+    public String encryptMydata(@RequestParam(value = "cid", required = false, defaultValue = "") String cid, HttpServletRequest req) {
+
+        log.info("## QuartzController.java [encryptMydata] Starts");
+
+        // 마이데이터 수입정보 암호화
+        if (Utils.isEmpty(cid)) {
+            mydataService.getMydataIncomeList().forEach(mi -> {
+                mi.setAccountNum(CryptoUtil.encodeAESCBC(mi.getAccountNum()));
+                mydataIncomeRepository.save(mi);
+            });
+        } else {
+            mydataService.getMydataIncomeByCustId(cid).forEach(mi -> {
+                mi.setAccountNum(CryptoUtil.encodeAESCBC(mi.getAccountNum()));
+                mydataIncomeRepository.save(mi);
+            });
+        }
+
+        log.info("## QuartzController.java [encryptMydata] End");
+
+        return "";
+    }
+
+    @RequestMapping(value = "/decryptMydata", method = RequestMethod.GET)
+    public String decryptMydata(@RequestParam(value = "cid", required = false, defaultValue = "") String cid, HttpServletRequest req) {
+
+        log.info("## QuartzController.java [decryptMydata] Starts");
+
+        // 마이데이터 수입정보 복호화
+        if (Utils.isEmpty(cid)) {
+            mydataService.getMydataIncomeList().forEach(mi -> {
+                mi.setAccountNum(CryptoUtil.decodeAESCBC(mi.getAccountNum()));
+                mydataIncomeRepository.save(mi);
+            });
+        } else {
+            mydataService.getMydataIncomeByCustId(cid).forEach(mi -> {
+                mi.setAccountNum(CryptoUtil.decodeAESCBC(mi.getAccountNum()));
+                mydataIncomeRepository.save(mi);
+            });
+        }
+
+        log.info("## QuartzController.java [decryptMydata] End");
 
         return "";
     }

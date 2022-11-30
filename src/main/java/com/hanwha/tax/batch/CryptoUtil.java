@@ -1,7 +1,9 @@
 package com.hanwha.tax.batch;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -16,8 +18,8 @@ import java.security.NoSuchAlgorithmException;
 
 @Slf4j
 public class CryptoUtil {
-	public static final String KEY = "Yq3t6w9z$C&F)J@M";
-	public static final String IV = "Yq3t6w9z$C&F)J@M";
+	public static final String KEY = "736f6372617461783230323231313239";
+	public static final String IV = "736f6372617461783230323231313239";
 
 	/**
 	 * 암호화 : AES/CBC/PKCS5Padding, Base64 Encoding
@@ -28,9 +30,9 @@ public class CryptoUtil {
 		String dataEnc = "";
 
 		try {
-			SecretKey secureKey = new SecretKeySpec(KEY.getBytes(), "AES");
+			SecretKey secureKey = new SecretKeySpec(Hex.decodeHex(KEY.toCharArray()), "AES");
 			Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
-			c.init(Cipher.ENCRYPT_MODE, secureKey, new IvParameterSpec(IV.getBytes()));
+			c.init(Cipher.ENCRYPT_MODE, secureKey, new IvParameterSpec(Hex.decodeHex(IV.toCharArray())));
 			byte[] encrypted = c.doFinal(data.trim().getBytes());
 			dataEnc = Base64.encodeBase64String(encrypted);
 		} catch (NoSuchAlgorithmException e) {
@@ -44,6 +46,8 @@ public class CryptoUtil {
 		} catch (IllegalBlockSizeException e) {
 			log.error("**** 요청 처리 실패 {}", e);
 		} catch (BadPaddingException e) {
+			log.error("**** 요청 처리 실패 {}", e);
+		} catch (DecoderException e) {
 			log.error("**** 요청 처리 실패 {}", e);
 		}
 
@@ -59,9 +63,9 @@ public class CryptoUtil {
 		String dataDec = "";
 
 		try {
-			SecretKey secureKey = new SecretKeySpec(KEY.getBytes(), "AES");
+			SecretKey secureKey = new SecretKeySpec(Hex.decodeHex(KEY.toCharArray()), "AES");
 			Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
-			c.init(Cipher.DECRYPT_MODE, secureKey, new IvParameterSpec(IV.getBytes()));
+			c.init(Cipher.DECRYPT_MODE, secureKey, new IvParameterSpec(Hex.decodeHex(IV.toCharArray())));
 			byte[] decrypted = Base64.decodeBase64(data.trim());
 			dataDec = new String(c.doFinal(decrypted));
 		} catch (NoSuchAlgorithmException e) {
@@ -75,6 +79,8 @@ public class CryptoUtil {
 		} catch (IllegalBlockSizeException e) {
 			log.error("**** 요청 처리 실패 {}", e);
 		} catch (BadPaddingException e) {
+			log.error("**** 요청 처리 실패 {}", e);
+		} catch (DecoderException e) {
 			log.error("**** 요청 처리 실패 {}", e);
 		}
 
