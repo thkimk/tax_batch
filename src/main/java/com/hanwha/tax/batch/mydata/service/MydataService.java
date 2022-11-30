@@ -393,9 +393,6 @@ public class MydataService {
     private MydataOutgoing saveMydataOutgoing(MydataOutgoing mydataOutgoing) {
         Integer seq = mydataOutgoing.getSeq();
 
-        // 카드번호 암호화
-        mydataOutgoing.setCardId(CryptoUtil.encodeAESCBC(mydataOutgoing.getCardId()));
-
         // 마이데이터 경비 내역 조회
         mydataOutgoing.setSeq(null);
         List<MydataOutgoing> listMydataOutgoing = mydataOutgoingRepository.findByDataPk(mydataOutgoing);
