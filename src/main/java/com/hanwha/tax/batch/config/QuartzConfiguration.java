@@ -3,7 +3,7 @@ package com.hanwha.tax.batch.config;
 import com.hanwha.tax.batch.job.CustDestroyDormancyJob;
 import com.hanwha.tax.batch.job.CustDestroyWithdrawalJob;
 import com.hanwha.tax.batch.job.CustDormancyJob;
-import com.hanwha.tax.batch.job.CustGradeStatusJob;
+import com.hanwha.tax.batch.job.CustStatJob;
 import com.hanwha.tax.batch.job.DeductTransferJob;
 import com.hanwha.tax.batch.job.EventStatusJob;
 import com.hanwha.tax.batch.job.MydataJob;
@@ -66,8 +66,8 @@ public class QuartzConfiguration {
 	@Value("${deduct.transfer.schedule}")
 	private String deductTransferCronExp;
 
-	@Value("${cust.grade.status.schedule}")
-	private String custGradeStatusCronExp;
+	@Value("${cust.stat.schedule}")
+	private String custStatCronExp;
 
 	private static String TRIGGER_GROUP_NAME = "TAX_GROUP";
 
@@ -270,21 +270,21 @@ public class QuartzConfiguration {
 		return trigger;
 	}
 
-	@Bean(name="custGradeStatusJobDetail")
-	public JobDetailFactoryBean custGradeStatusJobDetail() {
+	@Bean(name="custStatJobDetail")
+	public JobDetailFactoryBean custStatJobDetail() {
 		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
-		jobDetailFactory.setJobClass(CustGradeStatusJob.class);
-		jobDetailFactory.setDescription("save status by custGrade");
+		jobDetailFactory.setJobClass(CustStatJob.class);
+		jobDetailFactory.setDescription("save stat by cust");
 		jobDetailFactory.setDurability(true);
 		return jobDetailFactory;
 	}
 
-	@Bean(name="custGradeStatusTrigger")
-	public CronTriggerFactoryBean custGradeStatusTrigger(JobDetail custGradeStatusJobDetail) {
+	@Bean(name="custStatTrigger")
+	public CronTriggerFactoryBean custStatTrigger(JobDetail custStatJobDetail) {
 		CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
 		trigger.setGroup(TRIGGER_GROUP_NAME);
-		trigger.setCronExpression(custGradeStatusCronExp);
-		trigger.setJobDetail(custGradeStatusJobDetail);
+		trigger.setCronExpression(custStatCronExp);
+		trigger.setJobDetail(custStatJobDetail);
 
 		return trigger;
 	}

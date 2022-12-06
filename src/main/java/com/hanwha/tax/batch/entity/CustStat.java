@@ -9,16 +9,18 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 /**
- * 고객 등급 현황
+ * 고객 이용 현황
  */
 @Getter
 @Setter
 @ToString
 @DynamicInsert
-@Entity(name="cust_grade_status")
-public class CustGradeStatus {
+@Entity(name="cust_stat")
+public class CustStat {
 	@Id
 	private String 	  basicYmd;			// 기준일
+	private int 	  downCnt;			// 다운로드 수
+	private int 	  loginCnt;			// 로그인 수
 	private int 	  newCnt;			// 신규회원 수
 	private int 	  regCnt;			// 정회원 수
 	private int 	  asctCnt;			// 준회원 수

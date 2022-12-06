@@ -37,6 +37,12 @@ public class NotiTargetJob extends AbstractBaseJob {
 			// 고객정보를 알람정보로 변환
 			NotiTarget notiTarget = new NotiTarget().convertByCust(c, custInfo, custInfoDtl, custDeduct, custFamilyList);
 
+			// 고객번호, 이메일 검증
+			if (Utils.isEmpty(notiTarget.getCustId()) || Utils.isEmpty(notiTarget.getEmail())) {
+				log.error("※※※ 알람 대상 고객정보를 확인해 주시기 바랍니다. [회원번호 : {}]", notiTarget.getCustId());
+				return;
+			}
+
 			// 알람 대상 정보 저장
 			if (noticeService.saveNotiTarget(notiTarget) == null) {
 				log.error("※※※ 알람 대상 고객정보 저장에 실패하였습니다. [회원번호 : {}]", notiTarget.getCustId());

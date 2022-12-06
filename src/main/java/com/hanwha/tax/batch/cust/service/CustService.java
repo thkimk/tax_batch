@@ -50,7 +50,7 @@ public class CustService {
     CustEventRepository custEventRepository;
 
     @Autowired
-    CustGradeStatusRepository custGradeStatusRepository;
+    CustStatRepository custStatRepository;
 
     @Autowired
     AuthService authService;
@@ -367,25 +367,27 @@ public class CustService {
     }
 
     /**
-     * 기준일의 고객 등급 별 현황 저장
+     * 기준일별 고객 이용 현황 저장
      * @param basicYmd
      * @return
      */
-    public CustGradeStatus saveCustGradeStatus(String basicYmd) {
-        CustGradeStatus custGradeStatus = new CustGradeStatus();
-        custGradeStatus.setBasicYmd(basicYmd);
+    public CustStat saveCustStat(String basicYmd) {
+        CustStat custStat = new CustStat();
+        custStat.setBasicYmd(basicYmd);
 
-        BeanWrapper wrapper = new BeanWrapperImpl(custGradeStatus);
+        BeanWrapper wrapper = new BeanWrapperImpl(custStat);
 
         // 기준일 별 등급 현황
-        custGradeStatusRepository.getCustGradeStatusTarget(basicYmd).forEach(cgs -> {
-            wrapper.setPropertyValue(cgs.get("grade"), cgs.get("cnt") == null ? 0 : Integer.parseInt(String.valueOf(cgs.get("cnt"))));
+        custStatRepository.getCustStatTarget(basicYmd).forEach(cgs -> {
+            if (!Utils.isEmpty(cgs.get("col"))) {
+                wrapper.setPropertyValue(cgs.get("col"), cgs.get("cnt") == null ? 0 : Integer.parseInt(String.valueOf(cgs.get("cnt"))));
+            }
         });
         // 현재 등급 현황
-        custGradeStatusRepository.getCustGradeStatusTarget().forEach(cgs -> {
-            wrapper.setPropertyValue(cgs.get("grade"), cgs.get("cnt") == null ? 0 : Integer.parseInt(String.valueOf(cgs.get("cnt"))));
+        custStatRepository.getCustStatTarget().forEach(cgs -> {
+            wrapper.setPropertyValue(cgs.get("col"), cgs.get("cnt") == null ? 0 : Integer.parseInt(String.valueOf(cgs.get("cnt"))));
         });
 
-        return custGradeStatusRepository.save(custGradeStatus);
+        return custStatRepository.save(custStat);
     }
 }

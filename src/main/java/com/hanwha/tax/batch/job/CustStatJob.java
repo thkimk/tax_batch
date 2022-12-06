@@ -9,7 +9,7 @@ import org.quartz.JobExecutionException;
 
 
 @Slf4j
-public class CustGradeStatusJob extends AbstractBaseJob {
+public class CustStatJob extends AbstractBaseJob {
 
 	private CustService custService;
 
@@ -17,13 +17,13 @@ public class CustGradeStatusJob extends AbstractBaseJob {
 	protected void doExecute(JobExecutionContext context) throws JobExecutionException {
 		custService = (CustService) SpringApplicationContext.getBean("custService");
 
-		log.info("============= 일별 고객등급 현황 QUARTZ 시작 [{}] =============", Utils.getCurrentDateTime());
+		log.info("============= 일별 고객 이용 현황 QUARTZ 시작 [{}] =============", Utils.getCurrentDateTime());
 
 		String basicYmd = Utils.getCurrentDate();
-		if (custService.saveCustGradeStatus(basicYmd) == null) {
+		if (custService.saveCustStat(basicYmd) == null) {
 			log.error("▶︎︎︎ [{}] 고객 등급 현황 저장 실패", basicYmd);
 		}
 
-		log.info("============= 일별 고객등급 현황 QUARTZ 종료 [{}] =============", Utils.getCurrentDateTime());
+		log.info("============= 일별 고객 이용 현황 QUARTZ 종료 [{}] =============", Utils.getCurrentDateTime());
 	}
 }
