@@ -27,7 +27,7 @@ public interface CustStatRepository extends JpaRepository<CustStat, String> {
             "from login_hst lh " +
             "where auth_status not in ('LOGIN','LOGOUT') " +
             "and DATE_FORMAT(login_dt,'%Y%m%d') = :basicYmd) lst " +
-            "where lst.rn = 1" +
+            "where lst.rn = 1 " +
             "group by lst.auth_status", nativeQuery = true)
     List<Map<String, String>> getCustStatTarget(String basicYmd);
 
