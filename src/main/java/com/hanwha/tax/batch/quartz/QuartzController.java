@@ -498,4 +498,17 @@ public class QuartzController {
 
         return "";
     }
+
+    @RequestMapping(value = "/saveCustStat", method = RequestMethod.GET)
+    public String saveCustStat(@RequestParam String ymd, HttpServletRequest req) {
+
+        log.info("## QuartzController.java [saveCustStat] Starts");
+
+        // 고객 이용 현황 저장
+        custService.saveCustStat(ymd);
+
+        log.info("## QuartzController.java [saveCustStat] End");
+
+        return "";
+    }
 }
