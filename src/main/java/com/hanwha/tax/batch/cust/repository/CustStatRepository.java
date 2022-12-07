@@ -38,5 +38,5 @@ public interface CustStatRepository extends JpaRepository<CustStat, String> {
     @Query(value="select 'regAccCnt' as col, COUNT(*) as cnt from cust c1 where cust_status != '02' and cust_grade = '02' union " +
             "select 'asctAccCnt' as col, COUNT(*) as cnt from cust c2 where cust_status != '02' and cust_grade = '01' union " +
             "select 'outAccCnt' as col, COUNT(*) as cnt from cust c3 where cust_status = '02'", nativeQuery = true)
-    List<Map<String, String>> getCustStatTarget();
+    List<Map<String, String>> getCustStatAccTarget();
 }

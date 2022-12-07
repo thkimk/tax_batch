@@ -30,6 +30,15 @@ public interface CustRepository extends JpaRepository<Cust, String> {
     List<Cust> findByCustStatusAndCustGradeAndRegOutDtLessThan(String custStatus, String custGrade, String regOutDt);
 
     /**
+     * 고객정보 파기
+     * @param custId
+     */
+    @Transactional
+    @Modifying
+    @Query(value="call proc_deleteCust(:custId)", nativeQuery = true)
+    void destroyCust(String custId);
+
+    /**
      * 고객번호 기준으로 고객정보 삭제
      * @param custId
      */

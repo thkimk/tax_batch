@@ -119,8 +119,10 @@ public class HttpUtil {
 
 			// 헤더값 설정
 			httpPost.addHeader("Content-Type", "Application/json; charset=UTF-8");
-			for (final String key : headerMap.keySet()) {
-				httpPost.addHeader(key, headerMap.get(key));
+			if (headerMap != null) {
+				for (final String key : headerMap.keySet()) {
+					httpPost.addHeader(key, headerMap.get(key));
+				}
 			}
 
 			CloseableHttpResponse httpResponse = httpClient.execute(httpPost);

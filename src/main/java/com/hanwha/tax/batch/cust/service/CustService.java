@@ -181,6 +181,17 @@ public class CustService {
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
+    public void destroyCust(String custID) throws Exception {
+        log.info("▶▶▶ [{}] 고객정보 식제 ◀◀◀", custID);
+        custRepository.destroyCust(custID);
+    }
+
+    /**
+     * 고객 데이터 파기
+     * @param custID
+     * @throws Exception
+     */
+    @Transactional(rollbackFor = Exception.class)
     public void deleteCustData(String custID) throws Exception {
         log.info("▶▶▶ [{}] 고객정보 식제 시작 ◀◀◀", custID);
 
@@ -384,7 +395,7 @@ public class CustService {
             }
         });
         // 현재 등급 현황
-        custStatRepository.getCustStatTarget().forEach(cgs -> {
+        custStatRepository.getCustStatAccTarget().forEach(cgs -> {
             wrapper.setPropertyValue(cgs.get("col"), cgs.get("cnt") == null ? 0 : Integer.parseInt(String.valueOf(cgs.get("cnt"))));
         });
 

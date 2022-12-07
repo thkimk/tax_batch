@@ -1,6 +1,7 @@
 package com.hanwha.tax.batch.mydata.service;
 
 import com.hanwha.tax.batch.CryptoUtil;
+import com.hanwha.tax.batch.HttpUtil;
 import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.auth.service.AuthService;
 import com.hanwha.tax.batch.cust.service.CustService;
@@ -147,6 +148,9 @@ public class MydataService {
 
     @Value("${tax.mydata.path.unzip}")
     private String mydataFileUnzipPath;
+
+    @Value("${tax.api.domain}")
+    private String domainApi;
 
     /**
      * 마이데이터 파일 경로 가져오기
@@ -974,18 +978,18 @@ public class MydataService {
      */
     public void procMydataInfo(String fileType, String ymdBasic) {
         String downPath = getFilePath(mydataFileZipPath, ymdBasic);         // 마이데이터 zip 파일 경로
-        String mydataPath = getFilePath(mydataFileUnzipPath, ymdBasic);     // 마이데이터 unzio 파일 경로
+        String openPath = getFilePath(mydataFileUnzipPath, ymdBasic);     // 마이데이터 unzip 파일 경로
         String fileName = ymdBasic + "_" + mydataSftpUser + "_" + AbstractMydataCoocon.FILE_KIND.쿠콘.getCode() + "_" + fileType;
 
         // SFTP Get 수행
         mydataSftpGet(getFilePath(COOCON_FILE_SFTP_PATH, ymdBasic), downPath, fileName);
 
         // zip 압축 해제
-        mydataUnzip(downPath+fileName+".zip", mydataPath);
+        mydataUnzip(downPath+fileName+".zip", openPath);
 
         // File load (parsing)
         // DB Upsert (mydata_income)
-        readMydataFile(fileType, mydataPath+fileName);
+        readMydataFile(fileType, openPath+fileName);
     }
 
     /**
@@ -1081,5 +1085,13 @@ public class MydataService {
      */
     public List<MydataOutgoing> getMydataOutgoingList() {
         return mydataOutgoingRepository.findAll();
+    }
+
+    /**
+     * 마이데이터 제3자 제공동의 철회
+     * @param custID
+     */
+    public void revoke(String custID) {
+        HttpUtil.sendReqPOSTJson(domainApi+"/api/v1/auth/ccRevoke", "{\"cid\":\""+custID+"\", \"tax_token\":\"tax-token-coocon001\"}", null);
     }
 }
