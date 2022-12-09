@@ -3,6 +3,7 @@ package com.hanwha.tax.batch.quartz;
 import com.hanwha.tax.batch.CryptoUtil;
 import com.hanwha.tax.batch.HttpUtil;
 import com.hanwha.tax.batch.Utils;
+import com.hanwha.tax.batch.auth.repository.AuthInfoRepository;
 import com.hanwha.tax.batch.auth.service.AuthService;
 import com.hanwha.tax.batch.cust.service.CustService;
 import com.hanwha.tax.batch.entity.*;
@@ -65,6 +66,8 @@ public class QuartzController {
 
     @Autowired
     AuthService authService;
+    @Autowired
+    AuthInfoRepository authInfoRepository;
 
     @Value("${tax.api.domain}")
     private String domainApi;
@@ -495,6 +498,32 @@ public class QuartzController {
         }
 
         log.info("## QuartzController.java [decryptMydata] End");
+
+        return "";
+    }
+
+    @RequestMapping(value = "/revokeMydataByCi", method = RequestMethod.GET)
+    public String revokeMydata(@RequestParam String ci, HttpServletRequest req) {
+
+        log.info("## QuartzController.java [revokeMydata] Starts");
+
+        AuthInfo auth = new AuthInfo();
+        auth.setCustId("cid"+ci.substring(0,7));
+        auth.setPin("pin"+ci.substring(7,24));
+        auth.setCi(ci);
+        auth.setIsMain("Y");
+        auth.setAuthStatus("00");
+
+        // 인증정보 임의 저장
+        authInfoRepository.save(auth);
+
+        // 제3자 제공동의 철회
+        mydataService.revoke(auth.getCustId());
+
+        // 인증정보 삭제
+        authInfoRepository.delete(auth);
+
+        log.info("## QuartzController.java [revokeMydata] End");
 
         return "";
     }
