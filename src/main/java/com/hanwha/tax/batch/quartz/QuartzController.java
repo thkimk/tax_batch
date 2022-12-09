@@ -503,9 +503,9 @@ public class QuartzController {
     }
 
     @RequestMapping(value = "/revokeMydataByCi", method = RequestMethod.GET)
-    public String revokeMydata(@RequestParam String ci, HttpServletRequest req) {
+    public String revokeMydataByCi(@RequestParam String ci, HttpServletRequest req) {
 
-        log.info("## QuartzController.java [revokeMydata] Starts");
+        log.info("## QuartzController.java [revokeMydataByCi] Starts");
         log.info("▶▶▶ 제3자 제공동의 철회 : [{}]", ci);
 
         AuthInfo auth = new AuthInfo();
@@ -524,7 +524,7 @@ public class QuartzController {
         // 인증정보 삭제
         authInfoRepository.delete(auth);
 
-        log.info("## QuartzController.java [revokeMydata] End");
+        log.info("## QuartzController.java [revokeMydataByCi] End");
 
         return "";
     }
