@@ -506,6 +506,7 @@ public class QuartzController {
     public String revokeMydata(@RequestParam String ci, HttpServletRequest req) {
 
         log.info("## QuartzController.java [revokeMydata] Starts");
+        log.info("▶▶▶ 제3자 제공동의 철회 : [{}]", ci);
 
         AuthInfo auth = new AuthInfo();
         auth.setCustId("cid"+ci.substring(0,7));
