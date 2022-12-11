@@ -20,8 +20,8 @@ public class AuthService {
      * @param custId
      * @return
      */
-    public List<AuthInfo> getAuthInfoByCustId(String custId) {
-        return authInfoRepository.findByCustId(custId);
+    public AuthInfo getAuthInfo(String custId) {
+        return authInfoRepository.findById(custId).orElse(null);
     }
 
     /**

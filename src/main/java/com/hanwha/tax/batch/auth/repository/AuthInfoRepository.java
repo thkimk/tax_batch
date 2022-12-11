@@ -1,6 +1,5 @@
 package com.hanwha.tax.batch.auth.repository;
 
-import com.hanwha.tax.batch.auth.model.AuthId;
 import com.hanwha.tax.batch.entity.AuthInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -9,15 +8,17 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface AuthInfoRepository extends JpaRepository<AuthInfo, AuthId> {
+public interface AuthInfoRepository extends JpaRepository<AuthInfo, String> {
     /**
      * 고객번호로로 인증정보 조회
+     *
      * @param custId
      * @return
      */
-    List<AuthInfo> findByCustId(String custId);
+    Optional<AuthInfo> findById(String custId);
     
     /**
      * ci값으로 인증정보 조회

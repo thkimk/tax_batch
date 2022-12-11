@@ -1,16 +1,12 @@
 package com.hanwha.tax.batch.entity;
 
-import com.hanwha.tax.batch.auth.model.AuthId;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.DynamicInsert;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
-import java.io.Serializable;
 
 /**
  * 인증
@@ -20,12 +16,10 @@ import java.io.Serializable;
 @ToString
 @DynamicInsert
 @Entity(name="auth_info")
-@IdClass(AuthId.class)
-public class AuthInfo implements Serializable {
+public class AuthInfo {
 	@Id
-	@Column(name="cust_id")
 	private String custId;			// 고객 번호
-	@Id
+	private String authType;		//
 	private String pin;				// 핀 번호
 	private String ci;				// 본인확인 인증키
 	private String isMain;			// 대표여부

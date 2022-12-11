@@ -434,9 +434,7 @@ public class QuartzController {
         log.info("## QuartzController.java [selectAuth] Starts");
 
         // 고객번호로 인증정보 조회
-        authService.getAuthInfoByCustId(cid).forEach(ai -> {
-            log.info("[{}]", ai.toString());
-        });
+        log.info("[{}]", authService.getAuthInfo(cid).toString());
 
         log.info("## QuartzController.java [selectAuth] End");
 
