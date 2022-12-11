@@ -508,10 +508,12 @@ public class QuartzController {
 
         AuthInfo auth = new AuthInfo();
         auth.setCustId("cid"+ci.substring(0,7));
+        auth.setAuthType("PIN");
         auth.setPin("pin"+ci.substring(7,24));
         auth.setCi(ci);
         auth.setIsMain("Y");
         auth.setAuthStatus("00");
+        auth.setCreateDt(Utils.getCurrentDateTime());
 
         // 인증정보 임의 저장
         authInfoRepository.save(auth);
