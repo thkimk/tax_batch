@@ -504,6 +504,8 @@ public class QuartzController {
     public String revokeMydataByCi(@RequestParam String ci, HttpServletRequest req) {
 
         log.info("## QuartzController.java [revokeMydataByCi] Starts");
+
+        ci = ci.replace("%26","&").replace("%2B","+").replace("%3D","=");
         log.info("▶▶▶ 제3자 제공동의 철회 : [{}]", ci);
 
         AuthInfo auth = new AuthInfo();
