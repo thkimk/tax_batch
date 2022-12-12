@@ -48,7 +48,7 @@ public interface CustRepository extends JpaRepository<Cust, String> {
     void deleteById(String custId);
 
     /**
-     * 휴면기관과 고객상태로 휴면회원 리스트 조회
+     * 휴면기간과 고객상태로 휴면회원 리스트 조회
      * @param ymdBasic
      * @param custStatus
      * @return

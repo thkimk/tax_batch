@@ -39,4 +39,12 @@ public interface CustStatRepository extends JpaRepository<CustStat, String> {
             "select 'asctAccCnt' as col, COUNT(*) as cnt from cust c2 where cust_status != '02' and cust_grade = '01' union " +
             "select 'outAccCnt' as col, COUNT(*) as cnt from cust c3 where cust_status = '02'", nativeQuery = true)
     List<Map<String, String>> getCustStatAccTarget();
+
+    /**
+     * from ~ to 일자의 회워 이용 현황 조회
+     * @param from
+     * @param to
+     * @return
+     */
+    List<CustStat> findByBasicYmdBetween(String from, String to);
 }

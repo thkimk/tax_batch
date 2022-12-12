@@ -4,9 +4,21 @@ import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.auth.service.AuthService;
 import com.hanwha.tax.batch.book.service.BookService;
 import com.hanwha.tax.batch.cust.model.CustDeductId;
-import com.hanwha.tax.batch.cust.repository.*;
+import com.hanwha.tax.batch.cust.repository.CustDeductRepository;
+import com.hanwha.tax.batch.cust.repository.CustEventRepository;
+import com.hanwha.tax.batch.cust.repository.CustFamilyRepository;
+import com.hanwha.tax.batch.cust.repository.CustInfoRepository;
+import com.hanwha.tax.batch.cust.repository.CustInfoDtlRepository;
+import com.hanwha.tax.batch.cust.repository.CustRepository;
+import com.hanwha.tax.batch.cust.repository.CustStatRepository;
+import com.hanwha.tax.batch.cust.repository.CustTermsAgmtRepository;
 import com.hanwha.tax.batch.dev.service.DevService;
-import com.hanwha.tax.batch.entity.*;
+import com.hanwha.tax.batch.entity.Cust;
+import com.hanwha.tax.batch.entity.CustDeduct;
+import com.hanwha.tax.batch.entity.CustFamily;
+import com.hanwha.tax.batch.entity.CustInfo;
+import com.hanwha.tax.batch.entity.CustInfoDtl;
+import com.hanwha.tax.batch.entity.CustStat;
 import com.hanwha.tax.batch.helpdesk.service.HelpdeskService;
 import com.hanwha.tax.batch.login.service.LoginService;
 import com.hanwha.tax.batch.mydata.service.MydataService;
@@ -400,5 +412,15 @@ public class CustService {
         });
 
         return custStatRepository.save(custStat);
+    }
+
+    /**
+     * from ~ to 일자의 회원 이용 현황 조회
+     * @param from
+     * @param to
+     * @return
+     */
+    public List<CustStat> getCustStatList(String from, String to) {
+        return custStatRepository.findByBasicYmdBetween(from, to);
     }
 }

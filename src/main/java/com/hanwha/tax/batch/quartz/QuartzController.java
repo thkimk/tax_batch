@@ -511,8 +511,6 @@ public class QuartzController {
         auth.setAuthType("PIN");
         auth.setPin("pin"+ci.substring(7,24));
         auth.setCi(ci);
-        auth.setIsMain("Y");
-        auth.setAuthStatus("00");
         auth.setCreateDt(Utils.getCurrentDateTime());
 
         // 인증정보 임의 저장
@@ -520,6 +518,13 @@ public class QuartzController {
 
         // 제3자 제공동의 철회
         mydataService.revoke(auth.getCustId());
+
+        // 3초간 멈춤
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            log.error("**** 요청 처리 실패 {}", e);
+        }
 
         // 인증정보 삭제
         authInfoRepository.delete(auth);
@@ -538,6 +543,22 @@ public class QuartzController {
         custService.saveCustStat(ymd);
 
         log.info("## QuartzController.java [saveCustStat] End");
+
+        return "";
+    }
+
+    @RequestMapping(value = "/selectCustStat", method = RequestMethod.GET)
+    public String selectCustStat(@RequestParam String from, @RequestParam String to, HttpServletRequest req) {
+
+        log.info("## QuartzController.java [selectCustStat] Starts");
+        log.info("▶▶▶ 회원 이용 현황 조회 : [{} ~ {}]", from, to);
+
+        // 고객 이용 현황 조회
+        custService.getCustStatList(from, to).forEach(cs -> {
+            log.info("[{}]", cs.toString());
+        });
+
+        log.info("## QuartzController.java [selectCustStat] End");
 
         return "";
     }
