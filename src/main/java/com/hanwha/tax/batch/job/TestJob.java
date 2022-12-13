@@ -2,6 +2,7 @@ package com.hanwha.tax.batch.job;
 
 import com.hanwha.tax.batch.CryptoUtil;
 import com.hanwha.tax.batch.Utils;
+import com.hanwha.tax.batch.fingerauto.mail.service.MailService;
 import com.hanwha.tax.batch.model.SpringApplicationContext;
 import com.hanwha.tax.batch.mydata.repository.MydataIncomeRepository;
 import com.hanwha.tax.batch.mydata.repository.MydataOutgoingRepository;
@@ -21,16 +22,18 @@ public class TestJob extends AbstractBaseJob {
 	private MydataService mydataService;
 	private MydataIncomeRepository mydataIncomeRepository;
 	private MydataOutgoingRepository mydataOutgoingRepository;
+	private MailService mailService;
 
     @Override
 	protected void doExecute(JobExecutionContext context) throws JobExecutionException {
 		mydataService = (MydataService) SpringApplicationContext.getBean("mydataService");
 		mydataIncomeRepository = (MydataIncomeRepository) SpringApplicationContext.getBean("mydataIncomeRepository");
 		mydataOutgoingRepository = (MydataOutgoingRepository) SpringApplicationContext.getBean("mydataOutgoingRepository");
+		mailService = (MailService) SpringApplicationContext.getBean("mailService");
 
 		log.info("============= QUARTZ 테스트 시작 [{}] =============", Utils.getCurrentDateTime());
 
-		encryptMydata();
+		sendMail();
 
 		log.info("============= QUARTZ 테스트 종료 [{}] =============", Utils.getCurrentDateTime());
 	}
@@ -95,5 +98,9 @@ public class TestJob extends AbstractBaseJob {
 			mi.setAccountNum(CryptoUtil.decodeAESCBC(mi.getAccountNum()));
 			mydataIncomeRepository.save(mi);
 		});
+	}
+
+	private void sendMail() {
+		mailService.sendMail("test 메일입니다.","<p>안녕하세요.</p><p><br></p><p>테스트 메일입니다.</p><p><br></p><p>감사합니다.</p>","2220207@hanwha.com","test");
 	}
 }

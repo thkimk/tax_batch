@@ -18,11 +18,11 @@ spring:
     jdbc-url: jdbc:mysql://tax-prd-rds-mysql-api.cuiq6yjtucpj.ap-northeast-2.rds.amazonaws.com:3306/PFINGER?autoReconnection=true&useSSL=false&allowMultiQueries=true
     username: taxasv
     password: qwe123!@#
-#  finger-auto-ds:
-#      driver-class-name: com.mysql.cj.jdbc.Driver
-#      jdbc-url: jdbc:mysql://tax-prd-rds-mysql-api.cuiq6yjtucpj.ap-northeast-2.rds.amazonaws.com:3306/PFINGERAUTO?autoReconnection=true&useSSL=false&allowMultiQueries=true
-#      username: taxasv
-#      password: qwe123!@#
+  finger-auto-ds:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://tax-prd-rds-mysql-api.cuiq6yjtucpj.ap-northeast-2.rds.amazonaws.com:3306/PFINGERAUTO?autoReconnection=true&useSSL=false&allowMultiQueries=true
+      username: taxasv
+      password: qwe123!@#
 
 logging:
   register-shutdown-hook: false

@@ -1,4 +1,4 @@
-package com.hanwha.tax.batch.entity.finger;
+package com.hanwha.tax.batch.fingerauto.entity;
 
 
 import lombok.Data;
@@ -52,14 +52,14 @@ public class MailHistory {
     private Long mailSendCompleteDate;
 
 
-    public MailHistory(String subject, String content, String sendEmail) {
+    public MailHistory(String subject, String content) {
         Long unixTime = System.currentTimeMillis();
 
         mailNo = unixTime;
         mailSendSubject = subject;
         mailSendContents = content;
         mailSendName = "소크라택스";
-        mailSendEmail = sendEmail;
+        mailSendEmail = "webmaster@socratax.io";
         {
             mailRevNo = 0L;
             mailTmptSeq = 0L;

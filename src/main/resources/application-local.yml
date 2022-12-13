@@ -18,6 +18,11 @@ spring:
     jdbc-url: jdbc:mysql://tax-dbms.cjzouundkjlm.ap-northeast-2.rds.amazonaws.com:3306/finger?autoReconnection=true&useSSL=false&allowMultiQueries=true
     username: root
     password: welcome123
+  finger-auto-ds:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jdbc-url: jdbc:mysql://tax-dbms.cjzouundkjlm.ap-northeast-2.rds.amazonaws.com:3306/finger_auto?autoReconnection=true&useSSL=false&allowMultiQueries=true
+    username: root
+    password: welcome123
 
 logging:
   register-shutdown-hook: false

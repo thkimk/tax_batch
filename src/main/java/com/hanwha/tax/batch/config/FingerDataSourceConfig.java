@@ -5,7 +5,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -17,8 +16,7 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 
 @Configuration
-@PropertySource({"classpath:application-dev.yml"})
-@EnableJpaRepositories(basePackages = "com.hanwha.tax.batch.finger.repository", entityManagerFactoryRef = "fingerEntityManager", transactionManagerRef = "fingerTransactionManager")
+@EnableJpaRepositories(basePackages = "com.hanwha.tax.batch.finger.*.repository", entityManagerFactoryRef = "fingerEntityManager", transactionManagerRef = "fingerTransactionManager")
 public class FingerDataSourceConfig {
 	@Autowired
 	private Environment env;
@@ -29,7 +27,7 @@ public class FingerDataSourceConfig {
 		em.setDataSource(fingerDataSource());
 
 		//Entity 패키지 경로
-		em.setPackagesToScan(new String[] { "com.hanwha.tax.batch.entity.finger" });
+		em.setPackagesToScan(new String[] { "com.hanwha.tax.batch.finger.entity" });
 
 		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		em.setJpaVendorAdapter(vendorAdapter);

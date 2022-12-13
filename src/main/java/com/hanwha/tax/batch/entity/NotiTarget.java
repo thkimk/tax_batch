@@ -141,7 +141,7 @@ public class NotiTarget {
 		if (cust != null) {
 			this.custId = cust.getCustId();
 			this.custGrade = Cust.CustGrade.정회원.getCode().equals(cust.getCustGrade()) ? CustGrade.정회원.getCode() :
-							 Cust.CustGrade.준회원.getCode().equals(cust.getCustGrade()) ? CustGrade.준회원.getCode() : CustGrade.전체.getCode();
+							 Cust.CustGrade.준회원.getCode().equals(cust.getCustGrade()) ? CustGrade.준회원.getCode() : null;
 		}
 
 		if (custInfo != null) {
@@ -151,8 +151,8 @@ public class NotiTarget {
 			this.email = custInfo.getEmail();
 			this.mobile = custInfo.getMobile();
 			this.gender = CustInfo.Gender.남자.getCode().equals(custInfo.getGender()) ? Gender.남자.getCode() :
-						  CustInfo.Gender.여자.getCode().equals(custInfo.getGender()) ? Gender.여자.getCode() : Gender.전체.getCode();
-			this.age = realAge < 10 ? Age.전체.getCode() :
+						  CustInfo.Gender.여자.getCode().equals(custInfo.getGender()) ? Gender.여자.getCode() : null;
+			this.age = realAge < 10 ? null :
 					   realAge < 20 ? Age.십대.getCode() :
 					   realAge < 30 ? Age.이십대.getCode() :
 					   realAge < 40 ? Age.삼십대.getCode() :
@@ -164,9 +164,9 @@ public class NotiTarget {
 
 		if (custInfoDtl != null) {
 			this.marriage = "Y".equals(custInfoDtl.getIsMarriage()) ? Marriage.기혼.getCode() :
-							"N".equals(custInfoDtl.getIsMarriage()) ? Marriage.미혼.getCode() : Marriage.전체.getCode();
+							"N".equals(custInfoDtl.getIsMarriage()) ? Marriage.미혼.getCode() : null;
 			this.newBusin = "Y".equals(custInfoDtl.getIsNewBusin()) ? NewBusin.신규사업자.getCode() :
-							"N".equals(custInfoDtl.getIsNewBusin()) ? NewBusin.계속사업자.getCode() : NewBusin.전체.getCode();
+							"N".equals(custInfoDtl.getIsNewBusin()) ? NewBusin.계속사업자.getCode() : null;
 		}
 
 		if (custDeduct != null) {
@@ -177,7 +177,7 @@ public class NotiTarget {
 						  50000000 <= custDeduct.getIncome() ? Income.오천만원.getCode() :
 						  60000000 <= custDeduct.getIncome() ? Income.육천만원.getCode() :
 						  70000000 <= custDeduct.getIncome() ? Income.칠천만원.getCode() :
-						  75000000 <= custDeduct.getIncome() ? Income.칠천오백만원이상.getCode() : Income.전체.getCode();
+						  75000000 <= custDeduct.getIncome() ? Income.칠천오백만원이상.getCode() : null;
 		}
 
 		if (custFamilyList != null) {
@@ -186,7 +186,7 @@ public class NotiTarget {
 						  2 == cntFamily ? Family.두명.getCode() :
 						  3 == cntFamily ? Family.세명.getCode() :
 						  4 == cntFamily ? Family.네명.getCode() :
-						  5 <= cntFamily ? Family.다섯명이상.getCode() : Family.전체.getCode();
+						  5 <= cntFamily ? Family.다섯명이상.getCode() : null;
 		}
 
 		return this;

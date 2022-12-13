@@ -549,7 +549,7 @@ public class QuartzController {
         return "";
     }
 
-    @RequestMapping(value = "/selectCustStat", method = RequestMethod.GET)
+    @RequestMapping(value = "/selectCustStat")
     public String selectCustStat(@RequestParam String from, @RequestParam String to, HttpServletRequest req) {
 
         log.info("## QuartzController.java [selectCustStat] Starts");
