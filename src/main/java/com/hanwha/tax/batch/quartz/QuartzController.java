@@ -573,7 +573,7 @@ public class QuartzController {
 
         // 고객 이용 현황 조회
         custService.getLstCustStatHstList(ymd).forEach(lcs -> {
-            log.info("[{}]", lcs.toString());
+            log.info("[LoginHst(custId={}, loginDt={}, authStatus={})]", lcs.get("cust_id"), lcs.get("login_dt"), lcs.get("auth_status"));
         });
 
         log.info("## QuartzController.java [selectLstCustStatHst] End");
