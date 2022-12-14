@@ -47,4 +47,18 @@ public interface CustStatRepository extends JpaRepository<CustStat, String> {
      * @return
      */
     List<CustStat> findByBasicYmdBetween(String from, String to);
+
+    /**
+     * 기준일 별 고객 마지막 이용 현황 내역 조회
+     * @param basicYmd
+     * @return
+     */
+    @Query(value="select lst.* " +
+            "from (" +
+            "select ROW_NUMBER() OVER(partition by cust_id order by login_dt desc) as rn, lh.* " +
+            "from login_hst lh " +
+            "where auth_status not in ('LOGIN','LOGOUT') " +
+            "and DATE_FORMAT(login_dt,'%Y%m%d') = :basicYmd) lst " +
+            "where lst.rn = 1 ", nativeQuery = true)
+    List<Map<String, String>> getLstCustStatHst(String basicYmd);
 }

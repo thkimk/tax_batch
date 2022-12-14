@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -422,5 +423,14 @@ public class CustService {
      */
     public List<CustStat> getCustStatList(String from, String to) {
         return custStatRepository.findByBasicYmdBetween(from, to);
+    }
+
+    /**
+     * 기준일별 고객 마지막 이용 이력 조회
+     * @param basicYmd
+     * @return
+     */
+    public List<Map<String, String>> getLstCustStatHstList(String basicYmd) {
+        return custStatRepository.getLstCustStatHst(basicYmd);
     }
 }

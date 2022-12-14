@@ -564,4 +564,20 @@ public class QuartzController {
 
         return "";
     }
+
+    @RequestMapping(value = "/selectLstCustStatHst")
+    public String selectLstCustStatHst(@RequestParam String ymd, HttpServletRequest req) {
+
+        log.info("## QuartzController.java [selectLstCustStatHst] Starts");
+        log.info("▶▶▶ 회원 마지막 이용 현황 조회 : [{}]", ymd);
+
+        // 고객 이용 현황 조회
+        custService.getLstCustStatHstList(ymd).forEach(lcs -> {
+            log.info("[{}]", lcs.toString());
+        });
+
+        log.info("## QuartzController.java [selectLstCustStatHst] End");
+
+        return "";
+    }
 }
