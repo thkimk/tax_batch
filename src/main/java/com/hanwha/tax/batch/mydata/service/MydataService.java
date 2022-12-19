@@ -18,6 +18,10 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,13 +30,20 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static com.hanwha.tax.batch.Constants.BANK_FILE;
+import static com.hanwha.tax.batch.Constants.BANK_TRANS_FILE;
+import static com.hanwha.tax.batch.Constants.CARD_APPR_FILE;
+import static com.hanwha.tax.batch.Constants.CARD_FILE;
 import static com.hanwha.tax.batch.Constants.COOCON_FILE_SFTP_PATH;
+import static com.hanwha.tax.batch.Constants.REVOKE_FILE;
+import static com.hanwha.tax.batch.Constants.THIRDPARTY_FILE;
 
 @Slf4j
 @Service("mydataService")
@@ -993,6 +1004,27 @@ public class MydataService {
     }
 
     /**
+     * 마이데이터 배치 처리
+     * @param ymdBasic
+     */
+    public void procMydataJob(String ymdBasic) {
+        log.info("▶︎▶︎▶ 마이데이터 쿠콘 탈회 확인");
+        procMydataInfo(REVOKE_FILE, ymdBasic);		    // 쿠콘 탈회 파일 확인 ( 탈퇴를 제3자 제공동의보다 먼저 처리해야 함 )
+        log.info("▶︎▶︎▶ 마이데이터 제3자 제공동의 확인");
+        procMydataInfo(THIRDPARTY_FILE, ymdBasic);	    // 제3자 제공동의 파일 확인
+
+        log.info("▶︎▶︎▶ 마이데이터 은행(원본) 확인");
+        procMydataInfo(BANK_FILE, ymdBasic);			// 은행(원본) 파일 확인
+        log.info("▶︎▶︎▶ 마이데이터 카드(원본) 확인");
+        procMydataInfo(CARD_FILE, ymdBasic);			// 카드(원본) 파일 확인
+
+        log.info("▶︎▶︎▶ 마이데이터 은행(수입) 확인");
+        procMydataInfo(BANK_TRANS_FILE, ymdBasic);  	// 은행(수입) 파일 확인
+        log.info("▶︎▶︎▶ 마이데이터 카드(경비) 확인");
+        procMydataInfo(CARD_APPR_FILE, ymdBasic);	    // 카드(경비) 파일 확인
+    }
+
+    /**
      * 카드정보로 특정 카드이력 내역 조회
      * @param orgCode
      * @param cardId
@@ -1037,6 +1069,95 @@ public class MydataService {
 //        totalOutgoingRepository.deleteTotalOutgoing();
 //        // tax 정보 삭제
 //        taxRepository.deleteTax();
+    }
+
+    public void procMydataValidJob() {
+        HashMap<String, String> headerMap = new HashMap<>();
+        headerMap.put("User-Agent","1.0;iPhone;IOS;16.0.1");
+        headerMap.put("uid","thkim0740");
+        headerMap.put("jwt","eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGtpbTA3NDAiLCJwaW4iOiIxMjM0IiwiaWF0IjoxNjY4NDA5MzI1LCJleHAiOjE2OTk5NDUzMjV9.urADlxbD-gblm1LUJedbfiTsFbA0WzPt_jhgJaNcbHQ");
+
+        // 정상 상태의 정회원 리스트 조회
+        custService.getCustListByStatusGrade(Cust.CustStatus.정상.getCode(), Cust.CustGrade.정회원.getCode()).forEach(c -> {
+            log.info("▶︎▶︎▶︎ TOTAL 데이터 검증 [{}]", c.getCustId());
+            headerMap.put("cid",c.getCustId());
+
+            // 수입정보 요청
+            String returnIncome = HttpUtil.sendReqGETJson(domainApi+"/api/v1/mydata/ccIncome", headerMap);
+
+            // 수입정보 분석
+            try {
+                JSONParser jsonParser = new JSONParser();
+                JSONObject jobjResult = (JSONObject) jsonParser.parse(returnIncome);
+                JSONObject jobjData = (JSONObject) jobjResult.get("data");
+
+                if ("00000".equals(jobjData.get("rsp_code"))) {
+                    JSONArray jArrList = (JSONArray) jobjData.get("incomes_list");
+
+                    for (int i = 0; i < jArrList.size(); i++) {
+                        JSONObject jobjInfo = (JSONObject) jArrList.get(i);
+                        long year = (long) jobjInfo.get("year");
+                        long month = (long) jobjInfo.get("month");
+                        String tyle = (String) jobjInfo.get("tyle");// 1 : 3.3% 포함, 0 : 미포함
+                        long total = (long) jobjInfo.get("total");
+                        long count = (long) jobjInfo.get("count");
+
+                        Map<String, String> incomeMap = totalService.getTotalIncomeByMonth(c.getCustId(), year, month, "1".equals(tyle) ? 'Y' : 'N');
+                        long inTotal = "null".equals(String.valueOf(incomeMap.get("total"))) ? 0 : Long.parseLong(String.valueOf(incomeMap.get("total")));
+                        long inCount = "null".equals(String.valueOf(incomeMap.get("count"))) ? 0 : Long.parseLong(String.valueOf(incomeMap.get("count")));
+                        total = "0".equals(tyle) ? total*1000/967 : total;
+
+                        if (total != inTotal) {
+                            log.error("▶︎▶︎▶︎ TOTAL_INCOME 금액을 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", c.getCustId(), year, month, tyle, total, inTotal);
+                        }
+                        if (count != inCount) {
+                            log.error("▶︎▶︎▶︎ TOTAL_INCOME 건수를 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalIncome={}]", c.getCustId(), year, month, tyle, count, inCount);
+                        }
+                    }
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            // 경비정보 요청
+            String returnOutgoing = HttpUtil.sendReqGETJson(domainApi+"/api/v1/mydata/ccExpense", headerMap);
+
+            // 경비정보 분석
+            try {
+                JSONParser jsonParser = new JSONParser();
+                JSONObject jobjResult = (JSONObject) jsonParser.parse(returnOutgoing);
+                JSONObject jobjData = (JSONObject) jobjResult.get("data");
+
+                if ("00000".equals(jobjData.get("rsp_code"))) {
+                    JSONArray jArrList = (JSONArray) jobjData.get("expense_list");
+
+                    for (int i = 0; i < jArrList.size(); i++) {
+                        JSONObject jobjInfo = (JSONObject) jArrList.get(i);
+                        long year = (long) jobjInfo.get("year");
+                        long month = (long) jobjInfo.get("month");
+                        String category = (String) jobjInfo.get("category");
+                        long total = (long) jobjInfo.get("total");
+                        long count = (long) jobjInfo.get("count");
+
+                        // 경비제외는 검증하지 않는다.
+                        if (!MydataOutgoing.CardCategory.경비제외.getCode().equals(category)) {
+                            Map<String, String> outgoingMap = totalService.getTotalOutgoingByMonth(c.getCustId(), year, month, Utils.lpadByte(category,2,"0"));
+                            long outTotal = "null".equals(String.valueOf(outgoingMap.get("total"))) ? 0 : Long.parseLong(String.valueOf(outgoingMap.get("total")));
+                            long outCount = "null".equals(String.valueOf(outgoingMap.get("count"))) ? 0 : Long.parseLong(String.valueOf(outgoingMap.get("count")));
+
+                            if (total != outTotal) {
+                                log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 금액을 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalOutgoing={}]", c.getCustId(), year, month, category, total, outTotal);
+                            }
+                            if (count != outCount) {
+                                log.error("▶︎▶︎▶︎ TOTAL_OUTGOING 건수를 확인해 주시기 바랍니다. [{}][{}][{}][{}][totalApi={}, totalOutgoing={}]", c.getCustId(), year, month, category, count, outCount);
+                            }
+                        }
+                    }
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /**

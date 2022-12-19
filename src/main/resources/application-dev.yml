@@ -1,27 +1,32 @@
 server:
-  port: 8081
+  port: 8006
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    jdbcUrl: jdbc:mysql://tax-database.c1ttexowmmks.ap-northeast-2.rds.amazonaws.com:3306/tax?autoReconnection=true&useSSL=false&allowMultiQueries=true
-    username: tax_admin
-    password: hli6363!
+    jdbcUrl: jdbc:mysql://tax-dev-rds-mysql-api.cootfk27k5or.ap-northeast-2.rds.amazonaws.com:3306/DTAXDB?autoReconnection=true&useSSL=false&allowMultiQueries=true
+    username: dtaxasv
+    password: qwe123!@#
   quartz-ds:
     datasource:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://tax-dbms.cjzouundkjlm.ap-northeast-2.rds.amazonaws.com:3306/quartz?autoReconnection=true&useSSL=false&allowMultiQueries=true
-      username: root
-      password: welcome123
+      jdbc-url: jdbc:mysql://tax-dev-rds-mysql-api.cootfk27k5or.ap-northeast-2.rds.amazonaws.com:3306/DQUARTZ?autoReconnection=true&useSSL=false&allowMultiQueries=true
+      username: dtaxasv
+      password: qwe123!@#
   finger-ds:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    jdbc-url: jdbc:mysql://tax-dbms.cjzouundkjlm.ap-northeast-2.rds.amazonaws.com:3306/finger?autoReconnection=true&useSSL=false&allowMultiQueries=true
-    username: root
-    password: welcome123
+    jdbc-url: jdbc:mysql://tax-dev-rds-mysql-api.cootfk27k5or.ap-northeast-2.rds.amazonaws.com:3306/DFINGER?autoReconnection=true&useSSL=false&allowMultiQueries=true
+    username: dtaxasv
+    password: qwe123!@#
+  finger-auto-ds:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://tax-dev-rds-mysql-api.cootfk27k5or.ap-northeast-2.rds.amazonaws.com:3306/DFINGERAUTO?autoReconnection=true&useSSL=false&allowMultiQueries=true
+      username: dtaxasv
+      password: qwe123!@#
 
 logging:
   register-shutdown-hook: false
-  config: /home/ec2-user/tax_batch/config/logback-dev.xml
+  config: classpath:logback-dev.xml
   level:
     root: INFO
     com.hanwha.tax.batch: DEBUG
@@ -30,7 +35,7 @@ logging:
 
 tax:
   api:
-    domain: http://52.78.119.207:8090
+    domain: https://api-dev.socratax.io
   sftp:
     user: IS000001
     pwd: d1OryUJJr3
@@ -38,5 +43,5 @@ tax:
     port: 3300
   mydata:
     path:
-      zip: /pds/tax/down/
-      unzip: /pds/tax/mydata/
+      zip: /data/file001/tax_batch/down/
+      unzip: /data/file001/tax_batch/open/

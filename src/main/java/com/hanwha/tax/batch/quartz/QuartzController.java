@@ -6,7 +6,10 @@ import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.auth.repository.AuthInfoRepository;
 import com.hanwha.tax.batch.auth.service.AuthService;
 import com.hanwha.tax.batch.cust.service.CustService;
-import com.hanwha.tax.batch.entity.*;
+import com.hanwha.tax.batch.entity.AuthInfo;
+import com.hanwha.tax.batch.entity.Cust;
+import com.hanwha.tax.batch.entity.MydataOutgoing;
+import com.hanwha.tax.batch.entity.Tax;
 import com.hanwha.tax.batch.mydata.repository.MydataIncomeRepository;
 import com.hanwha.tax.batch.mydata.service.MydataService;
 import com.hanwha.tax.batch.tax.service.CalcTax;
@@ -30,14 +33,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-
-import static com.hanwha.tax.batch.Constants.BANK_FILE;
-import static com.hanwha.tax.batch.Constants.BANK_TRANS_FILE;
-import static com.hanwha.tax.batch.Constants.CARD_APPR_FILE;
-import static com.hanwha.tax.batch.Constants.CARD_FILE;
-import static com.hanwha.tax.batch.Constants.REVOKE_FILE;
-import static com.hanwha.tax.batch.Constants.THIRDPARTY_FILE;
 
 @Slf4j
 @Controller
@@ -79,31 +74,8 @@ public class QuartzController {
 
         log.info("## QuartzController.java [manualExe] Starts..");
         String lRet = "";
-//        List<Map<String, Object>> jobList = selectJobs();
 
         try {
-
-//            // Job 실행 제약 체크
-//            String checkJob = checkJob(job);
-//            if(!checkJob.isEmpty()) {
-//                throw new BizException(checkJob);
-//            }
-//
-//            Optional<Map<String, Object>> tempList = jobList.stream()
-//                    .filter(tempMap -> tempMap.get("jobName").toString().equals(job))
-//                    .findFirst();
-//
-//            if(!tempList.isPresent()) {
-//                lRet = "## don't find [jobName] : " + job + ", " + " [jobGroup] : " + jobGroup + "\n";
-//                lRet += "============== possibility job \n";
-//                for(int i=0;i<jobList.size();i++) {
-//                    lRet += "[jobName] : " + jobList.get(i).get("jobName") + ", "
-//                            + "[jobGroup] : " + jobList.get(i).get("jobGroup") + "\n";
-//                }
-//                lRet += "==============";
-//                return lRet;
-//            }
-
             JobKey jobKey = new JobKey(job, jobGroup);
             Scheduler lScheduler = sfb.getScheduler();
             lScheduler.triggerJob(jobKey);
@@ -127,21 +99,12 @@ public class QuartzController {
         log.info("▶︎▶︎▶ 마이데이터 원본 삭제 [{}]", ymd);
         mydataService.resetMydata(ymd);
 
-        log.info("▶︎▶︎▶ 마이데이터 쿠콘 탈회 확인");
-        mydataService.procMydataInfo(REVOKE_FILE, ymd);     	// 쿠콘 탈회 파일 확인 ( 탈퇴를 제3자 제공동의보다 먼저 처리해야 함 )
-        log.info("▶︎▶︎▶ 마이데이터 제3자 제공동의 확인 [{}]",ymd);
-        mydataService.procMydataInfo(THIRDPARTY_FILE, ymd);	    // 제3자 제공동의 파일 확인
+        log.info("▶︎▶︎▶ 마이데이터 정보 등록 [{}]", ymd);
+        mydataService.procMydataJob(ymd);
 
-        log.info("▶︎▶︎▶ 마이데이터 은행(원본) 확인 [{}]",ymd);
-        mydataService.procMydataInfo(BANK_FILE, ymd);			// 은행(원본) 파일 확인
-        log.info("▶︎▶︎▶ 마이데이터 카드(원본) 확인 [{}]",ymd);
-        mydataService.procMydataInfo(CARD_FILE, ymd);			// 카드(원본) 파일 확인
-
-        log.info("▶︎▶︎▶ 마이데이터 은행(수입) 확인 [{}]",ymd);
-        mydataService.procMydataInfo(BANK_TRANS_FILE, ymd);	    // 은행(수입) 파일 확인
-        log.info("▶︎▶︎▶ 마이데이터 카드(경비) 확인 [{}]",ymd);
-        mydataService.procMydataInfo(CARD_APPR_FILE, ymd);	    // 카드(경비) 파일 확인
-
+//        log.info("▶︎▶︎▶ 총 수입/지출 금액 계산 [{}]", ymd);
+//        log.info("▶︎▶︎▶ 소득세 계산 [{}]", ymd);
+        
         log.info("## QuartzController.java [saveMydata] End");
 
         return "";
@@ -152,65 +115,9 @@ public class QuartzController {
 
         log.info("## QuartzController.java [totalMydata] Starts");
 
-        // 간편장부, 마이데이터 수입 변경내역 조회
-        log.info("▶▶▶ TOTAL 수입정보 저장");
-        totalService.getTotalIncomeTarget(ymd).forEach(ti -> {
-            // 전체수입정보
-            TotalIncome totalIncome = new TotalIncome().convertByMydataMap(ti);
-
-            // 총 수입금액 저장 ( 수입여부가 'Y'인 경우만 저장/'N'인 경우 삭제 )
-            if ("Y".equals(ti.get("is_income"))) {
-                totalService.saveTotalIncome(totalIncome);
-            } else {
-                totalService.deleteTotalIncomeByFkAndFlagFk(totalIncome.getFk(), totalIncome.getFlagFk());
-            }
-        });
-
-        // 간편장부, 마이데이터 지출 변경내역 조회
-        log.info("▶▶▶ TOTAL 지출정보 저장");
-        totalService.getTotalOutgoingTarget(ymd).forEach(to -> {
-            // 전체지출정보
-            TotalOutgoing totalOutgoing = new TotalOutgoing().convertByMydataMap(to);
-
-            // 마이데이터 지출정보인 경우만 금액 계산
-            if (!Utils.isEmpty(to.get("appr_num"))) {
-                // 지출금액
-                AtomicLong amount = new AtomicLong();
-
-                // 마이데이터 승인번호 별 카드이력 조회
-                mydataService.getMydataOutgoingByCardInfo(to.get("org_code"), to.get("card_id"), to.get("appr_num")).forEach(mo -> {
-                    // ★★★ 테스트 데이터 중복되어 코드 추가 함
-                    if (!mo.getCustId().equals(to.get("cust_id")))
-                        return;
-
-                    // 경비제외가 아닌 경우 지출금액 계산 ( ★★★ 원본 데이터 삽입 시 경비코드 빈값으로 셋팅됨 )
-                    if (Utils.isEmpty(mo.getCategory()) || MydataOutgoing.CardCategory.경비제외.getCode().equals(mo.getCategory()))
-                        return;
-
-                    // 승인, 승인취소, 정정에 따른 지출금액 계산
-                    if (MydataOutgoing.ApprStatus.승인.getCode().equals(mo.getStatus())) {
-                        amount.set(amount.get()+mo.getApprAmt());
-
-                        // 최초 승인내역 기준으로 외래키 세팅
-                        totalOutgoing.setFk(totalOutgoing.getFk() < mo.getId() ? totalOutgoing.getFk() : mo.getId());
-                    } else if (MydataOutgoing.ApprStatus.승인취소.getCode().equals(mo.getStatus())) {
-                        amount.set(amount.get()-mo.getApprAmt());
-                    } else {
-                        amount.set(mo.getModAmt());
-                    }
-                });
-
-                // 총 지출금액 세팅
-                totalOutgoing.setAmount(amount.get());
-            }
-
-            // 총 지출금액 저장 ( 금액이 있는 경우만 저장/갱신하고 0원인 경우 삭제 )
-            if (0 < totalOutgoing.getAmount()) {
-                totalService.saveTotalOutgoing(totalOutgoing);
-            } else {
-                totalService.deleteTotalOutgoingByFkAndFlagFk(totalOutgoing.getFk(), totalOutgoing.getFlagFk());
-            }
-        });
+        // 기준일 별 총 수입/지출 금액 계산
+        log.info("▶▶▶ 총 수입/지출 금액 조회 : [{}]", ymd);
+        totalService.procTotalAmountJob(ymd);
 
         log.info("## QuartzController.java [totalMydata] End");
 
