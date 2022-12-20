@@ -1,6 +1,6 @@
 package com.hanwha.tax.batch.quartz;
 
-import com.hanwha.tax.batch.CryptoUtil;
+import com.hanwha.tax.batch.mydata.model.Crypto;
 import com.hanwha.tax.batch.HttpUtil;
 import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.auth.repository.AuthInfoRepository;
@@ -10,11 +10,13 @@ import com.hanwha.tax.batch.entity.AuthInfo;
 import com.hanwha.tax.batch.entity.Cust;
 import com.hanwha.tax.batch.entity.MydataOutgoing;
 import com.hanwha.tax.batch.entity.Tax;
+import com.hanwha.tax.batch.mydata.model.GuCrypto;
 import com.hanwha.tax.batch.mydata.repository.MydataIncomeRepository;
 import com.hanwha.tax.batch.mydata.service.MydataService;
 import com.hanwha.tax.batch.tax.service.CalcTax;
 import com.hanwha.tax.batch.tax.service.TaxService;
 import com.hanwha.tax.batch.total.service.TotalService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -35,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
+@RequiredArgsConstructor
 @Controller
 public class QuartzController {
 
@@ -66,6 +69,9 @@ public class QuartzController {
 
     @Value("${tax.api.domain}")
     private String domainApi;
+
+    private final Crypto crypto;
+    private final GuCrypto guCrypto;
 
     @RequestMapping(value = "/manualExe", method = RequestMethod.GET)
     public String manualExe(@RequestParam String job
@@ -369,12 +375,12 @@ public class QuartzController {
         // 마이데이터 수입정보 암호화
         if (Utils.isEmpty(cid)) {
             mydataService.getMydataIncomeList().forEach(mi -> {
-                mi.setAccountNum(CryptoUtil.encodeAESCBC(mi.getAccountNum()));
+                mi.setAccountNum(crypto.encodeAESCBC(mi.getAccountNum()));
                 mydataIncomeRepository.save(mi);
             });
         } else {
             mydataService.getMydataIncomeByCustId(cid).forEach(mi -> {
-                mi.setAccountNum(CryptoUtil.encodeAESCBC(mi.getAccountNum()));
+                mi.setAccountNum(crypto.encodeAESCBC(mi.getAccountNum()));
                 mydataIncomeRepository.save(mi);
             });
         }
@@ -392,17 +398,40 @@ public class QuartzController {
         // 마이데이터 수입정보 복호화
         if (Utils.isEmpty(cid)) {
             mydataService.getMydataIncomeList().forEach(mi -> {
-                mi.setAccountNum(CryptoUtil.decodeAESCBC(mi.getAccountNum()));
+                mi.setAccountNum(crypto.decodeAESCBC(mi.getAccountNum()));
                 mydataIncomeRepository.save(mi);
             });
         } else {
             mydataService.getMydataIncomeByCustId(cid).forEach(mi -> {
-                mi.setAccountNum(CryptoUtil.decodeAESCBC(mi.getAccountNum()));
+                mi.setAccountNum(crypto.decodeAESCBC(mi.getAccountNum()));
                 mydataIncomeRepository.save(mi);
             });
         }
 
         log.info("## QuartzController.java [decryptMydata] End");
+
+        return "";
+    }
+
+    @RequestMapping(value = "/guDecryptMydata", method = RequestMethod.GET)
+    public String guDecryptMydata(@RequestParam(value = "cid", required = false, defaultValue = "") String cid, HttpServletRequest req) {
+
+        log.info("## QuartzController.java [guDecryptMydata] Starts");
+
+        // 마이데이터 수입정보 구복호화
+        if (Utils.isEmpty(cid)) {
+            mydataService.getMydataIncomeList().forEach(mi -> {
+                mi.setAccountNum(guCrypto.decodeAESCBC(mi.getAccountNum()));
+                mydataIncomeRepository.save(mi);
+            });
+        } else {
+            mydataService.getMydataIncomeByCustId(cid).forEach(mi -> {
+                mi.setAccountNum(guCrypto.decodeAESCBC(mi.getAccountNum()));
+                mydataIncomeRepository.save(mi);
+            });
+        }
+
+        log.info("## QuartzController.java [guDecryptMydata] End");
 
         return "";
     }

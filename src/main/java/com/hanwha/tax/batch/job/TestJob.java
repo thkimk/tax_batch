@@ -1,6 +1,6 @@
 package com.hanwha.tax.batch.job;
 
-import com.hanwha.tax.batch.CryptoUtil;
+import com.hanwha.tax.batch.mydata.model.Crypto;
 import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.fingerauto.mail.service.MailService;
 import com.hanwha.tax.batch.model.SpringApplicationContext;
@@ -10,6 +10,7 @@ import com.hanwha.tax.batch.mydata.service.MydataService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.hanwha.tax.batch.Constants.BANK_FILE;
 import static com.hanwha.tax.batch.Constants.BANK_TRANS_FILE;
@@ -23,6 +24,8 @@ public class TestJob extends AbstractBaseJob {
 	private MydataIncomeRepository mydataIncomeRepository;
 	private MydataOutgoingRepository mydataOutgoingRepository;
 	private MailService mailService;
+	@Autowired
+	private Crypto crypto;
 
     @Override
 	protected void doExecute(JobExecutionContext context) throws JobExecutionException {
@@ -61,41 +64,30 @@ public class TestJob extends AbstractBaseJob {
 			mydataService.procMydataInfo(CARD_APPR_FILE, String.valueOf(i));	// 카드(경비) 파일 확인
 		}
 
-//		// 중복 값 조회
-//		log.info("▶▶▶ 마이데이터 은행(수입) 중복 내역");
-//		mydataService.getMydataIncomeDuplicate().forEach(mi -> {
-//			if (!"1".equals(String.valueOf(mi.get("rn"))))
-//				log.info("[custId={},orgCode={},accountNum={},seqNo={},transDtime={},transNo={},seq={},transAmt={}]", mi.get("cust_id"), mi.get("org_code"), mi.get("account_num"), mi.get("seq_no"), mi.get("trans_dtime"), mi.get("trans_no"), mi.get("seq"), mi.get("trans_amt"));
-//		});
-//		log.info("▶▶▶ 마이데이터 카드(경비) 중복 내역");
-//		mydataService.getMydataOutgoingDuplicate().forEach(mo -> {
-//			if (!"1".equals(String.valueOf(mo.get("rn")))) {
-//				log.info("[custId={},orgCode={},cardId={},seq={},transDtime={},apprNum={},apprAmt={},apprDtime={}]", mo.get("cust_id"), mo.get("org_code"), mo.get("card_id"), mo.get("seq"), mo.get("trans_dtime"), mo.get("appr_num"), mo.get("appr_amt"), mo.get("appr_dtime"));
-//			}
-//		});
-
-//		// 수입/경비 내역 조회
-//		String custId = "2210576542";
-//		log.info("▶▶▶ 마이데이터 은행(수입) My내역");
-//		mydataService.getMydataIncomeByCustId(custId).forEach(mi -> {
-//			log.info("{}", mi.toString());
-//		});
-//		log.info("▶▶▶ 마이데이터 카드(경비) My내역");
-//		mydataService.getMydataOutgoingByCustId(custId).forEach(mo -> {
-//			log.info("{}", mo.toString());
-//		});
+		// 중복 값 조회
+		log.info("▶▶▶ 마이데이터 은행(수입) 중복 내역");
+		mydataService.getMydataIncomeDuplicate().forEach(mi -> {
+			if (!"1".equals(String.valueOf(mi.get("rn"))))
+				log.info("[custId={},orgCode={},accountNum={},seqNo={},transDtime={},transNo={},seq={},transAmt={}]", mi.get("cust_id"), mi.get("org_code"), mi.get("account_num"), mi.get("seq_no"), mi.get("trans_dtime"), mi.get("trans_no"), mi.get("seq"), mi.get("trans_amt"));
+		});
+		log.info("▶▶▶ 마이데이터 카드(경비) 중복 내역");
+		mydataService.getMydataOutgoingDuplicate().forEach(mo -> {
+			if (!"1".equals(String.valueOf(mo.get("rn")))) {
+				log.info("[custId={},orgCode={},cardId={},seq={},transDtime={},apprNum={},apprAmt={},apprDtime={}]", mo.get("cust_id"), mo.get("org_code"), mo.get("card_id"), mo.get("seq"), mo.get("trans_dtime"), mo.get("appr_num"), mo.get("appr_amt"), mo.get("appr_dtime"));
+			}
+		});
 	}
 
 	private void encryptMydata() {
 		mydataService.getMydataIncomeList().forEach(mi -> {
-			mi.setAccountNum(CryptoUtil.encodeAESCBC(mi.getAccountNum()));
+			mi.setAccountNum(crypto.encodeAESCBC(mi.getAccountNum()));
 			mydataIncomeRepository.save(mi);
 		});
 	}
 
 	private void decryptMydata() {
 		mydataService.getMydataIncomeList().forEach(mi -> {
-			mi.setAccountNum(CryptoUtil.decodeAESCBC(mi.getAccountNum()));
+			mi.setAccountNum(crypto.decodeAESCBC(mi.getAccountNum()));
 			mydataIncomeRepository.save(mi);
 		});
 	}

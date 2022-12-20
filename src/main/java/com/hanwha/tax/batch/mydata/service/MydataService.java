@@ -1,6 +1,6 @@
 package com.hanwha.tax.batch.mydata.service;
 
-import com.hanwha.tax.batch.CryptoUtil;
+import com.hanwha.tax.batch.mydata.model.Crypto;
 import com.hanwha.tax.batch.HttpUtil;
 import com.hanwha.tax.batch.Utils;
 import com.hanwha.tax.batch.auth.service.AuthService;
@@ -17,6 +17,7 @@ import com.hanwha.tax.batch.total.service.TotalService;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -46,6 +47,7 @@ import static com.hanwha.tax.batch.Constants.REVOKE_FILE;
 import static com.hanwha.tax.batch.Constants.THIRDPARTY_FILE;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service("mydataService")
 public class MydataService {
 
@@ -162,6 +164,8 @@ public class MydataService {
 
     @Value("${tax.api.domain}")
     private String domainApi;
+
+    private final Crypto crypto;
 
     /**
      * 마이데이터 파일 경로 가져오기
@@ -346,7 +350,7 @@ public class MydataService {
         Integer seq = mydataIncome.getSeq();
 
         // 게좌번호 암호화
-        mydataIncome.setAccountNum(CryptoUtil.encodeAESCBC(mydataIncome.getAccountNum()));
+        mydataIncome.setAccountNum(crypto.encodeAESCBC(mydataIncome.getAccountNum()));
 
         // 마이데이터 수입 원본 데이터 조회
         mydataIncome.setSeq(null);

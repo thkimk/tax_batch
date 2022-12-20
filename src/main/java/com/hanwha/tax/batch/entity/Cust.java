@@ -23,6 +23,7 @@ public class Cust {
 	private String custId;			// 고객 번호
 	private String custStatus;		// 고객 상태
 	private String custGrade;		// 고객 등급
+	private Character isMydata;		// 마이데이터 연동 여부
 	private String asctInDt;		// 준회원 가입일시
 	private String asctOutDt;		// 준회원 탈퇴일시
 	private String regInDt;			// 정회원 가입일시
